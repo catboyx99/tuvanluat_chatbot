@@ -9,8 +9,8 @@ backend/app/__pycache__/
 **/__pycache__/
 *.pyc
 
-# ChromaDB (too large, re-ingest on first run)
-backend/chroma_db/
+# ChromaDB data (persist qua Docker volume)
+chroma_db/data/
 
 # Node.js
 frontend/node_modules/
@@ -22,6 +22,10 @@ Thumbs.db
 
 # Docker
 *.tar
+
+# Local docs
+impl_plan.md
+prd.md
 
 # Claude Code
 .agent/

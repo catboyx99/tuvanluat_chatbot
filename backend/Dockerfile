@@ -8,11 +8,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY app/ ./app/
-COPY .env .
-
-# Copy law documents + pre-built ChromaDB (self-contained, no re-ingest needed)
-COPY md_materials/ ./md_materials/
-COPY chroma_db/ ./chroma_db/
 
 EXPOSE 8000
 

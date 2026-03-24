@@ -14,9 +14,19 @@ Internet → Domain (HTTPS:443)
     ↓                    ↓
  Frontend:3000      Backend:8000
  (Next.js)          (FastAPI)
-    └────────→───────────┘
+                         ↓
+                    ChromaDB (internal)
+                    (Vector DB)
+    └────────────────────┘
        Docker internal network
 ```
+
+### 3 Docker Services
+| Service | Image | Port | Mô tả |
+|---------|-------|------|-------|
+| `chroma` | chromadb/chroma:0.6.3 | internal | Vector DB, data persist qua volume |
+| `backend` | python:3.12-slim | 8000 | FastAPI + RAG, kết nối ChromaDB qua HTTP |
+| `frontend` | node:20-alpine | 3000 | Next.js UI |
 
 ---
 
@@ -33,16 +43,20 @@ git clone https://github.com/catboyx99/tuvanluat_chatbot.git
 cd tuvanluat_chatbot
 ```
 
-### Bước 3 — Tạo file `.env`
+### Bước 3 — Tạo file `.env` ở root project
+```bash
+echo "GEMINI_API_KEY=<your-api-key>" > .env
 ```
-GEMINI_API_KEY=<api-key>
-```
+> **Quan trọng**: File `.env` phải nằm ở root (cùng cấp với `docker-compose.yml`). Docker Compose tự đọc biến từ file này.
+> API key lấy tại: https://aistudio.google.com/apikey
 
 ### Bước 4 — Build & chạy Docker
 ```bash
 docker compose up -d --build
 ```
-Lần đầu sẽ tự build images + ingest data vào ChromaDB (~2-3 phút).
+- Lần đầu sẽ tự build images + ingest toàn bộ `md_materials/` vào ChromaDB (~2-3 phút).
+- Các lần sau chỉ ingest file `.md` mới (nếu có), data ChromaDB được persist qua Docker volume.
+- Thêm file luật mới: copy file `.md` vào `md_materials/` rồi restart backend (`docker compose restart backend`).
 
 ### Bước 5 — Cài Nginx reverse proxy + SSL
 ```bash
@@ -107,7 +121,7 @@ git clone https://github.com/catboyx99/tuvanluat_chatbot.git
 cd tuvanluat_chatbot
 ```
 
-### Bước 3 — Tạo file `.env` (giống Linux)
+### Bước 3 — Tạo file `.env` ở root project (giống Linux Bước 3)
 
 ### Bước 4 — Build & chạy Docker
 ```powershell
@@ -142,6 +156,9 @@ docker-compose up -d --build
 Khi deploy production, dùng thêm file override `docker-compose.prod.yml`:
 ```yaml
 services:
+  chroma:
+    restart: always
+
   frontend:
     restart: always
 
@@ -154,14 +171,16 @@ Chạy production:
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
-`restart: always` đảm bảo container tự khởi động lại khi server reboot hoặc crash.
+`restart: always` đảm bảo cả 3 container tự khởi động lại khi server reboot hoặc crash.
+> **Lưu ý**: ChromaDB service đã có `restart: unless-stopped` mặc định trong docker-compose.yml.
 
 ---
 
 ## Verification Checklist
-- [ ] `docker compose ps` — cả 2 container Running
+- [ ] `docker compose ps` — cả 3 container Running (chroma, backend, frontend)
+- [ ] `docker compose logs backend` — thấy `[Startup] ChromaDB connected.` và ingest done
 - [ ] `curl http://localhost:3000` — frontend OK
 - [ ] `curl http://localhost:8000/health` — backend OK (trả `{"status":"ok"}`)
 - [ ] Truy cập `https://yourdomain.com` — hiện giao diện chat
-- [ ] Hỏi thử câu pháp luật — nhận streaming response với citation
+- [ ] Hỏi thử câu pháp luật (cả dạng tự nhiên không dấu) — nhận streaming response với citation
 - [ ] `curl -I https://yourdomain.com` — kiểm tra SSL certificate OK

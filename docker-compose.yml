@@ -1,5 +1,29 @@
-version: '3.8'
 services:
+  chroma:
+    build:
+      context: ./chroma_db
+      dockerfile: Dockerfile
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - MD_DIR=/app/md_materials
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./md_materials:/app/md_materials:ro
+    depends_on:
+      - chroma
+
   frontend:
     build:
       context: ./frontend
@@ -11,11 +35,5 @@ services:
     depends_on:
       - backend
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
+volumes:
+  chroma_data:

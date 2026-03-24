@@ -35,7 +35,7 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
   - Custom dark scrollbar
 
 ### 2.2. RAG Pipeline & Backend Engine (Python FastAPI)
-- **Framework**: FastAPI, LangChain, Uvicorn, Pydantic, ChromaDB, `langchain-google-genai`
+- **Framework**: FastAPI, LangChain, Uvicorn, Pydantic, `langchain-google-genai`, `chromadb` (HTTP client)
 - **Models**:
   - LLM: `gemini-2.5-flash` (temperature=0.0, streaming=True)
   - Embedding: `gemini-embedding-001`
@@ -44,20 +44,25 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
   - `POST /api/ingest`: Quét `md_materials/`, split + embed + lưu ChromaDB
   - `GET /health`: Health check
 - **Document Ingestion**:
-  - 2 thư mục `md_materials/`: root (nơi user thêm file mới) và `backend/md_materials/` (BE dùng để ingest)
-  - **Auto-sync & Incremental Ingest**: Khi khởi động backend, tự so sánh root vs backend, copy file `.md` mới sang backend, chỉ ingest file mới vào ChromaDB (không trùng lặp). Hỗ trợ param `only_files` trong `load_and_split_markdown_documents()`.
+  - Duy nhất 1 thư mục `md_materials/` ở root project. Backend đọc trực tiếp qua Docker volume mount (`MD_DIR` env var).
+  - **Auto-detect & Incremental Ingest**: Khi khởi động backend, kiểm tra ChromaDB:
+    - DB rỗng → ingest toàn bộ file `.md`
+    - DB có data → so sánh file trong folder vs source metadata trong ChromaDB (`get_ingested_sources()`), chỉ ingest file mới
+    - Không có gì mới → skip
+  - Hỗ trợ param `only_files` trong `load_and_split_markdown_documents()` cho incremental ingest.
   - `MarkdownHeaderTextSplitter`: Split theo header hierarchy (#→Luật, ##→Chương, ###→Điều, ####→Khoản)
   - `RecursiveCharacterTextSplitter`: chunk_size=1000, overlap=150
   - Metadata: `source`, `Luật/Nghị Định`, `Chương/Mục`, `Điều`, `Khoản`
 - **RAG Flow**:
-  1. Retrieval: Top-5 vector search từ ChromaDB, lọc qua relevance score threshold (0.35) — loại bỏ kết quả không liên quan
-  2. Context: Build context kèm metadata label `[Nguồn: Luật > Chương > Điều > Khoản]`
-  3. System Prompt: Yêu cầu trả lời 2 phần:
+  1. **Query Rewriting**: Dùng LLM chuyển câu hỏi tự nhiên/không dấu/khẩu ngữ thành truy vấn pháp lý tiếng Việt có dấu (VD: "con bố 20 tuổi nó học trường nào đc?" → "Quyền học tập và trình độ đào tạo cho người 20 tuổi")
+  2. Retrieval: Top-5 vector search từ ChromaDB (không dùng threshold — để LLM tự đánh giá relevance)
+  3. Context: Build context kèm metadata label `[Nguồn: Luật > Chương > Điều > Khoản]`
+  4. System Prompt: Linh hoạt suy luận ý định câu hỏi, trả lời 2 phần:
      - Phần 1: Lời tư vấn dễ hiểu
-     - Phần 2: "Căn cứ pháp lý:" theo format: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ]. Nhiều Điểm cùng Khoản liệt kê trên 1 dòng (VD: "Điểm a, Điểm b, Điểm c"). Nhiều Điều từ cùng văn bản → mỗi Điều trên dòng riêng.
-  4. KHÔNG trích dẫn tên file markdown, KHÔNG bịa điều khoản, KHÔNG dùng kiến thức bên ngoài context
-  5. Nếu không có dữ liệu liên quan → trả lời "Xin lỗi, hệ thống không tìm thấy dữ liệu..."
-  5. Stream output qua `llm.stream(messages)`
+     - Phần 2: "Căn cứ pháp lý:" theo format: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ]
+  5. KHÔNG trích dẫn tên file markdown, KHÔNG bịa điều khoản, KHÔNG dùng kiến thức bên ngoài context
+  6. Nếu không có dữ liệu liên quan → trả lời "Xin lỗi, hệ thống không tìm thấy dữ liệu..."
+  7. Stream output qua `llm.stream(messages)`
 
 ### 2.3. Cấu trúc Thư mục
 ```text
@@ -74,29 +79,36 @@ LawConsultant_ChatBot/
 ├── backend/                  # Workspace Backend (Python)
 │   ├── app/
 │   │   ├── __init__.py
-│   │   ├── main.py           # FastAPI app, CORS, 3 endpoints
-│   │   ├── rag_engine.py     # ChromaDB + Gemini LLM + citation system prompt
+│   │   ├── main.py           # FastAPI app, CORS, 3 endpoints, auto-detect & incremental ingest, wait_for_chroma
+│   │   ├── rag_engine.py     # ChromaDB HTTP client + Gemini LLM + query rewriting + citation system prompt
 │   │   ├── document_loader.py# Hierarchical markdown splitter
 │   │   └── schemas.py        # Pydantic: ChatMessage, ChatRequest
-│   ├── md_materials/         # 27 file luật (Luật, Nghị định, Thông tư, Quyết định)
-│   ├── chroma_db/            # ChromaDB persistent storage (2478 documents)
 │   ├── requirements.txt
-│   ├── .env                  # GEMINI_API_KEY
 │   └── Dockerfile
-├── md_materials/             # Thư mục root — nơi user thêm file .md mới (auto-sync sang backend)
-├── docker-compose.yml        # 2 services (frontend:3000, backend:8000)
+├── chroma_db/                # ChromaDB service
+│   └── Dockerfile            # Dựa trên chromadb/chroma:0.6.3
+├── md_materials/             # Duy nhất 1 thư mục — chứa file .md luật, mount read-only vào backend container
+├── .env                      # GEMINI_API_KEY cho Docker Compose (không commit, tạo thủ công)
+├── docker-compose.yml        # 3 services (chroma, backend, frontend) + chroma_data volume
 ├── CLAUDE.md                 # PRD (file này dùng làm context cho Claude Code)
 ├── IMPLEMENTATION_PLAN.md    # File kiến trúc này
 └── history_log.md            # Log tiến độ & lỗi blocking
 ```
 
 ### 2.4. DevOps & Triển khai
-- **Local**: `docker-compose up -d` — 2 images (node:20-alpine standalone + python:3.12-slim)
-- **Docker images**: backend 271MB, frontend 53MB. Self-contained (chứa sẵn chroma_db + md_materials)
-- **Chuyển máy khác**: `docker save` → copy `.tar` + `docker-compose.yml` + `.env` → `docker load` → `docker-compose up -d`
+- **Docker Compose**: 3 services
+  - `chroma`: ChromaDB server (image chromadb/chroma:0.6.3), data persist qua `chroma_data` volume
+  - `backend`: Python 3.12 FastAPI, kết nối ChromaDB qua HTTP client
+  - `frontend`: Node 20 Alpine standalone
+- **Docker volumes**:
+  - `chroma_data`: persist ChromaDB data giữa các lần run (không cần re-ingest)
+  - `./md_materials` mount read-only vào `/app/md_materials` trong backend container
+- **Deploy trên máy mới** (chỉ 3 bước):
+  1. `git clone https://github.com/catboyx99/tuvanluat_chatbot.git && cd tuvanluat_chatbot`
+  2. Tạo file `.env` ở root chứa `GEMINI_API_KEY=<api-key>` (lấy tại https://aistudio.google.com/apikey)
+  3. `docker compose up -d --build` (lần đầu tự ingest ~2-3 phút, các lần sau skip)
+- **Thêm file luật mới**: Copy file `.md` vào `md_materials/` → `docker compose restart backend`
 - **GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
-- **Root `.env`**: Chứa `GEMINI_API_KEY`, docker-compose tự đọc — không cần truyền thủ công
-- **Lưu ý Windows**: Uvicorn `--reload` không ổn định với Python 3.14 trên Windows, chạy không có `--reload`. Console log phải dùng ASCII (không tiếng Việt trong `print()`) vì Windows cp1252 không encode được Unicode tiếng Việt.
 
 ## 3. Các bước triển khai
 
@@ -120,9 +132,10 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Markdown rendering (react-markdown) cho bot response
 - [x] Loading animation: Scale icon lắc lư + random messages (hiện ngay, không đợi 2s)
 - [x] Ẩn bubble assistant rỗng khi chưa có streaming content
-- [x] Auto-sync file .md mới từ root → backend + incremental ingest
+- [x] Auto-detect file .md mới + incremental ingest (1 thư mục md_materials/ duy nhất ở root)
 - [x] Dọn file test rác (luat_doanh_nghiep_mau.md, run_law_chatbot.cmd)
-- [x] Anti-hallucination: relevance score threshold (0.35) + system prompt cấm kiến thức ngoài
-- [x] Docker build OK — 2 images: backend (271MB, Python 3.12) + frontend (53MB, Node 20 standalone)
-- [x] Docker Compose chạy OK — root `.env` chứa GEMINI_API_KEY, không cần truyền thủ công
+- [x] Query rewriting: câu hỏi tự nhiên/không dấu → truy vấn pháp lý chính xác
+- [x] Anti-hallucination: system prompt linh hoạt suy luận ý định + không bịa điều khoản
+- [x] ChromaDB tách container riêng (server mode, HTTP client)
+- [x] Docker 3 services (chroma + backend + frontend), volume persist, chỉ cần `.env` + `docker compose up`
 - [x] Push project lên GitHub (https://github.com/catboyx99/tuvanluat_chatbot)

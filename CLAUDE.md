@@ -22,8 +22,11 @@
 - **Loading Animation**: Khi gửi câu hỏi, hiện ngay icon cán cân (Scale) lắc lư kèm câu trấn an random (8 messages luân phiên). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
 
 ### 2.2. Xử lý dữ liệu (Data Pipeline)
-- **Nguồn nạp văn bản**: 2 thư mục `md_materials/` — root (nơi user thêm file mới) và `backend/md_materials/` (BE dùng để ingest).
-- **Auto-sync & Incremental Ingest**: Khi khởi động backend, tự động so sánh root vs backend, copy file `.md` mới sang backend, rồi chỉ ingest file mới vào ChromaDB (không trùng lặp data cũ).
+- **Nguồn nạp văn bản**: Duy nhất 1 thư mục `md_materials/` ở root project. Backend đọc trực tiếp qua Docker volume mount.
+- **Auto-detect & Incremental Ingest**: Khi khởi động backend, tự kiểm tra ChromaDB:
+  - DB rỗng → ingest toàn bộ file `.md` trong `md_materials/`
+  - DB có data → so sánh file trong folder vs source đã ingest trong ChromaDB, chỉ ingest file mới (incremental)
+  - Không có gì mới → skip, khởi động nhanh
 - **Tính năng Cắt văn bản theo cấu trúc pháp luật**: Áp dụng thuật toán chia nhỏ tài liệu theo cấu trúc:
   1. Luật/Nghị Định (Parent Root — Header #)
   2. Chương/Mục (Header ##)
@@ -32,18 +35,19 @@
 - **Embedding & Storage**: Dùng `gemini-embedding-001` lưu vào Local Vector DB (ChromaDB).
 
 ### 2.3. RAG Engine
+- **Query Rewriting**: Trước khi search, dùng LLM chuyển câu hỏi tự nhiên/không dấu thành truy vấn pháp lý tiếng Việt có dấu để vector search chính xác hơn.
 - Khi trả lời, hệ thống phải đọc kỹ nội dung chunks để xác định chính xác số Điều, Khoản, Điểm rồi trích dẫn ở cuối câu trả lời theo format chuẩn "Căn cứ pháp lý".
 - **Chống bịa đặt (Anti-Hallucination)**:
-  - Relevance score threshold (0.35) — lọc bỏ kết quả vector search không liên quan trước khi đưa vào LLM.
-  - System prompt nghiêm cấm sử dụng kiến thức bên ngoài, bắt buộc trả lời "không có dữ liệu" nếu context không chứa thông tin.
-  - KHÔNG bịa số điều khoản.
+  - System prompt yêu cầu chỉ trả lời dựa trên dữ liệu được cung cấp, linh hoạt suy luận ý định câu hỏi đời thường.
+  - KHÔNG bịa số điều khoản, KHÔNG dùng kiến thức bên ngoài context.
 
 ## 3. Kiến trúc Công nghệ (Technology Stack)
 
 ### 3.1. Backend (API + RAG Core)
-- Python 3.14, FastAPI, LangChain, ChromaDB
+- Python 3.12, FastAPI, LangChain
 - LLM: `gemini-2.5-flash` (streaming, temperature=0.0)
 - Embedding: `gemini-embedding-001`
+- ChromaDB: container riêng (server mode), backend kết nối qua HTTP client
 - Code luôn được docs/comments rõ ràng
 
 ### 3.2. Frontend (UI)
@@ -54,18 +58,25 @@
   - Message content truy cập qua `m.parts` (không phải `m.content`)
 
 ### 3.3. DevOps
-- **Docker / Docker-Compose**: 2 services (frontend:3000, backend:8000)
+- **Docker / Docker-Compose**: 3 services:
+  - `chroma`: ChromaDB server (container riêng, data persist qua `chroma_data` volume)
+  - `backend`: FastAPI + RAG (kết nối ChromaDB qua HTTP, mount `md_materials/` read-only)
+  - `frontend`: Next.js (port 3000)
 - **Git/GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
-- **Deploy**: Docker Compose (`docker-compose up -d`)
+- **Deploy trên máy mới** (chỉ 3 bước):
+  1. `git clone https://github.com/catboyx99/tuvanluat_chatbot.git && cd tuvanluat_chatbot`
+  2. Tạo file `.env` ở root chứa `GEMINI_API_KEY=<api-key>`
+  3. `docker compose up -d --build` (lần đầu tự ingest ~2-3 phút, các lần sau skip)
 
 ## 4. Trạng thái hiện tại — Hoàn thiện
 - Frontend + Backend đã hoàn thiện và chạy OK
-- 2478 documents pháp luật đã ingest vào ChromaDB (sạch, không file test rác)
+- 2475 documents pháp luật đã ingest vào ChromaDB
 - Dark theme IDE-style, typing effect, markdown rendering, citation format chuẩn
-- Auto-sync & incremental ingest
+- Auto-detect & incremental ingest (1 thư mục md_materials/ duy nhất ở root)
+- Query rewriting: câu hỏi tự nhiên/không dấu → truy vấn pháp lý chính xác
 - Loading animation (Scale icon lắc lư + random messages)
-- Anti-hallucination (relevance score threshold + system prompt)
-- Docker build OK — 2 images self-contained (backend 271MB, frontend 53MB)
+- Anti-hallucination (system prompt linh hoạt + không bịa điều khoản)
+- Docker 3 services: ChromaDB (container riêng) + Backend + Frontend, data persist qua volume
 - Pushed lên GitHub
 
 ## 5. Ghi chú kỹ thuật quan trọng

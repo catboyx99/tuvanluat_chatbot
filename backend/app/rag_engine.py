@@ -1,4 +1,5 @@
 import os
+import chromadb
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
@@ -9,15 +10,16 @@ try:
 except:
     pass
 
-CHROMA_PATH = "./chroma_db"
+CHROMA_HOST = os.environ.get("CHROMA_HOST", "localhost")
+CHROMA_PORT = int(os.environ.get("CHROMA_PORT", "8000"))
 
 def get_vector_store():
-    # Sử dụng Embedding model của Gemini
     embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+    client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
     vector_store = Chroma(
+        client=client,
         collection_name="law_database",
         embedding_function=embeddings,
-        persist_directory=CHROMA_PATH
     )
     return vector_store
 
@@ -36,6 +38,16 @@ def build_llm():
         streaming=True
     )
 
+def rewrite_query(query: str) -> str:
+    """Chuyen cau hoi tu nhien thanh query phap ly de vector search chinh xac hon."""
+    llm = build_llm()
+    result = llm.invoke([
+        SystemMessage(content="Chuyen cau hoi sau thanh truy van phap ly tieng Viet co dau day du, ngan gon, phu hop de tim kiem trong co so du lieu luat Viet Nam. Chi tra ve cau truy van, khong giai thich."),
+        HumanMessage(content=query)
+    ])
+    return result.content.strip()
+
+
 def invoke_rag_chain(query: str, history: list):
     """
     Tìm context liên quan trong DB và stream câu trả lời về HTTP.
@@ -43,12 +55,11 @@ def invoke_rag_chain(query: str, history: list):
     """
     vector_store = get_vector_store()
 
-    # 1. Retrieval with relevance score filtering
-    RELEVANCE_THRESHOLD = 0.35
-    results_with_scores = vector_store.similarity_search_with_relevance_scores(query, k=5)
+    # 1. Query rewriting — chuyen cau hoi tu nhien thanh query phap ly
+    search_query = rewrite_query(query)
 
-    # Filter out low-relevance results
-    docs = [doc for doc, score in results_with_scores if score >= RELEVANCE_THRESHOLD]
+    # 2. Retrieval — lay top-k ket qua
+    docs = vector_store.similarity_search(search_query, k=5)
 
     if not docs:
         yield "Xin l\u1ed7i, h\u1ec7 th\u1ed1ng kh\u00f4ng t\u00ecm th\u1ea5y d\u1eef li\u1ec7u ph\u00e1p l\u00fd li\u00ean quan \u0111\u1ebfn c\u00e2u h\u1ecfi c\u1ee7a b\u1ea1n trong c\u01a1 s\u1edf d\u1eef li\u1ec7u hi\u1ec7n c\u00f3. Vui l\u00f2ng h\u1ecfi v\u1ec1 c\u00e1c v\u0103n b\u1ea3n lu\u1eadt \u0111\u00e3 \u0111\u01b0\u1ee3c n\u1ea1p v\u00e0o h\u1ec7 th\u1ed1ng."
@@ -69,10 +80,10 @@ def invoke_rag_chain(query: str, history: list):
     # System Prompt yêu cầu trích dẫn theo đúng Điều/Khoản
     system_prompt = f"""Bạn là một Trợ lý Ảo Tư Vấn Luật Pháp Việt Nam vô cùng chính xác.
 Nhiệm vụ của bạn là giải đáp câu hỏi của người dùng CHỈ DỰA TRÊN phần "Dữ liệu pháp luật" được cung cấp bên dưới.
-TUYỆT ĐỐI KHÔNG sử dụng kiến thức bên ngoài. CHỈ trả lời dựa trên dữ liệu pháp luật bên dưới.
-Hãy cố gắng tìm thông tin liên quan nhất trong dữ liệu để trả lời câu hỏi của người dùng.
-KHÔNG ĐƯỢC bịa ra bất kỳ điều luật, khoản, hay nội dung nào không có trong dữ liệu bên dưới.
-Chỉ khi dữ liệu HOÀN TOÀN không liên quan đến câu hỏi, hãy trả lời: "Xin lỗi, hệ thống hiện tại không có dữ liệu pháp lý liên quan đến câu hỏi này."
+CHỈ trả lời dựa trên dữ liệu pháp luật bên dưới. KHÔNG bịa ra điều luật, khoản, hay nội dung không có trong dữ liệu.
+Người dùng có thể hỏi bằng ngôn ngữ đời thường, không dấu, hoặc câu hỏi gián tiếp. Hãy suy luận ý định thực sự của câu hỏi và tìm thông tin liên quan nhất trong dữ liệu để trả lời.
+Ví dụ: "con tôi 20 tuổi học ở đâu được" → liên quan đến quy định về độ tuổi, trình độ đào tạo, quyền học tập.
+Chỉ khi dữ liệu THỰC SỰ không chứa bất kỳ thông tin nào liên quan, hãy trả lời: "Xin lỗi, hệ thống hiện tại không có dữ liệu pháp lý liên quan đến câu hỏi này."
 
 YÊU CẦU ĐỊNH DẠNG câu trả lời gồm 2 phần:
 
