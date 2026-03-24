@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: #1e1e1e;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4a4a4a;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #606060;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.typing-cursor {
+  animation: blink 0.8s step-end infinite;
+  color: #569cd6;
+  font-weight: 300;
+  margin-left: 1px;
+}
+
+@keyframes msgAppear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.msg-appear {
+  animation: msgAppear 0.3s ease-out;
+}
+
+/* Scale icon swinging animation */
+@keyframes scaleSwing {
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(12deg); }
+  40%  { transform: rotate(-10deg); }
+  60%  { transform: rotate(6deg); }
+  80%  { transform: rotate(-4deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.scale-swing {
+  animation: scaleSwing 1.5s ease-in-out infinite;
+  transform-origin: center 40%;
+}
+
+/* Markdown rendering in chat messages */
+.markdown-body {
+  line-height: 1.7;
+}
+
+.markdown-body p {
+  margin-bottom: 0.5em;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body strong {
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.markdown-body em {
+  color: #c5c5c5;
+}
+
+.markdown-body ul, .markdown-body ol {
+  padding-left: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+  color: #569cd6;
+  font-weight: 600;
+  margin-top: 0.75em;
+  margin-bottom: 0.25em;
+}
+
+.markdown-body code {
+  background: #3c3c3c;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.markdown-body pre {
+  background: #1e1e1e;
+  padding: 0.75em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin-bottom: 0.5em;
+}
+
+.markdown-body hr {
+  border-color: #3c3c3c;
+  margin: 0.75em 0;
+}

@@ -1,0 +1,28 @@
+# Environment & secrets
+.env
+backend/.env
+
+# Python
+backend/venv/
+backend/__pycache__/
+backend/app/__pycache__/
+**/__pycache__/
+*.pyc
+
+# ChromaDB (too large, re-ingest on first run)
+backend/chroma_db/
+
+# Node.js
+frontend/node_modules/
+frontend/.next/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.tar
+
+# Claude Code
+.agent/
+.claude/
