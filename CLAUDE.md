@@ -55,16 +55,18 @@
 
 ### 3.3. DevOps
 - **Docker / Docker-Compose**: 2 services (frontend:3000, backend:8000)
-- **Git/GitHub**: Version control
-- **Deploy**: Vercel (Frontend) + VPS/Ngrok (Backend)
+- **Git/GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
+- **Deploy**: Docker Compose (`docker-compose up -d`)
 
-## 4. Trạng thái hiện tại
+## 4. Trạng thái hiện tại — Hoàn thiện
 - Frontend + Backend đã hoàn thiện và chạy OK
 - 2478 documents pháp luật đã ingest vào ChromaDB (sạch, không file test rác)
-- Dark theme IDE-style, typing effect, markdown rendering, citation format chuẩn đã triển khai
-- Auto-sync & incremental ingest đã triển khai
-- Loading animation (Scale icon lắc lư + random messages) đã triển khai
-- Cần hoàn thiện: Docker build test, E2E multi-turn test, deploy public demo
+- Dark theme IDE-style, typing effect, markdown rendering, citation format chuẩn
+- Auto-sync & incremental ingest
+- Loading animation (Scale icon lắc lư + random messages)
+- Anti-hallucination (relevance score threshold + system prompt)
+- Docker build OK — 2 images self-contained (backend 271MB, frontend 53MB)
+- Pushed lên GitHub
 
 ## 5. Ghi chú kỹ thuật quan trọng
 - **Python 3.14** rất mới, có compatibility issues (thiếu `chardet`, Pydantic V1 warning). `--reload` của uvicorn không ổn định trên Windows. Console log phải dùng ASCII (không dùng tiếng Việt trong `print()`) vì Windows cp1252 không encode được Unicode tiếng Việt.

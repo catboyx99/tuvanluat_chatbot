@@ -91,8 +91,11 @@ LawConsultant_ChatBot/
 ```
 
 ### 2.4. DevOps & Triển khai
-- **Local**: `docker-compose up --build` — 2 images (node:20 + python:3.10)
-- **Share Public**: Frontend → Vercel, Backend → VPS hoặc Ngrok tunnel
+- **Local**: `docker-compose up -d` — 2 images (node:20-alpine standalone + python:3.12-slim)
+- **Docker images**: backend 271MB, frontend 53MB. Self-contained (chứa sẵn chroma_db + md_materials)
+- **Chuyển máy khác**: `docker save` → copy `.tar` + `docker-compose.yml` + `.env` → `docker load` → `docker-compose up -d`
+- **GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
+- **Root `.env`**: Chứa `GEMINI_API_KEY`, docker-compose tự đọc — không cần truyền thủ công
 - **Lưu ý Windows**: Uvicorn `--reload` không ổn định với Python 3.14 trên Windows, chạy không có `--reload`. Console log phải dùng ASCII (không tiếng Việt trong `print()`) vì Windows cp1252 không encode được Unicode tiếng Việt.
 
 ## 3. Các bước triển khai
@@ -108,7 +111,7 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - Proxy route SSE UIMessageStream (tương thích AI SDK v6)
 - Fallback UX >2s, citation format chuẩn
 
-### Giai đoạn 4 — Kiểm thử & Triển khai (đang tiến hành)
+### Giai đoạn 4 — Kiểm thử & Triển khai ✅
 - [x] Backend health check, single-query stream
 - [x] Dọn file test rác, re-ingest ChromaDB sạch (2478 docs)
 - [x] Fix AI SDK v6 breaking changes (useChat API + SSE protocol)
@@ -122,4 +125,4 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Anti-hallucination: relevance score threshold (0.35) + system prompt cấm kiến thức ngoài
 - [x] Docker build OK — 2 images: backend (271MB, Python 3.12) + frontend (53MB, Node 20 standalone)
 - [x] Docker Compose chạy OK — root `.env` chứa GEMINI_API_KEY, không cần truyền thủ công
-- [ ] Push project lên GitHub
+- [x] Push project lên GitHub (https://github.com/catboyx99/tuvanluat_chatbot)
