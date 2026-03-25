@@ -87,13 +87,21 @@ body {
   color: #c5c5c5;
 }
 
-.markdown-body ul, .markdown-body ol {
+.markdown-body ul {
   padding-left: 1.5em;
   margin-bottom: 0.5em;
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  padding-left: 1.5em;
+  margin-bottom: 0.5em;
+  list-style-type: decimal;
 }
 
 .markdown-body li {
   margin-bottom: 0.25em;
+  display: list-item;
 }
 
 .markdown-body h1, .markdown-body h2, .markdown-body h3 {

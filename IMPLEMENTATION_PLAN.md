@@ -29,10 +29,12 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
 - **UI/UX**:
   - Dark theme IDE-style (VS Code colors: `#1e1e1e`, `#252526`, `#2d2d2d`, `#3c3c3c`, `#569cd6`)
   - **Markdown Rendering**: Bot response parse bằng `react-markdown` (bold, list, heading...). User message giữ plain text.
-  - Typing effect: `requestAnimationFrame` loop ~12ms/char, blinking cursor `|` khi streaming
+  - Typing effect: `requestAnimationFrame` loop ~4ms/char, blinking cursor `|` khi streaming
   - Message appear animation: slide-up + fade-in (CSS `@keyframes msgAppear`)
-  - **Loading Animation**: Hiện ngay khi gửi câu hỏi — icon cán cân (Scale) lắc lư (`@keyframes scaleSwing`) + câu trấn an random (8 messages luân phiên). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
+  - **Loading Animation**: Hiện ngay khi gửi câu hỏi — icon cán cân (Scale) lắc lư (`@keyframes scaleSwing`) + câu trấn an random (8 messages luân phiên). Tắt ngay khi assistant có text đầu tiên (không đợi stream kết thúc). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
+  - **Auto Scroll**: Dùng `scrollTop = scrollHeight` trên `<main>` ref, gọi liên tục qua `onUpdate` callback từ TypingText component (không dùng `scrollIntoView smooth` vì bị queue lag)
   - Custom dark scrollbar
+  - **Markdown list style**: CSS bổ sung `list-style-type: disc/decimal` cho `ul/ol` (Tailwind reset mặc định xóa list style)
 
 ### 2.2. RAG Pipeline & Backend Engine (Python FastAPI)
 - **Framework**: FastAPI, LangChain, Uvicorn, Pydantic, `langchain-google-genai`, `chromadb` (HTTP client)
@@ -59,7 +61,7 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
   3. Context: Build context kèm metadata label `[Nguồn: Luật > Chương > Điều > Khoản]`
   4. System Prompt: Linh hoạt suy luận ý định câu hỏi, trả lời 2 phần:
      - Phần 1: Lời tư vấn dễ hiểu
-     - Phần 2: "Căn cứ pháp lý:" theo format: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ]
+     - Phần 2: "**Căn cứ pháp lý:**" trên dòng riêng, mỗi nguồn là gạch đầu dòng markdown (`-`). Format: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ]
   5. KHÔNG trích dẫn tên file markdown, KHÔNG bịa điều khoản, KHÔNG dùng kiến thức bên ngoài context
   6. Nếu không có dữ liệu liên quan → trả lời "Xin lỗi, hệ thống không tìm thấy dữ liệu..."
   7. Stream output qua `llm.stream(messages)`
@@ -88,7 +90,7 @@ LawConsultant_ChatBot/
 ├── chroma_db/                # ChromaDB service
 │   └── Dockerfile            # Dựa trên chromadb/chroma:0.6.3
 ├── md_materials/             # Duy nhất 1 thư mục — chứa file .md luật, mount read-only vào backend container
-├── .env                      # GEMINI_API_KEY cho Docker Compose (không commit, tạo thủ công)
+├── .env                      # GEMINI_API_KEY — duy nhất 1 file ở root (Docker inject + backend load_dotenv đều đọc file này)
 ├── docker-compose.yml        # 3 services (chroma, backend, frontend) + chroma_data volume
 ├── CLAUDE.md                 # PRD (file này dùng làm context cho Claude Code)
 ├── IMPLEMENTATION_PLAN.md    # File kiến trúc này
@@ -139,3 +141,11 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] ChromaDB tách container riêng (server mode, HTTP client)
 - [x] Docker 3 services (chroma + backend + frontend), volume persist, chỉ cần `.env` + `docker compose up`
 - [x] Push project lên GitHub (https://github.com/catboyx99/tuvanluat_chatbot)
+
+### Giai đoạn 5 — Cải thiện UX ✅
+- [x] Tăng tốc typing effect: 12ms/char → 4ms/char (nhanh gấp 3)
+- [x] Auto scroll theo typing: dùng `scrollTop` instant thay vì `scrollIntoView smooth` (hết lag)
+- [x] Loading animation tắt ngay khi stream có text đầu tiên (không đợi kết thúc)
+- [x] Căn cứ pháp lý hiển thị bullet list (mỗi nguồn 1 gạch đầu dòng)
+- [x] Fix Tailwind reset xóa list-style: thêm `list-style-type: disc/decimal` trong CSS
+- [x] Xóa `backend/.env` thừa, backend `load_dotenv()` trỏ về root `.env`

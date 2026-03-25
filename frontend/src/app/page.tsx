@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useMemo } from 'react';
 import { Send, Scale } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
-function TypingText({ text, isStreaming }: { text: string; isStreaming: boolean }) {
+function TypingText({ text, isStreaming, onUpdate }: { text: string; isStreaming: boolean; onUpdate?: () => void }) {
   const [displayed, setDisplayed] = useState('');
   const targetRef = useRef(text);
   const indexRef = useRef(0);
@@ -16,7 +16,7 @@ function TypingText({ text, isStreaming }: { text: string; isStreaming: boolean 
 
   useEffect(() => {
     let lastTime = 0;
-    const speed = 12; // ms per character
+    const speed = 4; // ms per character
 
     function tick(now: number) {
       if (!lastTime) lastTime = now;
@@ -29,6 +29,7 @@ function TypingText({ text, isStreaming }: { text: string; isStreaming: boolean 
         indexRef.current = nextIndex;
         setDisplayed(target.slice(0, nextIndex));
         lastTime = now;
+        onUpdate?.();
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -54,7 +55,7 @@ function getMessageText(m: any): string {
 
 export default function Chat() {
   const { messages, sendMessage, status, error } = useChat();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
   const [input, setInput] = useState('');
   const [delayNotice, setDelayNotice] = useState(false);
 
@@ -80,18 +81,25 @@ export default function Chat() {
     return -1;
   }, [messages]);
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, delayNotice]);
+  const scrollToBottom = () => {
+    const el = mainRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  };
 
   useEffect(() => {
-    if (isLoading) {
+    scrollToBottom();
+  }, [messages, delayNotice]);
+
+  const lastAssistantHasContent = lastAssistantIdx >= 0 && !!getMessageText(messages[lastAssistantIdx]);
+
+  useEffect(() => {
+    if (isLoading && !lastAssistantHasContent) {
       setDelayMsg(delayMessages[Math.floor(Math.random() * delayMessages.length)]);
       setDelayNotice(true);
-    } else {
+    } else if (lastAssistantHasContent || !isLoading) {
       setDelayNotice(false);
     }
-  }, [isLoading]);
+  }, [isLoading, lastAssistantHasContent]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,7 +116,7 @@ export default function Chat() {
         <h1 className="text-[#cccccc] text-xl font-semibold tracking-wide">Trợ lý ảo tư vấn luật</h1>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 sm:px-6 w-full max-w-4xl mx-auto flex flex-col gap-6 pt-24 pb-32">
+      <main ref={mainRef} className="flex-1 overflow-y-auto px-4 sm:px-6 w-full max-w-4xl mx-auto flex flex-col gap-6 pt-24 pb-32">
         {messages.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center opacity-80 mt-20">
             <Scale className="w-20 h-20 text-[#3c3c3c] mb-6" />
@@ -129,7 +137,7 @@ export default function Chat() {
               }`}
             >
               {m.role === 'assistant' && idx === lastAssistantIdx ? (
-                <TypingText text={getMessageText(m)} isStreaming={isStreaming} />
+                <TypingText text={getMessageText(m)} isStreaming={isStreaming} onUpdate={scrollToBottom} />
               ) : m.role === 'assistant' ? (
                 <div className="markdown-body"><ReactMarkdown>{getMessageText(m)}</ReactMarkdown></div>
               ) : (
@@ -150,7 +158,6 @@ export default function Chat() {
              </div>
            </div>
         )}
-        <div ref={messagesEndRef} />
       </main>
 
       <div className="p-4 bg-gradient-to-t from-[#1e1e1e] md:bg-[#1e1e1e] md:bg-none flex-none border-t border-[#3c3c3c] fixed w-full bottom-0 left-0 flex justify-center md:pb-8 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.3)]">

@@ -11,15 +11,17 @@
 - Có Main Header: **"Trợ lý ảo tư vấn luật"**.
 - Layout tối giản: Chỉ dùng duy nhất 1 khung chat (chat interface) ở giữa màn hình.
 - **Dark Theme (IDE-style)**: Giao diện tối giống theme VS Code — background `#1e1e1e`, header `#252526`, accent blue `#569cd6`.
-- **Hiệu ứng Typing**: Bot trả lời với hiệu ứng gõ chữ từng ký tự mượt mà (requestAnimationFrame ~12ms/char) kèm con trỏ `|` nhấp nháy xanh. Message mới slide-up + fade-in.
+- **Hiệu ứng Typing**: Bot trả lời với hiệu ứng gõ chữ từng ký tự mượt mà (requestAnimationFrame ~4ms/char) kèm con trỏ `|` nhấp nháy xanh. Message mới slide-up + fade-in.
 - **Markdown Rendering**: Bot trả lời dạng Markdown, frontend parse bằng `react-markdown` (in đậm, list, heading...). User message giữ plain text.
 - **Trích dẫn pháp lý chuẩn**: Cuối câu trả lời bắt buộc có phần "Căn cứ pháp lý" trích dẫn theo format:
-  - Thứ tự: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ].
+  - Tiêu đề `**Căn cứ pháp lý:**` trên dòng riêng, mỗi nguồn là 1 gạch đầu dòng markdown (`-`) trên dòng riêng.
+  - Thứ tự mỗi dòng: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ].
   - Nhiều Điểm cùng Khoản liệt kê trên 1 dòng: "Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b, Điểm c."
-  - Nhiều Điều từ cùng văn bản → mỗi Điều trên dòng riêng.
+  - Mỗi Điều khác nhau phải nằm trên 1 gạch đầu dòng riêng.
   - KHÔNG được trích dẫn tên file markdown. Phải ghi tên luật đầy đủ + số hiệu văn bản + Điều/Khoản/Điểm cụ thể.
   - Nếu không xác định được Điều/Khoản, chỉ ghi tên văn bản.
-- **Loading Animation**: Khi gửi câu hỏi, hiện ngay icon cán cân (Scale) lắc lư kèm câu trấn an random (8 messages luân phiên). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
+- **Loading Animation**: Khi gửi câu hỏi, hiện ngay icon cán cân (Scale) lắc lư kèm câu trấn an random (8 messages luân phiên). Tắt ngay khi có chữ đầu tiên từ stream (không đợi stream kết thúc). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
+- **Auto Scroll**: Chat tự cuộn xuống đáy khi có tin nhắn mới và liên tục khi typing effect đang chạy (dùng `scrollTop = scrollHeight` trực tiếp, không dùng `scrollIntoView` smooth vì bị lag).
 
 ### 2.2. Xử lý dữ liệu (Data Pipeline)
 - **Nguồn nạp văn bản**: Duy nhất 1 thư mục `md_materials/` ở root project. Backend đọc trực tiếp qua Docker volume mount.
@@ -71,12 +73,14 @@
 ## 4. Trạng thái hiện tại — Hoàn thiện
 - Frontend + Backend đã hoàn thiện và chạy OK
 - 2475 documents pháp luật đã ingest vào ChromaDB
-- Dark theme IDE-style, typing effect, markdown rendering, citation format chuẩn
+- Dark theme IDE-style, typing effect (~4ms/char), markdown rendering, citation format chuẩn (bullet list)
+- Auto scroll theo typing effect (snap instant, không dùng smooth)
 - Auto-detect & incremental ingest (1 thư mục md_materials/ duy nhất ở root)
 - Query rewriting: câu hỏi tự nhiên/không dấu → truy vấn pháp lý chính xác
-- Loading animation (Scale icon lắc lư + random messages)
+- Loading animation (Scale icon lắc lư + random messages, tắt ngay khi stream bắt đầu có text)
 - Anti-hallucination (system prompt linh hoạt + không bịa điều khoản)
 - Docker 3 services: ChromaDB (container riêng) + Backend + Frontend, data persist qua volume
+- ENV: chỉ cần 1 file `.env` ở root (backend đọc qua `load_dotenv()` trỏ về root, Docker inject qua `environment:`)
 - Pushed lên GitHub
 
 ## 5. Ghi chú kỹ thuật quan trọng

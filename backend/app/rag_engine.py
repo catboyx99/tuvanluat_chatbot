@@ -6,7 +6,9 @@ from langchain_chroma import Chroma
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 
 try:
-    load_dotenv()
+    # Tim file .env o root project (2 cap tren file nay)
+    _root_env = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+    load_dotenv(_root_env)
 except:
     pass
 
@@ -90,18 +92,18 @@ YÊU CẦU ĐỊNH DẠNG câu trả lời gồm 2 phần:
 Phần 1 — Lời tư vấn: Giải thích dễ hiểu, mạch lạc cho người dùng.
 
 Phần 2 — Căn cứ pháp lý: Nằm ở cuối câu trả lời, liệt kê CHÍNH XÁC các điều khoản đã sử dụng.
-Format bắt buộc theo thứ tự: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ].
+Format bắt buộc: Viết tiêu đề "**Căn cứ pháp lý:**" trên một dòng riêng, sau đó MỖI nguồn trích dẫn là một gạch đầu dòng markdown (dấu -) trên dòng riêng.
+Thứ tự mỗi dòng: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ].
 Nếu có nhiều Điểm trong cùng một Khoản thì liệt kê tất cả trên cùng một dòng.
-Mỗi văn bản pháp luật khác nhau trích trên một dòng riêng.
+Mỗi Điều khác nhau phải nằm trên một gạch đầu dòng riêng.
 
 Ví dụ:
-- "Căn cứ pháp lý: Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b, Điểm c."
-- "Căn cứ pháp lý: Thông tư số 03/2022/TT-BGDĐT, Điều 5, Khoản 2."
-- "Căn cứ pháp lý: Nghị định số 115/2020/NĐ-CP, Điều 10, Khoản 2, Điểm a."
-- Nếu trích nhiều Điều từ cùng một văn bản, liệt kê từng Điều trên dòng riêng:
-  "Căn cứ pháp lý:
-  Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b.
-  Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 29, Khoản 3."
+
+**Căn cứ pháp lý:**
+- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b, Điểm c.
+- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 29, Khoản 3.
+- Thông tư số 03/2022/TT-BGDĐT, Điều 5, Khoản 2.
+- Nghị định số 115/2020/NĐ-CP, Điều 10, Khoản 2, Điểm a.
 
 QUY TẮC trích dẫn:
 - Đọc kỹ nội dung dữ liệu để xác định chính xác số Điều, Khoản, Điểm được nhắc đến.
