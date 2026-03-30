@@ -19,9 +19,12 @@
   - Nhiều Điểm cùng Khoản liệt kê trên 1 dòng: "Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b, Điểm c."
   - Mỗi Điều khác nhau phải nằm trên 1 gạch đầu dòng riêng.
   - KHÔNG được trích dẫn tên file markdown. Phải ghi tên luật đầy đủ + số hiệu văn bản + Điều/Khoản/Điểm cụ thể.
+  - Tên luật phải lấy từ NỘI DUNG văn bản trong dữ liệu, KHÔNG dùng tên file hoặc mã metadata (ví dụ: `"Luật-15-2017-QH14"` là SAI, phải ghi `"Luật Quản lý, sử dụng tài sản công"`).
+  - Số hiệu văn bản dùng dấu gạch chéo `/` (ví dụ: `"Luật số 43/2019/QH14"`), KHÔNG dùng dấu gạch ngang `-`.
   - Nếu không xác định được Điều/Khoản, chỉ ghi tên văn bản.
 - **Loading Animation**: Khi gửi câu hỏi, hiện ngay icon cán cân (Scale) lắc lư kèm câu trấn an random (8 messages luân phiên). Tắt ngay khi có chữ đầu tiên từ stream (không đợi stream kết thúc). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
 - **Auto Scroll**: Chat tự cuộn xuống đáy khi có tin nhắn mới và liên tục khi typing effect đang chạy (dùng `scrollTop = scrollHeight` trực tiếp, không dùng `scrollIntoView` smooth vì bị lag).
+- **Bộ đếm thời gian chờ (Response Timer)**: Khi gửi câu hỏi, phía dưới loading bubble hiển thị dòng "Đang phân tích câu hỏi của bạn..." với thinking dots animation (3 chấm nhấp nháy lần lượt) kèm bộ đếm thời gian. Dòng này biến mất khi có chữ đầu tiên từ stream. Thời gian cuối cùng hiển thị nhỏ phía dưới khung chat câu trả lời. Format: `120ms` → `1.2s` → `1m:05s`.
 
 ### 2.2. Xử lý dữ liệu (Data Pipeline)
 - **Nguồn nạp văn bản**: Duy nhất 1 thư mục `md_materials/` ở root project. Backend đọc trực tiếp qua Docker volume mount.
@@ -37,7 +40,7 @@
 - **Embedding & Storage**: Dùng `gemini-embedding-001` lưu vào Local Vector DB (ChromaDB).
 
 ### 2.3. RAG Engine
-- **Query Rewriting**: Trước khi search, dùng LLM chuyển câu hỏi tự nhiên/không dấu thành truy vấn pháp lý tiếng Việt có dấu để vector search chính xác hơn.
+- **Query Rewriting**: Trước khi search, dùng LLM (`gemini-2.5-flash-lite`) thêm dấu tiếng Việt vào câu hỏi, giữ nguyên nghĩa gốc để vector search chính xác hơn.
 - Khi trả lời, hệ thống phải đọc kỹ nội dung chunks để xác định chính xác số Điều, Khoản, Điểm rồi trích dẫn ở cuối câu trả lời theo format chuẩn "Căn cứ pháp lý".
 - **Chống bịa đặt (Anti-Hallucination)**:
   - System prompt yêu cầu chỉ trả lời dựa trên dữ liệu được cung cấp, linh hoạt suy luận ý định câu hỏi đời thường.
@@ -47,7 +50,8 @@
 
 ### 3.1. Backend (API + RAG Core)
 - Python 3.12, FastAPI, LangChain
-- LLM: `gemini-2.5-flash` (streaming, temperature=0.0)
+- LLM chính: `gemini-2.5-flash` (streaming, temperature=0.0)
+- LLM rewrite: `gemini-2.5-flash-lite` (temperature=0.0) — chỉ thêm dấu tiếng Việt vào câu hỏi
 - Embedding: `gemini-embedding-001`
 - ChromaDB: container riêng (server mode), backend kết nối qua HTTP client
 - Code luôn được docs/comments rõ ràng
@@ -72,18 +76,24 @@
 
 ## 4. Trạng thái hiện tại — Hoàn thiện
 - Frontend + Backend đã hoàn thiện và chạy OK
-- 2475 documents pháp luật đã ingest vào ChromaDB
+- 11326 documents pháp luật đã ingest vào ChromaDB
 - Dark theme IDE-style, typing effect (~4ms/char), markdown rendering, citation format chuẩn (bullet list)
 - Auto scroll theo typing effect (snap instant, không dùng smooth)
 - Auto-detect & incremental ingest (1 thư mục md_materials/ duy nhất ở root)
-- Query rewriting: câu hỏi tự nhiên/không dấu → truy vấn pháp lý chính xác
+- Query rewriting: thêm dấu tiếng Việt vào câu hỏi, giữ nguyên nghĩa gốc (dùng `gemini-2.5-flash-lite`)
+- Singleton pattern: LLM, ChromaDB, embedding khởi tạo 1 lần, dùng lại cho mọi request
+- Performance logging: đo thời gian rewrite, vector search, LLM first token
 - Loading animation (Scale icon lắc lư + random messages, tắt ngay khi stream bắt đầu có text)
 - Anti-hallucination (system prompt linh hoạt + không bịa điều khoản)
 - Docker 3 services: ChromaDB (container riêng) + Backend + Frontend, data persist qua volume
 - ENV: chỉ cần 1 file `.env` ở root (backend đọc qua `load_dotenv()` trỏ về root, Docker inject qua `environment:`)
 - Pushed lên GitHub
 
-## 5. Ghi chú kỹ thuật quan trọng
+## 5. Quy trình phát triển
+- **Khi dev tính năng mới**: PHẢI thực hiện đầy đủ đến khi chạy được bằng Docker (`docker compose up -d --build`). Không dừng ở code local — phải đảm bảo build Docker thành công và tính năng hoạt động trong môi trường container.
+- **Cập nhật IMPLEMENTATION_PLAN.md**: Khi implement tính năng, phải cập nhật tiến độ trong IMPLEMENTATION_PLAN.md (đánh dấu `[x]` cho task hoàn thành, thêm ghi chú nếu cần).
+
+## 6. Ghi chú kỹ thuật quan trọng
 - **Python 3.14** rất mới, có compatibility issues (thiếu `chardet`, Pydantic V1 warning). `--reload` của uvicorn không ổn định trên Windows. Console log phải dùng ASCII (không dùng tiếng Việt trong `print()`) vì Windows cp1252 không encode được Unicode tiếng Việt.
 - **Embedding model**: API key chỉ hỗ trợ `gemini-embedding-001`, không có `text-embedding-004`.
 - **LLM model**: `gemini-1.5-flash` và `gemini-2.0-flash` đã deprecated. Dùng `gemini-2.5-flash`.

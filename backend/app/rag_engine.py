@@ -1,4 +1,5 @@
 import os
+import time
 import chromadb
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
@@ -15,15 +16,22 @@ except:
 CHROMA_HOST = os.environ.get("CHROMA_HOST", "localhost")
 CHROMA_PORT = int(os.environ.get("CHROMA_PORT", "8000"))
 
+# === Singleton instances — khoi tao 1 lan, dung lai cho moi request ===
+_vector_store = None
+_llm_main = None
+_llm_rewrite = None
+
 def get_vector_store():
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
-    client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
-    vector_store = Chroma(
-        client=client,
-        collection_name="law_database",
-        embedding_function=embeddings,
-    )
-    return vector_store
+    global _vector_store
+    if _vector_store is None:
+        embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+        client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
+        _vector_store = Chroma(
+            client=client,
+            collection_name="law_database",
+            embedding_function=embeddings,
+        )
+    return _vector_store
 
 def ingest_docs_to_vector_store(documents):
     if not documents:
@@ -33,21 +41,36 @@ def ingest_docs_to_vector_store(documents):
     return True
 
 def build_llm():
-    # Gọi model Gemini 2.5 Flash tối ưu hóa tốc độ độ trễ <2s
-    return ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0.0,
-        streaming=True
-    )
+    # Model chinh: Gemini 2.5 Flash cho cau tra loi (streaming)
+    global _llm_main
+    if _llm_main is None:
+        _llm_main = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash",
+            temperature=0.0,
+            streaming=True
+        )
+    return _llm_main
+
+def build_rewrite_llm():
+    # Model nhe cho query rewriting: gemini-2.5-flash-lite (nhanh gap ~10x so voi 2.5-flash)
+    global _llm_rewrite
+    if _llm_rewrite is None:
+        _llm_rewrite = ChatGoogleGenerativeAI(
+            model="gemini-2.5-flash-lite",
+            temperature=0.0,
+            streaming=False
+        )
+    return _llm_rewrite
 
 def rewrite_query(query: str) -> str:
-    """Chuyen cau hoi tu nhien thanh query phap ly de vector search chinh xac hon."""
-    llm = build_llm()
+    """Them dau tieng Viet vao cau hoi, giu nguyen y dinh goc de vector search chinh xac hon."""
+    llm = build_rewrite_llm()
     result = llm.invoke([
-        SystemMessage(content="Chuyen cau hoi sau thanh truy van phap ly tieng Viet co dau day du, ngan gon, phu hop de tim kiem trong co so du lieu luat Viet Nam. Chi tra ve cau truy van, khong giai thich."),
+        SystemMessage(content="Them dau tieng Viet vao cau hoi sau, giu nguyen nghia goc. Chi tra ve cau da them dau."),
         HumanMessage(content=query)
     ])
-    return result.content.strip()
+    # Loai bo markdown bold (**) neu co
+    return result.content.strip().replace("**", "")
 
 
 def invoke_rag_chain(query: str, history: list):
@@ -58,10 +81,15 @@ def invoke_rag_chain(query: str, history: list):
     vector_store = get_vector_store()
 
     # 1. Query rewriting — chuyen cau hoi tu nhien thanh query phap ly
+    t0 = time.time()
     search_query = rewrite_query(query)
+    t1 = time.time()
+    print(f"[Perf] Query rewrite: {t1-t0:.2f}s | '{query}' -> '{search_query}'")
 
     # 2. Retrieval — lay top-k ket qua
     docs = vector_store.similarity_search(search_query, k=5)
+    t2 = time.time()
+    print(f"[Perf] Vector search: {t2-t1:.2f}s | {len(docs)} docs found")
 
     if not docs:
         yield "Xin l\u1ed7i, h\u1ec7 th\u1ed1ng kh\u00f4ng t\u00ecm th\u1ea5y d\u1eef li\u1ec7u ph\u00e1p l\u00fd li\u00ean quan \u0111\u1ebfn c\u00e2u h\u1ecfi c\u1ee7a b\u1ea1n trong c\u01a1 s\u1edf d\u1eef li\u1ec7u hi\u1ec7n c\u00f3. Vui l\u00f2ng h\u1ecfi v\u1ec1 c\u00e1c v\u0103n b\u1ea3n lu\u1eadt \u0111\u00e3 \u0111\u01b0\u1ee3c n\u1ea1p v\u00e0o h\u1ec7 th\u1ed1ng."
@@ -79,45 +107,20 @@ def invoke_rag_chain(query: str, history: list):
         context_parts.append(f"[Nguồn: {label}]\n{d.page_content}")
     context_str = "\n\n---\n\n".join(context_parts)
 
-    # System Prompt yêu cầu trích dẫn theo đúng Điều/Khoản
-    system_prompt = f"""Bạn là một Trợ lý Ảo Tư Vấn Luật Pháp Việt Nam vô cùng chính xác.
-Nhiệm vụ của bạn là giải đáp câu hỏi của người dùng CHỈ DỰA TRÊN phần "Dữ liệu pháp luật" được cung cấp bên dưới.
-CHỈ trả lời dựa trên dữ liệu pháp luật bên dưới. KHÔNG bịa ra điều luật, khoản, hay nội dung không có trong dữ liệu.
-Người dùng có thể hỏi bằng ngôn ngữ đời thường, không dấu, hoặc câu hỏi gián tiếp. Hãy suy luận ý định thực sự của câu hỏi và tìm thông tin liên quan nhất trong dữ liệu để trả lời.
-Ví dụ: "con tôi 20 tuổi học ở đâu được" → liên quan đến quy định về độ tuổi, trình độ đào tạo, quyền học tập.
-Chỉ khi dữ liệu THỰC SỰ không chứa bất kỳ thông tin nào liên quan, hãy trả lời: "Xin lỗi, hệ thống hiện tại không có dữ liệu pháp lý liên quan đến câu hỏi này."
+    # System Prompt — rut gon de giam input tokens, tang toc LLM first token
+    system_prompt = f"""Tro ly tu van luat Viet Nam chinh xac. CHI tra loi dua tren du lieu ben duoi, KHONG bia.
+Suy luan y dinh cau hoi doi thuong (VD: "con toi 20 tuoi hoc o dau" = quy dinh do tuoi, quyen hoc tap).
+Neu du lieu khong lien quan -> "Xin loi, he thong khong co du lieu phap ly lien quan."
 
-YÊU CẦU ĐỊNH DẠNG câu trả lời gồm 2 phần:
+Tra loi 2 phan:
+1. Loi tu van de hieu, mach lac.
+2. **Can cu phap ly:** cuoi cau tra loi. Moi nguon 1 gach dau dong (-).
+   Format: Ten luat day du (So hieu dung dau /), Dieu X, Khoan Y, Diem Z.
+   VD: - Luat Giao duc 2019 (Luat so 43/2019/QH14), Dieu 28, Khoan 1, Diem a, Diem b.
+   Ten luat lay tu NOI DUNG van ban, KHONG dung ten file. KHONG bia dieu khoan.
 
-Phần 1 — Lời tư vấn: Giải thích dễ hiểu, mạch lạc cho người dùng.
-
-Phần 2 — Căn cứ pháp lý: Nằm ở cuối câu trả lời, liệt kê CHÍNH XÁC các điều khoản đã sử dụng.
-Format bắt buộc: Viết tiêu đề "**Căn cứ pháp lý:**" trên một dòng riêng, sau đó MỖI nguồn trích dẫn là một gạch đầu dòng markdown (dấu -) trên dòng riêng.
-Thứ tự mỗi dòng: Tên văn bản (Số hiệu), Điều [số], Khoản [số], Điểm [chữ].
-Nếu có nhiều Điểm trong cùng một Khoản thì liệt kê tất cả trên cùng một dòng.
-Mỗi Điều khác nhau phải nằm trên một gạch đầu dòng riêng.
-
-Ví dụ:
-
-**Căn cứ pháp lý:**
-- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b, Điểm c.
-- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 29, Khoản 3.
-- Thông tư số 03/2022/TT-BGDĐT, Điều 5, Khoản 2.
-- Nghị định số 115/2020/NĐ-CP, Điều 10, Khoản 2, Điểm a.
-
-QUY TẮC trích dẫn:
-- Đọc kỹ nội dung dữ liệu để xác định chính xác số Điều, Khoản, Điểm được nhắc đến.
-- Tên luật phải viết đầy đủ dạng đọc được (ví dụ: "Luật Giáo dục 2019" thay vì "Luật-43-2019-QH14").
-- Kèm số hiệu văn bản trong ngoặc đơn (ví dụ: "(Luật số 43/2019/QH14)").
-- Luôn trích dẫn đầy đủ đến cấp chi tiết nhất có trong dữ liệu: Điều → Khoản → Điểm.
-- KHÔNG trích dẫn tên file markdown. KHÔNG bịa số điều khoản không có trong dữ liệu.
-- Nếu dữ liệu không đủ để xác định Điều/Khoản cụ thể, chỉ ghi tên văn bản.
-
-Dữ liệu pháp luật:
-======================
-{context_str}
-======================
-"""
+Du lieu phap luat:
+{context_str}"""
 
     messages = [SystemMessage(content=system_prompt)]
 
@@ -135,5 +138,10 @@ Dữ liệu pháp luật:
 
     # 4. Stream output
     llm = build_llm()
+    t3 = time.time()
+    first_chunk = True
     for chunk in llm.stream(messages):
+        if first_chunk:
+            print(f"[Perf] LLM first token: {time.time()-t3:.2f}s | Total FTTB: {time.time()-t0:.2f}s")
+            first_chunk = False
         yield chunk.content

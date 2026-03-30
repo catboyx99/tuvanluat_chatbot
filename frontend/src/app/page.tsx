@@ -1,6 +1,6 @@
 'use client';
 import { useChat } from '@ai-sdk/react';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Send, Scale } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
@@ -53,6 +53,22 @@ function getMessageText(m: any): string {
   return m.parts?.filter((p: any) => p.type === 'text').map((p: any) => p.text).join('') || '';
 }
 
+function formatTimer(ms: number): string {
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+  const minutes = Math.floor(ms / 60000);
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}m:${seconds.toString().padStart(2, '0')}s`;
+}
+
+function ThinkingDots() {
+  return (
+    <span className="thinking-dots">
+      <span>.</span><span>.</span><span>.</span>
+    </span>
+  );
+}
+
 export default function Chat() {
   const { messages, sendMessage, status, error } = useChat();
   const mainRef = useRef<HTMLElement>(null);
@@ -61,6 +77,14 @@ export default function Chat() {
 
   const isStreaming = status === 'streaming';
   const isLoading = status === 'submitted' || isStreaming;
+
+  // Response Timer
+  const [elapsedMs, setElapsedMs] = useState(0);
+  const [finalTimes, setFinalTimes] = useState<Record<string, number>>({});
+  const timerStartRef = useRef<number>(0);
+  const timerRafRef = useRef<number>(0);
+  const msgCountAtSubmitRef = useRef<number>(0);
+  const timerRunningRef = useRef(false);
 
   const delayMessages = [
     "Đang lật giở hàng ngàn trang luật để tìm câu trả lời chính xác nhất...",
@@ -92,6 +116,37 @@ export default function Chat() {
 
   const lastAssistantHasContent = lastAssistantIdx >= 0 && !!getMessageText(messages[lastAssistantIdx]);
 
+  // Start rAF timer loop
+  const startTimerLoop = useCallback(() => {
+    const tick = () => {
+      if (timerStartRef.current) {
+        setElapsedMs(Date.now() - timerStartRef.current);
+      }
+      timerRafRef.current = requestAnimationFrame(tick);
+    };
+    timerRafRef.current = requestAnimationFrame(tick);
+  }, []);
+
+  // Stop timer when a NEW assistant message has content
+  useEffect(() => {
+    if (!timerRunningRef.current) return;
+    // Find assistant messages added after submit
+    const assistantMessages = messages.filter(m => m.role === 'assistant');
+    const newAssistants = assistantMessages.slice(Math.floor(msgCountAtSubmitRef.current / 2));
+    const hasNewContent = newAssistants.some(m => !!getMessageText(m));
+    if (hasNewContent && timerStartRef.current) {
+      const final = Date.now() - timerStartRef.current;
+      cancelAnimationFrame(timerRafRef.current);
+      setElapsedMs(final);
+      // Save final time for all new assistant messages
+      const updates: Record<string, number> = {};
+      newAssistants.forEach(m => { if (getMessageText(m)) updates[m.id] = final; });
+      setFinalTimes(prev => ({ ...prev, ...updates }));
+      timerStartRef.current = 0;
+      timerRunningRef.current = false;
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (isLoading && !lastAssistantHasContent) {
       setDelayMsg(delayMessages[Math.floor(Math.random() * delayMessages.length)]);
@@ -105,6 +160,13 @@ export default function Chat() {
     e.preventDefault();
     const trimmed = input.trim();
     if (!trimmed || isLoading) return;
+    // Start response timer
+    cancelAnimationFrame(timerRafRef.current);
+    timerStartRef.current = Date.now();
+    timerRunningRef.current = true;
+    msgCountAtSubmitRef.current = messages.length;
+    setElapsedMs(0);
+    startTimerLoop();
     sendMessage({ text: trimmed });
     setInput('');
   };
@@ -128,7 +190,7 @@ export default function Chat() {
         {messages.map((m, idx) => {
           if (m.role === 'assistant' && !getMessageText(m)) return null;
           return (
-          <div key={m.id} className={`flex w-full ${m.role === 'user' ? 'justify-end' : 'justify-start'} msg-appear`}>
+          <div key={m.id} className={`flex flex-col w-full ${m.role === 'user' ? 'items-end' : 'items-start'} msg-appear`}>
             <div
               className={`px-5 py-4 max-w-[85%] rounded-3xl leading-relaxed shadow-sm text-[15.5px] ${
                 m.role === 'user'
@@ -144,18 +206,22 @@ export default function Chat() {
                 getMessageText(m)
               )}
             </div>
+            {m.role === 'assistant' && finalTimes[m.id] && (
+              <span className="text-[11px] text-[#6a6a6a] mt-1 ml-2">{formatTimer(finalTimes[m.id])}</span>
+            )}
           </div>
           );
         })}
 
         {delayNotice && (
-           <div className="flex w-full justify-start msg-appear">
+           <div className="flex flex-col w-full items-start msg-appear">
              <div className="px-5 py-4 bg-[#2d2d2d]/80 border border-[#3c3c3c]/60 text-[#808080] rounded-3xl rounded-tl-md max-w-[85%] leading-relaxed shadow-sm text-[15px]">
                 <span className="flex items-center gap-3">
                     <Scale size={22} className="text-[#569cd6] scale-swing flex-shrink-0" />
                     {delayMsg}
                 </span>
              </div>
+             <span className="text-[11px] text-[#6a6a6a] mt-1 ml-2">Đang phân tích câu hỏi của bạn<ThinkingDots /> {formatTimer(elapsedMs)}</span>
            </div>
         )}
       </main>

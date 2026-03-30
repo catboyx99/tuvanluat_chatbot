@@ -33,14 +33,18 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
   - Message appear animation: slide-up + fade-in (CSS `@keyframes msgAppear`)
   - **Loading Animation**: Hiện ngay khi gửi câu hỏi — icon cán cân (Scale) lắc lư (`@keyframes scaleSwing`) + câu trấn an random (8 messages luân phiên). Tắt ngay khi assistant có text đầu tiên (không đợi stream kết thúc). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
   - **Auto Scroll**: Dùng `scrollTop = scrollHeight` trên `<main>` ref, gọi liên tục qua `onUpdate` callback từ TypingText component (không dùng `scrollIntoView smooth` vì bị queue lag)
+  - **Response Timer**: Bộ đếm thời gian chờ hiển thị trong loading bubble (cạnh icon Scale + câu trấn an). Bắt đầu đếm khi gửi câu hỏi, dừng khi stream có text đầu tiên. Thời gian cuối cùng hiển thị nhỏ dưới khung chat câu trả lời. Format: `120ms` → `1.2s` → `1m:05s`.
   - Custom dark scrollbar
   - **Markdown list style**: CSS bổ sung `list-style-type: disc/decimal` cho `ul/ol` (Tailwind reset mặc định xóa list style)
 
 ### 2.2. RAG Pipeline & Backend Engine (Python FastAPI)
 - **Framework**: FastAPI, LangChain, Uvicorn, Pydantic, `langchain-google-genai`, `chromadb` (HTTP client)
 - **Models**:
-  - LLM: `gemini-2.5-flash` (temperature=0.0, streaming=True)
+  - LLM chính: `gemini-2.5-flash` (temperature=0.0, streaming=True)
+  - LLM rewrite: `gemini-2.5-flash-lite` (temperature=0.0) — thêm dấu tiếng Việt vào câu hỏi
   - Embedding: `gemini-embedding-001`
+- **Singleton Pattern**: `_vector_store`, `_llm_main`, `_llm_rewrite` khởi tạo 1 lần, dùng lại cho mọi request
+- **Performance Logging**: `time.time()` đo rewrite, vector search, LLM first token — log ra console
 - **API Endpoints**:
   - `POST /api/chat`: Nhận `{ query: string, history: ChatMessage[] }`, trả `StreamingResponse` (text/plain)
   - `POST /api/ingest`: Quét `md_materials/`, split + embed + lưu ChromaDB
@@ -56,7 +60,7 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
   - `RecursiveCharacterTextSplitter`: chunk_size=1000, overlap=150
   - Metadata: `source`, `Luật/Nghị Định`, `Chương/Mục`, `Điều`, `Khoản`
 - **RAG Flow**:
-  1. **Query Rewriting**: Dùng LLM chuyển câu hỏi tự nhiên/không dấu/khẩu ngữ thành truy vấn pháp lý tiếng Việt có dấu (VD: "con bố 20 tuổi nó học trường nào đc?" → "Quyền học tập và trình độ đào tạo cho người 20 tuổi")
+  1. **Query Rewriting**: Dùng `gemini-2.5-flash-lite` thêm dấu tiếng Việt vào câu hỏi, giữ nguyên nghĩa gốc (VD: "con toi 10 tuoi no hoc duoc truong nao" → "Con tôi 10 tuổi, nó học được trường nào?")
   2. Retrieval: Top-5 vector search từ ChromaDB (không dùng threshold — để LLM tự đánh giá relevance)
   3. Context: Build context kèm metadata label `[Nguồn: Luật > Chương > Điều > Khoản]`
   4. System Prompt: Linh hoạt suy luận ý định câu hỏi, trả lời 2 phần:
@@ -82,7 +86,7 @@ LawConsultant_ChatBot/
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── main.py           # FastAPI app, CORS, 3 endpoints, auto-detect & incremental ingest, wait_for_chroma
-│   │   ├── rag_engine.py     # ChromaDB HTTP client + Gemini LLM + query rewriting + citation system prompt
+│   │   ├── rag_engine.py     # ChromaDB HTTP client + Gemini LLM (singleton) + query rewriting (flash-lite) + perf logging
 │   │   ├── document_loader.py# Hierarchical markdown splitter
 │   │   └── schemas.py        # Pydantic: ChatMessage, ChatRequest
 │   ├── requirements.txt
@@ -127,7 +131,7 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 
 ### Giai đoạn 4 — Kiểm thử & Triển khai ✅
 - [x] Backend health check, single-query stream
-- [x] Dọn file test rác, re-ingest ChromaDB sạch (2478 docs)
+- [x] Dọn file test rác, re-ingest ChromaDB sạch (11326 docs)
 - [x] Fix AI SDK v6 breaking changes (useChat API + SSE protocol)
 - [x] Dark theme + typing effect
 - [x] Citation format chuẩn pháp lý (Điều/Khoản/Điểm a, Điểm b, Điểm c)
@@ -149,3 +153,40 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Căn cứ pháp lý hiển thị bullet list (mỗi nguồn 1 gạch đầu dòng)
 - [x] Fix Tailwind reset xóa list-style: thêm `list-style-type: disc/decimal` trong CSS
 - [x] Xóa `backend/.env` thừa, backend `load_dotenv()` trỏ về root `.env`
+
+### Giai đoạn 6 — Response Timer ✅
+- [x] Thêm bộ đếm thời gian chờ (Response Timer) trong loading bubble
+  - [x] Bắt đầu đếm khi user gửi câu hỏi (status chuyển sang `submitted`)
+  - [x] Hiển thị label nhỏ phía dưới loading bubble (text `#6a6a6a`, font 11px)
+  - [x] Dừng đếm khi assistant có text đầu tiên (stream bắt đầu)
+  - [x] Lưu thời gian cuối cùng vào `finalTimes` map, hiển thị nhỏ phía dưới khung chat câu trả lời
+  - [x] Format hiển thị: `120ms` → `1.2s` → `1m:05s`
+  - [x] Docker build & deploy thành công
+
+### Giai đoạn 7 — Cải thiện Loading UX ✅
+- [x] Đổi dòng timer loading bubble: "Câu trả lời sẽ có trong..." → "Đang phân tích câu hỏi của bạn..."
+- [x] Thêm thinking dots animation (3 chấm nhấp nháy lần lượt) vào CSS
+- [x] Docker build & deploy thành công
+
+### Giai đoạn 8 — Tối ưu tốc độ FTTB ✅
+**Vấn đề**: FTTB 12-14s. Bottleneck: query rewrite (gemini-2.5-flash ~11s) + system prompt quá dài (~1900 chars).
+**Giải pháp**: Đổi model rewrite + rút gọn system prompt.
+
+- [x] Tạo hàm `build_rewrite_llm()` riêng dùng `gemini-2.5-flash-lite`, `temperature=0.0`, `streaming=False`
+- [x] Cập nhật `rewrite_query()` gọi `build_rewrite_llm()` thay vì `build_llm()`
+- [x] Rút gọn System Prompt từ ~1900 chars → ~600 chars (giảm ~70% input tokens)
+- [x] Thêm performance logging (`time.time()`) đo rewrite, vector search, LLM first token
+- [x] Docker build & deploy thành công
+- [x] Benchmark FTTB (3 câu test):
+  - "con tôi 10 tuổi nó học được trường nào": 12s → **6.43s** (~1.9x)
+  - "Nó muốn đi học đại học nó cần gì": 14s → **9.67s** (~1.4x)
+  - "tôi cho cháu căn nhà để đi học được không": **6.01s** (câu test mới)
+- [x] Chi tiết cải thiện từng step:
+  - Query rewrite: ~11s → ~1s (đổi sang `gemini-2.5-flash-lite`, 10x nhanh hơn)
+  - System prompt: ~1900 chars → ~600 chars (giảm 70% input tokens → LLM xử lý nhanh hơn)
+  - LLM main: vẫn dao động 3-8s (thinking model, không tắt được qua API)
+  - Singleton: request warm giảm thêm ~0.3-0.5s (rewrite 0.48s, search 0.45s)
+- [x] **Fix rewrite sai ý định**: Đổi prompt rewrite từ "chuyển thành truy vấn pháp lý" → "thêm dấu tiếng Việt, giữ nguyên nghĩa gốc" — câu 3 rewrite đúng "cho cháu căn nhà" thay vì "thuê nhà"
+- [x] **Singleton Pattern**: `get_vector_store()`, `build_llm()`, `build_rewrite_llm()` dùng global singleton — tạo 1 lần, dùng lại cho mọi request
+- [x] Docker build & deploy thành công
+- [x] Benchmark sau singleton: FTTB request warm tốt nhất **4.08s** (câu 1 lặp lại)
