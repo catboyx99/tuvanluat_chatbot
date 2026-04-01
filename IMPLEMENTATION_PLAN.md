@@ -215,18 +215,17 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
   - Kết quả: `backend/tests/test_suite_20260401_092001.json`
   - Per group: GD 45/45, BHXH 15/15, BHYT 12/12, VL 9/10, TC 10/10, KN 4/5, Khác 3/3
 
-**Bước 3 — Push code lên Git**
-- [ ] `git add` + `git commit` + `git push origin main`
+**Bước 3 — Push code lên Git** ✅
+- [x] `git commit` (a3dd2fa) + `git push origin main`
 
-**Bước 4 — Pull source về server**
-- [ ] SSH vào server `113.161.95.116`
-- [ ] `cd tuvanluat_chatbot && git pull origin main`
+**Bước 4 — Pull source về server** ✅
+- [x] SSH vào server `113.161.95.116` (user: ubuntu, via plink)
+- [x] `cd tuvanluat_chatbot && git pull origin main` — fast-forward OK
 
-**Bước 5 — Re-ingest trên server**
-- [ ] Xóa ChromaDB data cũ: `docker compose down -v`
-- [ ] Build lại và chạy: `docker compose up -d --build`
-- [ ] Chờ auto-ingest hoàn tất (~2-3 phút)
+**Bước 5 — Re-ingest trên server** ✅
+- [x] `docker compose down -v && docker compose up -d --build`
+- [x] Auto-ingest: 90 files → 10300 chunks (lần 1 lỗi Gemini 503, lần 2 OK)
 
-**Bước 6 — Verify trên server**
-- [ ] Test query "con tôi 5 tuổi cháu học tại đâu được" → OK
-- [ ] Test thêm các câu hỏi khác
+**Bước 6 — Verify trên server** ✅
+- [x] Test "con toi 5 tuoi chau hoc duoc truong nao" → trả lời đúng mầm non + citation Luật GD Điều 23, 26, 28, 80
+- [x] http://113.161.95.116:3000/ hoạt động OK
