@@ -1,0 +1,1456 @@
+{
+  "run_at": "2026-04-01T09:20:01.625798",
+  "api_url": "http://localhost:8000/api/chat",
+  "total_questions": 100,
+  "answered": 98,
+  "no_data": 0,
+  "has_citation": 96,
+  "errors": 2,
+  "avg_response_time_s": 14.35,
+  "results": [
+    {
+      "id": 1,
+      "question": "con toi 5 tuoi chau hoc duoc truong nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 5.35,
+      "total_time_s": 6.02,
+      "response_preview": "Chào bạn,\n\nVới cháu 5 tuổi, cháu sẽ học tại các cơ sở giáo dục mầm non, cụ thể là trường mẫu giáo hoặc trường mầm non. Đây là cấp học đầu tiên trong hệ thống giáo dục quốc dân, dành cho trẻ em từ 03 tháng tuổi đến 06 tuổi. Cháu chưa đủ tuổi để vào học lớp một của cấp tiểu học, vì tuổi vào lớp một là 06 tuổi.\n\n**Căn cứ pháp lý:**\n- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 23, Khoản 1.\n- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 26, Khoản 2, Khoản 3.\n- Luật Giáo dục 2019 (Luật số 43/2"
+    },
+    {
+      "id": 2,
+      "question": "tre may tuoi thi bat dau di hoc lop 1",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 3.38,
+      "total_time_s": 3.48,
+      "response_preview": "Theo quy định của pháp luật, trẻ em bắt đầu đi học lớp một khi đủ 06 tuổi và độ tuổi này được tính theo năm.\n\n**Căn cứ pháp lý:**\n- Luật Giáo dục (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a."
+    },
+    {
+      "id": 3,
+      "question": "con toi bi truong tu choi nhan vao hoc thi khieu nai o dau",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": false,
+      "error": null,
+      "fttb_s": 6.18,
+      "total_time_s": 6.25,
+      "response_preview": "Xin lỗi, hệ thống không có dữ liệu pháp lý liên quan đến việc khiếu nại cụ thể về việc trường học từ chối nhận học sinh. Các quy định trong dữ liệu chủ yếu đề cập đến trình tự, thủ tục chung về khiếu nại và giải quyết khiếu nại, nhưng không chỉ rõ cơ quan có thẩm quyền giải quyết đối với trường hợp này."
+    },
+    {
+      "id": 4,
+      "question": "hoc sinh tieu hoc co phai dong hoc phi khong",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 6.52,
+      "total_time_s": 6.68,
+      "response_preview": "Chào bạn,\n\nHọc sinh tiểu học trong các cơ sở giáo dục công lập không phải đóng học phí.\n\nTrong trường hợp ở những địa bàn không đủ trường công lập, học sinh tiểu học học tại các cơ sở giáo dục tư thục sẽ được Nhà nước hỗ trợ tiền đóng học phí. Mức hỗ trợ cụ thể sẽ do Hội đồng nhân dân cấp tỉnh quyết định.\n\n**Can cu phap ly:**\n- Luật Giáo dục, Điều 99, Khoản 3."
+    },
+    {
+      "id": 5,
+      "question": "pho cap giao duc la gi va ap dung cho cap nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md",
+        "22_VBHN-VPQH_651354.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 7.45,
+      "total_time_s": 7.94,
+      "response_preview": "Phổ cập giáo dục là quá trình Nhà nước tổ chức các hoạt động giáo dục nhằm đảm bảo mọi công dân trong độ tuổi quy định đều được học tập và đạt đến một trình độ học vấn nhất định theo quy định của pháp luật.\n\nHiện nay, Nhà nước thực hiện phổ cập giáo dục đối với trẻ em 05 tuổi ở cấp mầm non và phổ cập giáo dục trung học cơ sở.\n\n**Can cứ pháp lý:**\n- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 5, Khoản 8.\n- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 14, Khoản 1."
+    },
+    {
+      "id": 6,
+      "question": "con toi khong duoc len lop thi lam sao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.28,
+      "total_time_s": 15.86,
+      "response_preview": "Chào bạn,\n\nNếu con bạn không được lên lớp (hay còn gọi là lưu ban), pháp luật có quy định về trường hợp này để đảm bảo quyền học tập của học sinh.\n\n1.  **Lời tư vấn:**\n    Khi con bạn không được lên lớp, con bạn sẽ được học lại lớp đó để cải thiện kết quả học tập. Việc học lưu ban là một trường hợp được pháp luật công nhận, và con bạn có thể học ở độ tuổi cao hơn so với tuổi quy định cho lớp đó. Điều này có nghĩa là việc con bạn lớn tuổi hơn các bạn cùng lớp do lưu ban là hoàn toàn bình thường v"
+    },
+    {
+      "id": 7,
+      "question": "truong tu thuc voi truong cong khac nhau cho nao ve mat phap ly",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật-43-2019-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 13.55,
+      "total_time_s": 16.61,
+      "response_preview": "Chào bạn,\n\nDựa trên các quy định pháp luật được cung cấp, trường tư thục và trường công lập có những điểm khác biệt cơ bản về mặt pháp lý như sau:\n\n1.  **Chủ sở hữu và Nguồn vốn đầu tư:**\n    *   **Trường công lập:** Do Nhà nước đầu tư, bảo đảm điều kiện hoạt động và Nhà nước là đại diện chủ sở hữu.\n    *   **Trường tư thục:** Do nhà đầu tư trong nước hoặc nhà đầu tư nước ngoài đầu tư và bảo đảm điều kiện hoạt động. Tài sản của trường tư thục thuộc sở hữu của nhà đầu tư, hình thành từ vốn góp củ"
+    },
+    {
+      "id": 8,
+      "question": "dieu kien de duoc thi dai hoc la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-08-2022-TT-BGDĐT.md",
+        "Thông-tư-44-2021-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 25.26,
+      "total_time_s": 26.15,
+      "response_preview": "Để được xét tuyển vào đại học, thí sinh cần đáp ứng các điều kiện sau:\n\n1.  **Về trình độ học vấn:**\n    *   Đã được công nhận tốt nghiệp trung học phổ thông (THPT) của Việt Nam hoặc có bằng tốt nghiệp của nước ngoài được công nhận trình độ tương đương.\n    *   Hoặc đã có bằng tốt nghiệp trung cấp ngành nghề thuộc cùng nhóm ngành dự tuyển và đã hoàn thành đủ yêu cầu khối lượng kiến thức văn hóa cấp THPT theo quy định của pháp luật.\n2.  **Về sức khỏe:** Có đủ sức khỏe để học tập theo quy định hiệ"
+    },
+    {
+      "id": 9,
+      "question": "truong dai hoc tinh chi tieu tuyen sinh nhu the nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-03-2022-TT-BGDĐT.md",
+        "Thông-tư-10-2023-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 24.31,
+      "total_time_s": 28.34,
+      "response_preview": "Các trường đại học tự chủ trong việc xác định chỉ tiêu tuyển sinh của mình. Tuy nhiên, việc này phải tuân thủ các quy định pháp luật và dựa trên nhiều yếu tố quan trọng, bao gồm:\n\n1.  **Nhu cầu xã hội và thị trường lao động:** Chỉ tiêu tuyển sinh được xác định dựa trên nhu cầu phát triển kinh tế - xã hội, quy hoạch phát triển nguồn nhân lực và nhu cầu lao động của thị trường ở cấp quốc gia, địa phương và của từng ngành.\n2.  **Năng lực đào tạo của trường:** Chỉ tiêu phải phù hợp với các điều kiện"
+    },
+    {
+      "id": 10,
+      "question": "xet tuyen dai hoc nam 2025 co gi thay doi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-06-2025-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 18.03,
+      "total_time_s": 21.71,
+      "response_preview": "Chào bạn,\n\nDựa trên dữ liệu được cung cấp, việc xét tuyển đại học năm 2025 có một số thay đổi quan trọng, chủ yếu đến từ Thông tư số 06/2025/TT-BGDĐT của Bộ Giáo dục và Đào tạo, có hiệu lực từ ngày 19 tháng 3 năm 2025.\n\nDưới đây là những điểm thay đổi chính:\n\n1.  **Về các quy định bị bãi bỏ hoặc sửa đổi:**\n    *   Một số cụm từ và quy định cũ đã bị bãi bỏ, bao gồm: \"lĩnh vực\" tại khoản 1 Điều 2; \"Từ năm 2023\" tại điểm d khoản 1 Điều 7, khoản 4 Điều 7, khoản 1 Điều 26; \"năm tốt nghiệp THPT (hoặc "
+    },
+    {
+      "id": 11,
+      "question": "chi tieu tuyen sinh cao dang giao duc mam non xac dinh the nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-03-2022-TT-BGDĐT.md",
+        "Thông-tư-10-2023-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 16.03,
+      "total_time_s": 19.45,
+      "response_preview": "Việc xác định chỉ tiêu tuyển sinh cao đẳng ngành Giáo dục Mầm non được thực hiện theo quy trình và các tiêu chí cụ thể như sau:\n\n1.  **Cơ sở đào tạo tự xác định chỉ tiêu:**\n    *   Các cơ sở đào tạo được phép đào tạo ngành Giáo dục Mầm non sẽ tự xác định chỉ tiêu tuyển sinh của mình.\n    *   Việc xác định này phải dựa trên các điều kiện đảm bảo chất lượng đào tạo của cơ sở, yêu cầu phát triển kinh tế - xã hội, và tuân thủ các quy định của pháp luật hiện hành.\n    *   Cơ sở đào tạo có trách nhiệm"
+    },
+    {
+      "id": 12,
+      "question": "sinh vien hoc bao nhieu tin chi thi duoc tot nghiep",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-08-2021-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 17.0,
+      "total_time_s": 19.37,
+      "response_preview": "Chào bạn,\n\nĐể được xét công nhận tốt nghiệp, sinh viên cần tích lũy đủ số tín chỉ theo yêu cầu của chương trình đào tạo mà mình đang theo học. Số lượng tín chỉ cụ thể sẽ do Hiệu trưởng cơ sở đào tạo quyết định, nhưng phải đảm bảo các khối lượng học tập tối thiểu theo quy định của pháp luật.\n\nDưới đây là các quy định về khối lượng tín chỉ tối thiểu cho từng trình độ đào tạo:\n\n1.  **Chương trình đào tạo đại học:** Tối thiểu 120 tín chỉ, cộng với khối lượng giáo dục thể chất, giáo dục quốc phòng - "
+    },
+    {
+      "id": 13,
+      "question": "sinh vien bi dinh chi hoc tap trong truong hop nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-08-2021-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.43,
+      "total_time_s": 11.82,
+      "response_preview": "Chào bạn,\n\nSinh viên sẽ bị đình chỉ học tập trong trường hợp vi phạm quy định về thi cử.\n\nCụ thể:\n\n1.  **Lý do đình chỉ học tập:** Sinh viên thi hộ hoặc nhờ người khác thi hộ sẽ bị kỷ luật ở mức đình chỉ học tập 01 năm nếu đây là lần vi phạm đầu tiên. Nếu vi phạm lần thứ hai, sinh viên sẽ bị buộc thôi học.\n\n**Can cứ pháp lý:**\n- Quy định về xử lý vi phạm đối với sinh viên (Nguồn: Chương IV), Điều 20, Khoản 2."
+    },
+    {
+      "id": 14,
+      "question": "thoi gian dao tao dai hoc toi da la bao lau",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-08-2021-TT-BGDĐT.md",
+        "Luật số 08-2012-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.38,
+      "total_time_s": 12.86,
+      "response_preview": "Chào bạn,\n\nThời gian đào tạo đại học tối đa để sinh viên hoàn thành khóa học được quy định như sau:\n\n1.  **Thời gian tối đa để hoàn thành khóa học:** Không được vượt quá 02 lần thời gian theo kế hoạch học tập chuẩn toàn khóa đối với mỗi hình thức đào tạo. Kế hoạch học tập chuẩn toàn khóa này do cơ sở đào tạo cung cấp để định hướng cho sinh viên.\n2.  **Đối với sinh viên học liên thông:** Nếu đã được miễn trừ khối lượng tín chỉ tích lũy, thời gian tối đa để hoàn thành khóa học sẽ được xác định trê"
+    },
+    {
+      "id": 15,
+      "question": "toi muon chuyen truong dai hoc thi can dieu kien gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-08-2021-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.02,
+      "total_time_s": 15.63,
+      "response_preview": "Chào bạn, để chuyển trường đại học, bạn cần đáp ứng các điều kiện sau đây:\n\n1.  **Về tình trạng của sinh viên:**\n    *   Bạn không phải là sinh viên năm thứ nhất hoặc năm cuối khóa.\n    *   Bạn không thuộc diện đang bị xem xét buộc thôi học.\n    *   Bạn còn đủ thời gian học tập theo quy định.\n\n2.  **Về điều kiện tuyển sinh tại nơi chuyển đến:**\n    *   Bạn phải đạt điều kiện trúng tuyển của chương trình, ngành đào tạo tại trường bạn muốn chuyển đến, trong cùng khóa tuyển sinh.\n\n3.  **Về điều kiệ"
+    },
+    {
+      "id": 16,
+      "question": "truong dai hoc co quyen tu chu nhung gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật số 34-2018-QH14..md",
+        "Luật số 08-2012-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.14,
+      "total_time_s": 17.37,
+      "response_preview": "Trường đại học có quyền tự chủ trong nhiều hoạt động chính, bao gồm các lĩnh vực về học thuật, hoạt động chuyên môn, tổ chức, nhân sự, tài chính và tài sản.\n\nCụ thể, quyền tự chủ của trường đại học bao gồm:\n\n1.  **Về học thuật và hoạt động chuyên môn:**\n    *   Ban hành và tổ chức thực hiện các quy định nội bộ liên quan đến tuyển sinh, đào tạo, hoạt động khoa học và công nghệ, cũng như hợp tác trong nước và quốc tế.\n    *   Xác định và công bố công khai phương thức, chỉ tiêu tuyển sinh (trừ lĩnh"
+    },
+    {
+      "id": 17,
+      "question": "hoi dong truong dai hoc la gi va co nhiem vu gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Luật số 34-2018-QH14..md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 17.21,
+      "total_time_s": 19.52,
+      "response_preview": "Chào bạn, Hội đồng trường đại học là một tổ chức quản trị quan trọng trong cơ cấu của trường đại học, có vai trò và nhiệm vụ cụ thể như sau:\n\n1.  **Hội đồng trường đại học là gì?**\n    Hội đồng trường đại học là một tổ chức quản trị.\n    *   Đối với trường đại học công lập, Hội đồng trường thực hiện quyền đại diện của chủ sở hữu và các bên có lợi ích liên quan.\n    *   Đối với trường đại học tư thục hoặc trường đại học tư thục hoạt động không vì lợi nhuận, Hội đồng trường đại diện cho nhà đầu tư"
+    },
+    {
+      "id": 18,
+      "question": "dieu kien de hoc thac si la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Nghị-định-99-2019-NĐ-CP.md",
+        "99.signed.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.86,
+      "total_time_s": 10.33,
+      "response_preview": "Để được học thạc sĩ, bạn cần đáp ứng các điều kiện sau:\n\n1.  **Lời tư vấn:**\n    *   Bạn phải tốt nghiệp đại học (hoặc trình độ tương đương trở lên) với ngành phù hợp.\n    *   Bạn cần có trình độ ngoại ngữ Bậc 3 theo Khung năng lực ngoại ngữ 6 bậc dùng cho Việt Nam hoặc trình độ tương đương.\n    *   Đối với chương trình đào tạo thạc sĩ theo định hướng nghiên cứu, bạn phải tốt nghiệp đại học hạng khá trở lên hoặc có công bố khoa học liên quan đến lĩnh vực sẽ học tập.\n\n2.  **Căn cứ pháp lý:**\n    "
+    },
+    {
+      "id": 19,
+      "question": "hoc tien si mat bao lau",
+      "group": "Giao duc",
+      "target_docs": [
+        "Nghị-định-99-2019-NĐ-CP.md",
+        "99.signed.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 5.13,
+      "total_time_s": 5.33,
+      "response_preview": "Thời gian học tiến sĩ tối đa là 04 năm (tương đương 48 tháng). Thời gian này được tính từ thời điểm bạn nhập học chính thức tại cơ sở đào tạo hoặc từ thời điểm quyết định có hiệu lực đối với người học tiến sĩ.\n\n**Can cu phap ly:**\n- Thông tư số 25-2021-TT-BGDĐT (Thông tư số 25/2021/TT-BGDĐT), Chương I, Điều 12."
+    },
+    {
+      "id": 20,
+      "question": "giang vien can trinh do gi de duoc day dai hoc",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 25-2021-TT-BGDĐT .md",
+        "Luật số 08-2012-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 17.78,
+      "total_time_s": 19.01,
+      "response_preview": "Chào bạn,\n\nĐể được giảng dạy trình độ đại học, giảng viên cần đáp ứng các tiêu chuẩn về trình độ chuyên môn như sau:\n\n1.  **Trình độ tối thiểu:** Giảng viên giảng dạy trình độ đại học phải có trình độ tối thiểu là thạc sĩ trở lên.\n2.  **Trường hợp đặc biệt (Trợ giảng):** Đối với chức danh trợ giảng, quy định về trình độ có thể khác. Cụ thể, trong một số trường hợp, giảng viên trợ giảng có thể có bằng tốt nghiệp trình độ đại học cùng ngành hoặc nhóm ngành với ngành tham gia đào tạo, đồng thời có "
+    },
+    {
+      "id": 21,
+      "question": "truong nuoc ngoai muon mo chi nhanh tai viet nam can dieu kien gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Nghị-định-86-2018-NĐ-CP.md",
+        "Nghị-định-125-2024-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 8.82,
+      "total_time_s": 10.29,
+      "response_preview": "Chào bạn,\n\nĐể một trường đại học nước ngoài có thể mở chi nhánh (trong pháp luật gọi là \"phân hiệu\") tại Việt Nam, cần đáp ứng các điều kiện sau:\n\n1.  **Về tư cách pháp lý và chất lượng:** Trường đại học nước ngoài đó phải đang hoạt động hợp pháp và đảm bảo chất lượng theo quy định của nước sở tại.\n2.  **Về vốn đầu tư:** Phải có vốn đầu tư tối thiểu là 500 tỷ đồng Việt Nam (không bao gồm chi phí sử dụng đất). Đến thời điểm thẩm định để cho phép thành lập phân hiệu, giá trị đầu tư thực tế đã thực"
+    },
+    {
+      "id": 22,
+      "question": "hoc chuong trinh lien ket voi truong nuoc ngoai co duoc cap bang viet nam khong",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 07-2025-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.23,
+      "total_time_s": 11.5,
+      "response_preview": "Chào bạn,\n\nCó, khi tham gia chương trình liên kết đào tạo với trường nước ngoài, người học hoàn toàn có thể được cấp bằng của Việt Nam, hoặc bằng của nước ngoài, hoặc cả hai văn bằng (bằng của Việt Nam và bằng của nước ngoài) tùy theo chương trình liên kết cụ thể.\n\n**Căn cứ pháp lý:**\n- Chương II, Điều 17.\n- Chương II, Điều 22, Khoản 3, Điểm a, Điểm b.\n- Quyết định cho phép mở ngành đối với cơ sở giáo dục đại học chưa đủ điều kiện, Điều 45, Khoản 1.\n- Luật số 08/2012/QH13, Điều 45, Khoản 1."
+    },
+    {
+      "id": 23,
+      "question": "dieu kien de mo nganh dao tao moi tai truong dai hoc la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Nghị-định-125-2024-NĐ-CP.md",
+        "Nghị-định-99-2019-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.87,
+      "total_time_s": 19.35,
+      "response_preview": "Để một trường đại học mở ngành đào tạo mới, cần đáp ứng các điều kiện chung về nguồn lực và điều kiện cụ thể cho từng trình độ đào tạo, cũng như các quy định về quyền tự chủ mở ngành.\n\nDưới đây là các điều kiện cụ thể:\n\n1.  **Điều kiện chung để mở ngành đào tạo (áp dụng cho trình độ đại học, thạc sĩ, tiến sĩ):**\n    *   Ngành đào tạo phải phù hợp với nhu cầu nguồn nhân lực cho sự phát triển kinh tế - xã hội của địa phương, vùng, cả nước và từng lĩnh vực, đồng thời đảm bảo hội nhập quốc tế.\n    *"
+    },
+    {
+      "id": 24,
+      "question": "kiem dinh chat luong truong dai hoc la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-12-2017-TT-BGDĐT.md",
+        "Thông tư 62-2012-TT-BGDĐT.md",
+        "Quyết-định-790-QĐ-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 28.52,
+      "total_time_s": 29.46,
+      "response_preview": "Kiểm định chất lượng trường đại học là hoạt động đánh giá và công nhận một trường đại học (cơ sở giáo dục đại học) hoặc chương trình đào tạo của trường đó đạt các tiêu chuẩn chất lượng giáo dục đại học đã được quy định.\n\nMục đích của hoạt động này là để:\n*   Đảm bảo và nâng cao chất lượng giáo dục đại học.\n*   Xác nhận mức độ trường đại học hoặc chương trình đào tạo đáp ứng mục tiêu giáo dục trong từng giai đoạn.\n*   Làm căn cứ để trường đại học giải trình với các cơ quan quản lý nhà nước có thẩ"
+    },
+    {
+      "id": 25,
+      "question": "truong dai hoc khong dat kiem dinh thi sao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-04-2025-TT-BGDĐT.md",
+        "Thông-tư-13-2023-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.01,
+      "total_time_s": 12.79,
+      "response_preview": "Khi một trường đại học hoặc chương trình đào tạo không đạt kiểm định chất lượng, sẽ có các hậu quả và trách nhiệm sau:\n\n1.  **Trách nhiệm cải tiến chất lượng:** Cơ sở giáo dục đại học phải có trách nhiệm cải tiến, nâng cao chất lượng đào tạo, bảo đảm chuẩn đầu ra của chương trình đào tạo, và bảo đảm quyền lợi cho người học.\n2.  **Ngừng tuyển sinh đối với chương trình không đạt:** Trường không được tiếp tục tuyển sinh ngành đào tạo đó cho đến khi đạt tiêu chuẩn kiểm định chất lượng.\n3.  **Kiểm đị"
+    },
+    {
+      "id": 26,
+      "question": "ai duoc lam kiem dinh vien giao duc dai hoc",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-14-2022-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 5.0,
+      "total_time_s": 6.67,
+      "response_preview": "Để được làm kiểm định viên giáo dục đại học, cá nhân cần đáp ứng các tiêu chuẩn về phẩm chất, năng lực, kinh nghiệm và đã hoàn thành chương trình bồi dưỡng nghiệp vụ, cũng như có thẻ kiểm định viên còn hiệu lực.\n\nCụ thể, một người được làm kiểm định viên giáo dục đại học khi đáp ứng các điều kiện sau:\n\n1.  **Về phẩm chất và thái độ làm việc:**\n    *   Có phẩm chất đạo đức tốt, trung thực, khách quan, công tâm trong công việc.\n    *   Có thái độ và phong cách làm việc chuyên nghiệp, khoa học, có "
+    },
+    {
+      "id": 27,
+      "question": "bang dai hoc ghi nhung noi dung gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 27-2019-TT-BGDĐT.md",
+        "Thông-tư-21-2019-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.84,
+      "total_time_s": 14.13,
+      "response_preview": "Chào bạn,\n\nTrên bằng đại học của bạn sẽ ghi những nội dung chính sau đây:\n\n1.  **Tiêu đề:** CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập Tự do Hạnh phúc.\n2.  **Tên văn bằng:** Ví dụ: Bằng cử nhân.\n3.  **Ngành đào tạo.**\n4.  **Tên cơ sở giáo dục đại học** cấp văn bằng.\n5.  **Họ, chữ đệm, tên** của người được cấp văn bằng.\n6.  **Ngày tháng năm sinh** của người được cấp văn bằng.\n7.  **Hạng tốt nghiệp** (nếu có).\n8.  **Địa danh, ngày tháng năm** cấp văn bằng.\n9.  **Chức danh, chữ ký, họ, chữ đệm, tên"
+    },
+    {
+      "id": 28,
+      "question": "chung chi pte academic tuong duong bac nao cua khung nang luc ngoai ngu viet nam",
+      "group": "Giao duc",
+      "target_docs": [
+        "Quyết-định-2383-QĐ-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 7.4,
+      "total_time_s": 8.79,
+      "response_preview": "Chứng chỉ Pearson Test of English Academic (PTE Academic) được công nhận tương đương với các bậc của Khung năng lực ngoại ngữ 6 bậc dùng cho Việt Nam (KNLNNVN) để sử dụng trong tuyển sinh, đào tạo các trình độ của giáo dục đại học. Mức độ tương đương cụ thể như sau:\n\n*   **Bậc 1 KNLNNVN:** Tương đương PTE Academic từ 10 đến 29 điểm.\n*   **Bậc 2 KNLNNVN:** Tương đương PTE Academic 30 điểm.\n*   **Bậc 3 KNLNNVN:** Tương đương PTE Academic 42 điểm.\n*   **Bậc 4 KNLNNVN:** Tương đương PTE Academic từ "
+    },
+    {
+      "id": 29,
+      "question": "che do lam viec cua giang vien dai hoc nhu the nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 20-2020-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.83,
+      "total_time_s": 16.61,
+      "response_preview": "Chế độ làm việc của giảng viên đại học được quy định chi tiết bởi Bộ Giáo dục và Đào tạo, bao gồm thời gian làm việc, giờ chuẩn giảng dạy, định mức và các chế độ khác.\n\nDưới đây là các quy định cụ thể:\n\n1.  **Thời gian làm việc chung:**\n    *   Giảng viên làm việc 44 tuần trong một năm học, tương đương 1.760 giờ hành chính.\n    *   Thời gian này được dùng để thực hiện các nhiệm vụ như giảng dạy, nghiên cứu khoa học, phục vụ cộng đồng và các nhiệm vụ chuyên môn khác.\n\n2.  **Giờ chuẩn giảng dạy:**"
+    },
+    {
+      "id": 30,
+      "question": "giang vien dai hoc co phai lam nghien cuu khong",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 20-2020-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 4.75,
+      "total_time_s": 5.62,
+      "response_preview": "Có, giảng viên đại học có nghĩa vụ phải thực hiện nhiệm vụ nghiên cứu khoa học. Mỗi năm, giảng viên phải hoàn thành nhiệm vụ nghiên cứu khoa học được giao phù hợp với chức danh hoặc vị trí công việc của mình. Thủ trưởng cơ sở giáo dục đại học sẽ giao nhiệm vụ này và quy định cụ thể về số giờ nghiên cứu khoa học.\n\n**Can cứ pháp lý:**\n- Luật Giáo dục đại học 2012 (Luật số 08/2012/QH13), Điều 55, Khoản 2.\n- Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học 2018 (Luật số 34/2018/QH14), Điề"
+    },
+    {
+      "id": 31,
+      "question": "vi tri viec lam trong truong dai hoc cong lap gom nhung gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 04-2024-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.78,
+      "total_time_s": 14.08,
+      "response_preview": "Vị trí việc làm trong trường đại học công lập rất đa dạng, bao gồm các vị trí lãnh đạo, quản lý và các vị trí chức danh nghề nghiệp chuyên ngành giáo dục và đào tạo.\n\nCụ thể, các vị trí này bao gồm:\n\n1.  **Các vị trí lãnh đạo, quản lý:**\n    *   Chủ tịch Hội đồng đại học, Giám đốc đại học.\n    *   Phó giám đốc đại học, Chủ tịch Hội đồng trường, Hiệu trưởng trường đại học và các chức vụ tương đương.\n    *   Phó chủ tịch Hội đồng trường, Phó hiệu trưởng trường đại học và các chức vụ tương đương.\n "
+    },
+    {
+      "id": 32,
+      "question": "sinh vien co duoc tham gia nghien cuu khoa hoc khong",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 26-2021-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 5.4,
+      "total_time_s": 5.73,
+      "response_preview": "Có, sinh viên hoàn toàn được phép tham gia nghiên cứu khoa học. Các cơ sở giáo dục đại học có trách nhiệm tạo điều kiện thuận lợi để sinh viên tham gia vào các hoạt động nghiên cứu khoa học và công nghệ.\n\n**Can cu phap ly:**\n- Thông tư số 26/2021/TT-BGDĐT (Thông tư số 26/2021/TT-BGDĐT), Chương III, Điều 12, Khoản 2, Điểm a.\n- Thông tư số 26/2021/TT-BGDĐT (Thông tư số 26/2021/TT-BGDĐT), Chương IV, Điều 14, Khoản 3."
+    },
+    {
+      "id": 33,
+      "question": "truong dai hoc to chuc hoat dong khoa hoc cong nghe nhu the nao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Nghị-định-109-2022-NĐ-CP.md",
+        "Thông-tư-09-2018-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.01,
+      "total_time_s": 15.82,
+      "response_preview": "Các trường đại học tổ chức hoạt động khoa học và công nghệ theo các quy định chung, đồng thời có quyền tự chủ và trách nhiệm trong việc ban hành các quy định nội bộ và triển khai các hoạt động cụ thể.\n\nDưới đây là cách thức tổ chức hoạt động khoa học và công nghệ tại các trường đại học:\n\n1.  **Thực hiện theo quy định pháp luật và tự chủ:**\n    *   Các trường đại học thực hiện hoạt động khoa học và công nghệ theo Luật Khoa học và công nghệ cùng các quy định liên quan của Luật Giáo dục đại học.\n  "
+    },
+    {
+      "id": 34,
+      "question": "de tai khoa hoc cap bo cua bo giao duc quan ly ra sao",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-11-2016-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.2,
+      "total_time_s": 16.64,
+      "response_preview": "Chào bạn,\n\nĐề tài khoa học và công nghệ cấp bộ của Bộ Giáo dục và Đào tạo được quản lý theo một quy trình chặt chẽ, bao gồm nhiều giai đoạn từ xác định, tuyển chọn, thẩm định, tổ chức triển khai, kiểm tra, đánh giá và nghiệm thu.\n\nDưới đây là các thông tin chi tiết về cách thức quản lý:\n\n1.  **Lợi tư vấn dễ hiểu, mạch lạc:**\n    *   **Định nghĩa và Mục tiêu:** Đề tài cấp bộ là những nghiên cứu có tầm quan trọng đối với sự phát triển của ngành giáo dục, nhằm giải quyết các vấn đề khoa học công ng"
+    },
+    {
+      "id": 35,
+      "question": "giai thuong khoa hoc cong nghe danh cho sinh vien la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-45-2020-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.01,
+      "total_time_s": 13.15,
+      "response_preview": "Giải thưởng khoa học và công nghệ dành cho sinh viên là một giải thưởng được tổ chức trong các cơ sở giáo dục đại học (đại học, trường đại học, học viện) nhằm mục đích biểu dương thành tích xuất sắc và khuyến khích sinh viên tham gia nghiên cứu khoa học và phát triển công nghệ.\n\nMục tiêu của giải thưởng này là:\n*   Khuyến khích sinh viên ứng dụng khoa học và công nghệ vào giải quyết các vấn đề thực tiễn cuộc sống.\n*   Góp phần nâng cao chất lượng đào tạo, phát triển kinh tế xã hội.\n*   Phát hiện"
+    },
+    {
+      "id": 36,
+      "question": "truong dai hoc co duoc day truc tuyen khong",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 30-2023-TT-BGDĐT.md",
+        "Thông-tư-30-2023-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 6.27,
+      "total_time_s": 8.4,
+      "response_preview": "Có, các trường đại học (cơ sở đào tạo) được phép tổ chức dạy học trực tuyến, nhưng phải tuân thủ các quy định và điều kiện cụ thể.\n\nCụ thể:\n1.  **Điều kiện chung**: Cơ sở đào tạo được tổ chức các lớp học trực tuyến khi đáp ứng các quy định hiện hành về ứng dụng công nghệ thông tin trong quản lý và tổ chức đào tạo qua mạng. Đồng thời, phải có các giải pháp để đảm bảo chất lượng của lớp học trực tuyến không thấp hơn chất lượng của lớp học trực tiếp.\n2.  **Giới hạn về tỷ lệ**: Đối với đào tạo theo "
+    },
+    {
+      "id": 37,
+      "question": "hoc truc tuyen thi gioi han bao nhieu phan tram chuong trinh",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 30-2023-TT-BGDĐT.md",
+        "Thông-tư-30-2023-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 10.51,
+      "total_time_s": 11.69,
+      "response_preview": "Chào bạn,\n\nGiới hạn tỷ lệ phần trăm khối lượng chương trình đào tạo được thực hiện bằng hình thức trực tuyến phụ thuộc vào hình thức đào tạo cụ thể:\n\n1.  **Đối với đào tạo chính quy và vừa làm vừa học:**\n    Tối đa 30% tổng khối lượng của chương trình đào tạo được thực hiện bằng lớp học trực tuyến. Tuy nhiên, trong các trường hợp đặc biệt như thiên tai, dịch bệnh phức tạp hoặc các trường hợp bất khả kháng khác, cơ sở đào tạo sẽ thực hiện theo hướng dẫn của Bộ Giáo dục và Đào tạo.\n\n2.  **Đối với "
+    },
+    {
+      "id": 38,
+      "question": "thu vien truong dai hoc can dat tieu chuan gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 14-2023-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 10.81,
+      "total_time_s": 14.38,
+      "response_preview": "Thư viện trường đại học cần đạt các tiêu chuẩn về tài nguyên thông tin, cơ sở vật chất, thiết bị chuyên dùng, hoạt động thư viện và quản lý thư viện, nhằm đảm bảo thực hiện đầy đủ chức năng, nhiệm vụ và đáp ứng yêu cầu chất lượng giáo dục đại học.\n\nCụ thể, các tiêu chuẩn chính bao gồm:\n\n1.  **Về Cơ sở vật chất:**\n    *   **Vị trí:** Thư viện phải được bố trí ở vị trí thuận tiện, đáp ứng yêu cầu của người sử dụng và đảm bảo người khuyết tật có thể tiếp cận, sử dụng.\n    *   **Diện tích:**\n       "
+    },
+    {
+      "id": 39,
+      "question": "nha giao dat danh hieu nha giao uu tu can dieu kien gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "21_2020_TT_BGDDT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.84,
+      "total_time_s": 11.35,
+      "response_preview": "Để được phong tặng danh hiệu Nhà giáo ưu tú, nhà giáo cần đáp ứng các tiêu chuẩn theo quy định của pháp luật. Cụ thể, các tiêu chuẩn này thường liên quan đến thành tích và đóng góp xuất sắc trong ngành Giáo dục.\n\nDưới đây là các điều kiện chung:\n\n1.  **Đủ tiêu chuẩn theo quy định:** Nhà giáo, cán bộ quản lý giáo dục, cán bộ nghiên cứu giáo dục phải đủ tiêu chuẩn theo quy định của pháp luật để được Nhà nước phong tặng danh hiệu Nhà giáo ưu tú.\n2.  **Thành tích và đóng góp:**\n    *   Có thành tích"
+    },
+    {
+      "id": 40,
+      "question": "thu tuc hanh chinh trong linh vuc giao duc dai hoc gom nhung gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "1134_QD-BGDDT_512062.md",
+        "2231_QD-BGDDT_574574.md",
+        "4022_QD-BGDDT_637691.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 21.35,
+      "total_time_s": 22.66,
+      "response_preview": "Trong lĩnh vực giáo dục đại học, các thủ tục hành chính được Bộ Giáo dục và Đào tạo công bố bao gồm các thủ tục được sửa đổi, bổ sung, thay thế và bãi bỏ như sau:\n\n1.  **Thủ tục hành chính được sửa đổi, bổ sung:**\n    *   Mở ngành đào tạo trình độ đại học, trình độ thạc sĩ hoặc trình độ tiến sĩ.\n\n2.  **Thủ tục hành chính được thay thế:**\n    *   Hai thủ tục \"Mở ngành đào tạo trình độ thạc sĩ, tiến sĩ\" và \"Mở ngành đào tạo trình độ đại học\" đã được thay thế bằng thủ tục \"Mở ngành đào tạo trình độ"
+    },
+    {
+      "id": 41,
+      "question": "chuong trinh pho cap ky nang so va chuyen doi so cho sinh vien dai hoc la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "1504_QD-BGDDT_660137.md",
+        "4740_QD-BGDDT_549856.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 18.53,
+      "total_time_s": 22.35,
+      "response_preview": "Chương trình phổ cập kỹ năng số và chuyển đổi số cho sinh viên đại học là một sáng kiến của Bộ Giáo dục và Đào tạo nhằm trang bị cho sinh viên những kiến thức và kỹ năng cần thiết trong môi trường số, đồng thời thúc đẩy quá trình chuyển đổi số toàn diện trong các cơ sở giáo dục đại học.\n\nCụ thể:\n\n1.  **Chương trình phổ cập kiến thức, kỹ năng số cho sinh viên trong các cơ sở giáo dục đại học:**\n    *   **Là gì:** Đây là một chương trình được Bộ Giáo dục và Đào tạo ban hành nhằm phổ cập kiến thức "
+    },
+    {
+      "id": 42,
+      "question": "tai nguyen giao duc mo trong dai hoc la gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "1919_KH-BGDDT_637695.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 4.76,
+      "total_time_s": 5.29,
+      "response_preview": "Tài nguyên giáo dục mở trong giáo dục đại học là các tài liệu và tài nguyên được thiết kế nhằm hỗ trợ quá trình học tập, giảng dạy và nghiên cứu, đặc biệt trong môi trường trực tuyến.\n\nCác loại tài nguyên này có thể bao gồm:\n*   Giáo trình, bài giảng trực tuyến.\n*   Hình ảnh và biểu đồ.\n*   Tài liệu điện tử, tài liệu tham khảo.\n*   Phần mềm và ứng dụng học tập.\n*   Tài liệu hướng dẫn.\n*   Phần mềm mô phỏng, thí nghiệm ảo.\n*   Bài kiểm tra đánh giá.\n\n**Căn cứ pháp lý:**\n- Thông tư số 30-2023-TT-B"
+    },
+    {
+      "id": 43,
+      "question": "danh muc nganh dao tao dai hoc hien nay gom nhung gi",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông tư số 09-2022-TT-BGDĐT.md",
+        "Quyết định 1596-QĐ-BGDĐT .md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 8.63,
+      "total_time_s": 10.2,
+      "response_preview": "Hiện nay, danh mục ngành đào tạo đại học bao gồm hai loại chính: danh mục ngành chính thức và danh mục ngành thí điểm.\n\n1.  **Danh mục ngành chính thức:** Đây là danh mục được ban hành và cập nhật định kỳ, bao gồm các ngành đào tạo ở trình độ đại học, thạc sĩ và tiến sĩ. Các ngành trong danh mục này được quy định rõ ràng về mã ngành (gồm 7 chữ số, thể hiện mã trình độ, lĩnh vực, nhóm ngành và ngành cụ thể), tên ngành (thể hiện đặc điểm chuyên môn, nghề nghiệp) và thông tin về hiệu lực áp dụng.\n2"
+    },
+    {
+      "id": 44,
+      "question": "chuan chuong trinh dao tao dai hoc duoc quy dinh nhu the nao va giao trinh ai bien soan",
+      "group": "Giao duc",
+      "target_docs": [
+        "Thông-tư-17-2021-TT-BGDĐT.md",
+        "Thông-tư-35-2021-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.61,
+      "total_time_s": 18.83,
+      "response_preview": "Chào bạn, dựa trên dữ liệu pháp lý được cung cấp, chuẩn chương trình đào tạo đại học và việc biên soạn giáo trình được quy định như sau:\n\n1.  **Lợi tu vấn dễ hiểu, mạch lạc:**\n\n    *   **Về chuẩn chương trình đào tạo đại học:**\n        Chuẩn chương trình đào tạo đại học là những yêu cầu chung, tối thiểu áp dụng cho tất cả các chương trình đào tạo của các ngành, nhóm ngành, lĩnh vực ở một trình độ nhất định. Các yêu cầu này bao gồm mục tiêu đào tạo, chuẩn đầu ra (kiến thức, kỹ năng, phẩm chất, nă"
+    },
+    {
+      "id": 45,
+      "question": "luat giao duc hien hanh quy dinh nhung gi ve quyen cua nguoi hoc va chuan co so giao duc",
+      "group": "Giao duc",
+      "target_docs": [
+        "22_VBHN-VPQH_651354.md",
+        "Thông tư số 46-2021-TT-BGDĐT.md",
+        "Thông-tư-02-2022-TT-BGDĐT.md",
+        "Thông tư số 01-2024-TT-BGDĐT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.08,
+      "total_time_s": 14.57,
+      "response_preview": "Luật Giáo dục hiện hành quy định về quyền của người học và các tiêu chuẩn liên quan đến chất lượng cơ sở giáo dục như sau:\n\n1.  **Lời tư vấn dễ hiểu, mạch lạc:**\n\n    *   **Về quyền của người học:**\n        Người học có nhiều quyền lợi được pháp luật bảo vệ để phát triển toàn diện và phát huy tối đa tiềm năng của bản thân. Cụ thể, người học được:\n        *   Được giáo dục, học tập, được tôn trọng, bình đẳng về cơ hội giáo dục và học tập.\n        *   Được phát triển tài năng, năng khiếu, sáng tạo"
+    },
+    {
+      "id": 46,
+      "question": "toi la lao dong tu do thi co dong bao hiem xa hoi duoc khong",
+      "group": "BHXH",
+      "target_docs": [
+        "Luật-41-2024-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.78,
+      "total_time_s": 12.01,
+      "response_preview": "Chào bạn,\n\nLà lao động tự do, bạn hoàn toàn có thể tham gia bảo hiểm xã hội theo hình thức bảo hiểm xã hội tự nguyện. Điều này áp dụng cho công dân Việt Nam từ đủ 15 tuổi trở lên, không thuộc đối tượng tham gia bảo hiểm xã hội bắt buộc và không đang hưởng lương hưu, trợ cấp bảo hiểm xã hội, trợ cấp hằng tháng.\n\n**Căn cứ pháp lý:**\n- Luật Bảo hiểm xã hội 2024 (Luật số 41/2024/QH15), Điều 169, Khoản 4, Điểm a."
+    },
+    {
+      "id": 47,
+      "question": "dong bao hiem xa hoi bao nhieu nam thi duoc nghi huu",
+      "group": "BHXH",
+      "target_docs": [
+        "Luật-41-2024-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.17,
+      "total_time_s": 16.47,
+      "response_preview": "Để được hưởng lương hưu, người lao động cần đáp ứng điều kiện về thời gian đóng bảo hiểm xã hội và tuổi đời theo quy định của pháp luật.\n\n**1. Lời tư vấn dễ hiểu, mạch lạc:**\n\nThông thường, để được hưởng lương hưu, người lao động cần có thời gian đóng bảo hiểm xã hội bắt buộc từ đủ **15 năm trở lên**. Tuy nhiên, điều kiện này thường đi kèm với việc người lao động phải đủ tuổi nghỉ hưu theo quy định của pháp luật tại từng thời điểm.\n\nTrong một số trường hợp, đặc biệt là để hưởng lương hưu với mức"
+    },
+    {
+      "id": 48,
+      "question": "nguoi giup viec gia dinh co phai dong bhxh khong",
+      "group": "BHXH",
+      "target_docs": [
+        "Luật-41-2024-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 5.12,
+      "total_time_s": 5.15,
+      "response_preview": "Người giúp việc gia đình không thuộc đối tượng phải tham gia bảo hiểm xã hội bắt buộc.\n\n**Can cứ pháp lý:**\n- Luật số 41/2024/QH15, Điều 169, Khoản 7, Điểm b."
+    },
+    {
+      "id": 49,
+      "question": "toi muon rut bao hiem xa hoi mot lan thi can dieu kien gi",
+      "group": "BHXH",
+      "target_docs": [
+        "Luật-41-2024-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.71,
+      "total_time_s": 13.03,
+      "response_preview": "Để được rút bảo hiểm xã hội một lần, bạn cần đáp ứng các điều kiện sau:\n\n1.  **Điều kiện chung:**\n    *   Bạn đã chấm dứt việc tham gia bảo hiểm xã hội và có văn bản đề nghị hưởng bảo hiểm xã hội một lần.\n    *   Tại thời điểm nộp hồ sơ đề nghị, bạn không thuộc đối tượng tham gia bảo hiểm xã hội bắt buộc và cũng không tham gia bảo hiểm xã hội tự nguyện.\n\n2.  **Các trường hợp cụ thể (bạn chỉ cần thuộc một trong các trường hợp này):**\n    *   Đủ tuổi hưởng lương hưu nhưng chưa đủ 15 năm đóng bảo h"
+    },
+    {
+      "id": 50,
+      "question": "muc dong bao hiem xa hoi bat buoc la bao nhieu phan tram luong",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-158-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.81,
+      "total_time_s": 12.68,
+      "response_preview": "Mức đóng bảo hiểm xã hội bắt buộc được quy định theo từng quỹ cụ thể, tính trên tiền lương làm căn cứ đóng bảo hiểm xã hội bắt buộc. Cụ thể như sau:\n\n1.  **Đối với quỹ ốm đau và thai sản:** Mức đóng là 3% tiền lương làm căn cứ đóng bảo hiểm xã hội.\n2.  **Đối với quỹ hưu trí và tử tuất:** Mức đóng là 22% tiền lương làm căn cứ đóng bảo hiểm xã hội.\n3.  **Đối với quỹ tai nạn lao động, bệnh nghề nghiệp:**\n    *   Mức đóng bình thường là 0,5% tiền lương làm căn cứ đóng bảo hiểm xã hội bắt buộc.\n    *"
+    },
+    {
+      "id": 51,
+      "question": "che do thai san bhxh bat buoc duoc huong nhung gi",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-158-2025-NĐ-CP.md",
+        "Luật-41-2024-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 13.2,
+      "total_time_s": 19.35,
+      "response_preview": "Chào bạn,\n\nChế độ thai sản trong bảo hiểm xã hội bắt buộc mang lại nhiều quyền lợi cho người lao động khi đáp ứng đủ các điều kiện theo quy định. Cụ thể, người lao động có thể được hưởng các quyền lợi sau:\n\n1.  **Đối tượng được hưởng:**\n    *   Lao động nữ mang thai, sinh con, mang thai hộ, nhờ mang thai hộ.\n    *   Người lao động nhận nuôi con nuôi dưới 06 tháng tuổi.\n    *   Người lao động sử dụng các biện pháp tránh thai theo chỉ định y tế.\n    *   Lao động nam đang tham gia bảo hiểm xã hội b"
+    },
+    {
+      "id": 52,
+      "question": "dong bhxh tu nguyen muc thap nhat la bao nhieu",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-159-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.45,
+      "total_time_s": 13.03,
+      "response_preview": "Chào bạn,\n\nMức đóng bảo hiểm xã hội tự nguyện hằng tháng được tính bằng 22% mức thu nhập làm căn cứ đóng bảo hiểm xã hội tự nguyện mà người tham gia tự chọn.\n\nTuy nhiên, dữ liệu pháp lý được cung cấp không quy định cụ thể mức thu nhập làm căn cứ đóng bảo hiểm xã hội tự nguyện thấp nhất là bao nhiêu. Do đó, hệ thống không có dữ liệu để xác định mức đóng bảo hiểm xã hội tự nguyện thấp nhất.\n\n**Can cứ pháp lý:**\n- Luật Bảo hiểm xã hội 2024 (Luật số 41/2024/QH15), Chương IV, Điều 2.\n- Nghị định Quy "
+    },
+    {
+      "id": 53,
+      "question": "dong bhxh tu nguyen thi duoc huong nhung che do nao",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-159-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.49,
+      "total_time_s": 13.89,
+      "response_preview": "Khi tham gia bảo hiểm xã hội (BHXH) tự nguyện, người tham gia có thể được hưởng các chế độ sau:\n\n1.  **Chế độ hưu trí**: Đây là chế độ giúp người tham gia có lương hưu khi về già. Đặc biệt, nếu người tham gia vừa có thời gian đóng BHXH bắt buộc vừa có thời gian đóng BHXH tự nguyện thì tổng thời gian đóng của cả hai loại hình sẽ được tính để hưởng chế độ hưu trí.\n2.  **Chế độ tử tuất**: Chế độ này áp dụng khi người tham gia qua đời. Thân nhân của người đã đóng BHXH tự nguyện có thể được hưởng các"
+    },
+    {
+      "id": 54,
+      "question": "nguoi gia khong co luong huu thi co duoc ho tro gi khong",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-176-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.79,
+      "total_time_s": 15.06,
+      "response_preview": "Chào bạn, người cao tuổi không có lương hưu có thể được hưởng một số hình thức hỗ trợ từ nhà nước, cụ thể như sau:\n\n1.  **Trợ cấp hưu trí xã hội hằng tháng:**\n    *   **Đối tượng:**\n        *   Công dân Việt Nam từ đủ 75 tuổi trở lên, không hưởng lương hưu hoặc trợ cấp bảo hiểm xã hội hằng tháng, và có văn bản đề nghị hưởng trợ cấp.\n        *   Công dân Việt Nam từ đủ 70 tuổi đến dưới 75 tuổi thuộc hộ nghèo, hộ cận nghèo, không hưởng lương hưu hoặc trợ cấp bảo hiểm xã hội hằng tháng, và có văn b"
+    },
+    {
+      "id": 55,
+      "question": "tro cap huu tri xa hoi la gi va ai duoc huong",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-176-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.35,
+      "total_time_s": 10.39,
+      "response_preview": "Trợ cấp hưu trí xã hội là một khoản hỗ trợ tài chính được chi trả hằng tháng cho công dân Việt Nam đáp ứng các điều kiện nhất định, nhằm đảm bảo an sinh xã hội cho người cao tuổi không hưởng lương hưu hoặc trợ cấp bảo hiểm xã hội hằng tháng.\n\nCông dân Việt Nam được hưởng trợ cấp hưu trí xã hội khi đáp ứng các điều kiện sau:\n\n1.  **Đối với công dân từ đủ 75 tuổi trở lên:**\n    *   Từ đủ 75 tuổi trở lên.\n    *   Không hưởng lương hưu hoặc trợ cấp bảo hiểm xã hội hằng tháng (trừ trường hợp khác the"
+    },
+    {
+      "id": 56,
+      "question": "toi co the dong bao hiem xa hoi truc tuyen khong",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-164-2025-NĐ-CP-.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.73,
+      "total_time_s": 13.13,
+      "response_preview": "Có, bạn hoàn toàn có thể thực hiện các giao dịch liên quan đến bảo hiểm xã hội (BHXH) trực tuyến.\n\nCơ quan, tổ chức, cá nhân có thể thực hiện các dịch vụ công trực tuyến trong lĩnh vực BHXH trên Cổng Dịch vụ công quốc gia. Các giao dịch điện tử này sẽ được thực hiện thông qua tài khoản định danh điện tử của bạn. Khi thực hiện, bạn sẽ truy cập Cổng Dịch vụ công quốc gia để lập và gửi hồ sơ BHXH điện tử.\n\n**Can cu phap ly:**\n- Chương I, Điều 3, Khoản 1.\n- Chương I, Điều 3, Khoản 3.\n- Chương II, Đi"
+    },
+    {
+      "id": 57,
+      "question": "cong ty tron dong bao hiem cho nhan vien thi bi xu phat nhu the nao",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-274-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.79,
+      "total_time_s": 14.39,
+      "response_preview": "Chào bạn,\n\nNếu công ty có hành vi trốn đóng bảo hiểm xã hội bắt buộc, bảo hiểm thất nghiệp cho nhân viên, công ty sẽ phải đối mặt với nhiều hình thức xử phạt và biện pháp khắc phục hậu quả nghiêm khắc.\n\nDưới đây là các hình thức xử lý cụ thể:\n\n1.  **Phạt tiền:**\n    *   Công ty sẽ bị phạt tiền từ 50.000.000 đồng đến 75.000.000 đồng nếu hành vi trốn đóng bảo hiểm xã hội bắt buộc, bảo hiểm thất nghiệp chưa đến mức bị truy cứu trách nhiệm hình sự.\n\n2.  **Buộc khắc phục hậu quả:**\n    *   **Buộc đón"
+    },
+    {
+      "id": 58,
+      "question": "quy bao hiem xa hoi duoc quan ly su dung va dau tu nhu the nao",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-233-2025-NĐ-CP.md",
+        "233_2025_ND-CP_670873.md",
+        "Nghị-định-212-2025-NĐ-CP.md",
+        "212_2025_ND-CP_666742.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.36,
+      "total_time_s": 19.08,
+      "response_preview": "Quỹ bảo hiểm xã hội được quản lý, sử dụng và đầu tư theo các quy định pháp luật nhằm đảm bảo an toàn, bền vững và hiệu quả. Cụ thể như sau:\n\n1.  **Lời tư vấn:**\n    Quỹ bảo hiểm xã hội được sử dụng chủ yếu để chi trả các chế độ bảo hiểm xã hội cho người tham gia. Ngoài ra, một phần tiền sinh lời từ hoạt động đầu tư quỹ cũng được dùng để chi cho tổ chức và hoạt động của bộ máy bảo hiểm xã hội.\n    Về hoạt động đầu tư, quỹ được đầu tư theo nguyên tắc an toàn, bền vững và hiệu quả, ưu tiên vào trái"
+    },
+    {
+      "id": 59,
+      "question": "vi pham luat lao dong va bao hiem xa hoi bi phat bao nhieu tien",
+      "group": "BHXH",
+      "target_docs": [
+        "Nghị-định-28-2020-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.26,
+      "total_time_s": 23.41,
+      "response_preview": "Chào bạn,\n\nViệc vi phạm pháp luật về lao động và bảo hiểm xã hội có thể bị xử phạt hành chính với nhiều mức tiền khác nhau, tùy thuộc vào hành vi vi phạm cụ thể và đối tượng vi phạm (người sử dụng lao động hay người lao động). Dưới đây là một số mức phạt phổ biến dựa trên dữ liệu được cung cấp:\n\n### 1. Đối với người sử dụng lao động\n\n**a. Vi phạm quy định về đóng bảo hiểm xã hội bắt buộc, bảo hiểm thất nghiệp:**\n\n*   **Chậm đóng, đóng không đúng mức, đóng không đủ số người thuộc diện tham gia:**"
+    },
+    {
+      "id": 60,
+      "question": "he thong chi tieu thong ke nganh bao hiem xa hoi gom nhung gi",
+      "group": "BHXH",
+      "target_docs": [
+        "627183.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 20.05,
+      "total_time_s": 20.72,
+      "response_preview": "Hệ thống chỉ tiêu thống kê ngành Bảo hiểm xã hội bao gồm các thành phần chính sau:\n\n1.  **Danh mục chỉ tiêu thống kê ngành Bảo hiểm xã hội:** Đây là danh sách các chỉ tiêu được sử dụng để thống kê trong ngành Bảo hiểm xã hội, được quy định chi tiết tại Phụ lục 01 của Quyết định.\n2.  **Giải thích nội dung chỉ tiêu thống kê ngành Bảo hiểm xã hội:** Phần này cung cấp nội dung giải thích cụ thể cho từng chỉ tiêu thống kê, được quy định chi tiết tại Phụ lục 02 của Quyết định.\n\nHệ thống này là tập hợp"
+    },
+    {
+      "id": 61,
+      "question": "toi chua co bao hiem y te thi mua o dau",
+      "group": "BHYT",
+      "target_docs": [
+        "Luật-25-2018-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 7.78,
+      "total_time_s": 7.91,
+      "response_preview": "Xin lỗi, hệ thống không có dữ liệu pháp lý liên quan trực tiếp đến việc bạn có thể mua bảo hiểm y tế lần đầu ở đâu. Dữ liệu chỉ đề cập đến hồ sơ cần có khi tham gia bảo hiểm y tế lần đầu là Tờ khai tham gia bảo hiểm y tế của cá nhân hoặc hộ gia đình.\n\n**Căn cứ pháp lý:**\n- Điều 17 (Nguồn: Điều 17)"
+    },
+    {
+      "id": 62,
+      "question": "bao hiem y te chi tra nhung gi khi di kham benh",
+      "group": "BHYT",
+      "target_docs": [
+        "Luật-25-2018-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.3,
+      "total_time_s": 17.11,
+      "response_preview": "Khi bạn đi khám bệnh, chữa bệnh, Quỹ Bảo hiểm y tế sẽ thanh toán các chi phí trong phạm vi quyền lợi và mức hưởng của bạn. Cụ thể, các chi phí được thanh toán bao gồm:\n\n1.  **Các dịch vụ khám bệnh, chữa bệnh chung:**\n    *   Khám bệnh, chữa bệnh thông thường.\n    *   Khám bệnh, chữa bệnh từ xa, hỗ trợ khám bệnh, chữa bệnh từ xa.\n    *   Khám bệnh, chữa bệnh y học gia đình, khám bệnh, chữa bệnh tại nhà.\n    *   Phục hồi chức năng.\n    *   Khám thai định kỳ, sinh con.\n\n2.  **Các thành phần chi phí"
+    },
+    {
+      "id": 63,
+      "question": "the bao hiem y te het han thi lam lai nhu the nao",
+      "group": "BHYT",
+      "target_docs": [
+        "Luật-25-2018-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": false,
+      "error": null,
+      "fttb_s": 7.64,
+      "total_time_s": 7.64,
+      "response_preview": "Xin lỗi, hệ thống không có dữ liệu pháp lý liên quan đến quy trình làm lại thẻ bảo hiểm y tế khi thẻ hết hạn. Các quy định hiện có trong dữ liệu chỉ đề cập đến việc đổi thẻ trong trường hợp thẻ bị rách, nát, hỏng, thay đổi nơi khám chữa bệnh ban đầu, thông tin không đúng hoặc cấp lại thẻ khi bị mất."
+    },
+    {
+      "id": 64,
+      "question": "kham benh trai tuyen thi bao hiem chi tra bao nhieu phan tram",
+      "group": "BHYT",
+      "target_docs": [
+        "Luật-25-2018-QH14.md",
+        "Luật-51-2024-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 16.43,
+      "total_time_s": 16.62,
+      "response_preview": "Khi bạn tự đi khám bệnh, chữa bệnh không đúng nơi đăng ký khám bệnh, chữa bệnh bảo hiểm y tế ban đầu hoặc không đúng quy định về chuyển người bệnh, quỹ bảo hiểm y tế sẽ thanh toán 80% chi phí khám bệnh, chữa bệnh đối với các đối tượng khác.\n\n**Can cu phap ly:**\n- Điều 12, Khoản 1, Khoản 4."
+    },
+    {
+      "id": 65,
+      "question": "tre em duoi 6 tuoi co duoc cap the bao hiem y te mien phi khong",
+      "group": "BHYT",
+      "target_docs": [
+        "Nghị-định-146-2018-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 10.74,
+      "total_time_s": 11.13,
+      "response_preview": "Chào bạn,\n\n1.  **Lợi tư vấn:**\n    Theo quy định pháp luật hiện hành, trẻ em dưới 6 tuổi được cấp thẻ bảo hiểm y tế và không phải đóng tiền bảo hiểm y tế. Điều này có nghĩa là trẻ em dưới 6 tuổi được hưởng bảo hiểm y tế miễn phí.\n\n2.  **Căn cứ pháp lý:**\n    *   Luật Bảo hiểm y tế số 25/2008/QH12, Điều 16, Khoản 9.\n    *   Luật Bảo hiểm y tế số 25/2008/QH12, Điều 50, Khoản 1."
+    },
+    {
+      "id": 66,
+      "question": "nguoi ngheo co duoc nha nuoc ho tro mua bao hiem y te khong",
+      "group": "BHYT",
+      "target_docs": [
+        "Nghị-định-146-2018-NĐ-CP.md",
+        "Nghị-định-75-2023-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.42,
+      "total_time_s": 10.4,
+      "response_preview": "Có, người nghèo được Nhà nước hỗ trợ mua bảo hiểm y tế. Cụ thể, người thuộc hộ gia đình nghèo đa chiều và người thuộc hộ gia đình cận nghèo đều nằm trong nhóm được ngân sách nhà nước hỗ trợ mức đóng bảo hiểm y tế.\n\nMức hỗ trợ cụ thể như sau:\n*   **Đối với người thuộc hộ gia đình cận nghèo:**\n    *   Được hỗ trợ 100% mức đóng bảo hiểm y tế nếu đang cư trú trên địa bàn các huyện nghèo theo quyết định của Thủ tướng Chính phủ và các văn bản khác của cơ quan có thẩm quyền.\n    *   Được hỗ trợ tối thi"
+    },
+    {
+      "id": 67,
+      "question": "muc dong bao hiem y te hien nay la bao nhieu",
+      "group": "BHYT",
+      "target_docs": [
+        "Nghị-định-02-2025-NĐ-CP.md",
+        "Nghị-định-146-2018-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 17.74,
+      "total_time_s": 19.15,
+      "response_preview": "Mức đóng bảo hiểm y tế hiện nay thường là 4,5%. Tuy nhiên, cơ sở để tính mức đóng này sẽ khác nhau tùy thuộc vào từng đối tượng tham gia cụ thể:\n\n1.  **Đối với người lao động:** Mức đóng hằng tháng bằng 4,5% tiền lương tháng làm căn cứ đóng bảo hiểm xã hội bắt buộc hoặc tiền lương tháng của người lao động. Trong đó, người sử dụng lao động đóng hai phần ba và người lao động đóng một phần ba.\n2.  **Đối với người tham gia theo hộ gia đình hoặc tự đóng theo cá nhân:** Mức đóng hằng tháng bằng 4,5% m"
+    },
+    {
+      "id": 68,
+      "question": "benh nhan ung thu duoc bao hiem y te chi tra nhu the nao",
+      "group": "BHYT",
+      "target_docs": [
+        "Nghị-định-188-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 16.9,
+      "total_time_s": 22.61,
+      "response_preview": "Chào bạn,\n\nĐối với bệnh nhân ung thư, bảo hiểm y tế (BHYT) có các quy định chi trả đặc biệt và các quyền lợi chung áp dụng cho các trường hợp bệnh nặng, chi phí cao như sau:\n\n1.  **Hưởng quyền lợi ngay khi chẩn đoán xác định mắc bệnh đối với một số loại ung thư:**\n    Một số loại ung thư ác tính như u ác tuyến ức (mã C37), u ác của tim, trung thất và màng phổi (mã C38 trừ C38.4), u ác của xương và sụn khớp ở vị trí khác và không xác định (mã C41), u ác của màng não (mã C70), u ác của não (mã C71"
+    },
+    {
+      "id": 69,
+      "question": "danh muc thuoc bao hiem y te gom nhung loai nao",
+      "group": "BHYT",
+      "target_docs": [
+        "Nghị-định-188-2025-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 10.57,
+      "total_time_s": 11.27,
+      "response_preview": "Danh mục thuốc bảo hiểm y tế không được liệt kê cụ thể trong các văn bản luật chung mà do Bộ trưởng Bộ Y tế ban hành. Danh mục này bao gồm các loại thuốc như hóa dược, sinh phẩm, thuốc phóng xạ và chất đánh dấu, cùng với tỷ lệ và điều kiện thanh toán để người tham gia bảo hiểm y tế được hưởng.\n\n**Can cu phap ly:**\n- Luật Bảo hiểm y tế 2008 (Luật số 25/2008/QH12), Điều 27, Khoản 2, Điểm b.\n- Thông tư số 20/2022/TT-BYT ngày 31 tháng 12 năm 2022 của Bộ trưởng Bộ Y tế ban hành Danh mục và tỷ lệ, điề"
+    },
+    {
+      "id": 70,
+      "question": "quy trinh kham chua benh bao hiem y te dien ra nhu the nao",
+      "group": "BHYT",
+      "target_docs": [
+        "Thông-tư-01-2025-TT-BYT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.58,
+      "total_time_s": 15.12,
+      "response_preview": "Chào bạn,\n\nQuy trình khám chữa bệnh bảo hiểm y tế cơ bản diễn ra như sau:\n\n1.  **Xuất trình giấy tờ khi khám, chữa bệnh:**\n    *   **Đối với người lớn:** Bạn cần xuất trình thông tin về thẻ bảo hiểm y tế và giấy tờ chứng minh nhân thân của mình.\n        *   Nếu thẻ bảo hiểm y tế có ảnh: Chỉ cần xuất trình thẻ.\n        *   Nếu thẻ bảo hiểm y tế chưa có ảnh: Bạn phải xuất trình thẻ bảo hiểm y tế kèm theo một trong các giấy tờ tùy thân có ảnh do cơ quan có thẩm quyền cấp (như Căn cước công dân, Giấ"
+    },
+    {
+      "id": 71,
+      "question": "co so y te nao duoc kham bao hiem y te",
+      "group": "BHYT",
+      "target_docs": [
+        "Thông-tư-01-2025-TT-BYT.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.43,
+      "total_time_s": 10.33,
+      "response_preview": "Để một cơ sở y tế được khám chữa bệnh bằng bảo hiểm y tế, cơ sở đó cần đáp ứng các điều kiện sau:\n\n1.  Là cơ sở khám bệnh, chữa bệnh hoạt động theo quy định của pháp luật về khám bệnh, chữa bệnh.\n2.  Đã ký kết hợp đồng khám bệnh, chữa bệnh bảo hiểm y tế với cơ quan bảo hiểm xã hội.\n\nCác loại hình cơ sở y tế có thể bao gồm phòng khám chuyên khoa, phòng khám liên chuyên khoa, phòng khám răng hàm mặt, phòng khám dinh dưỡng, nhà hộ sinh, phòng chẩn trị y học cổ truyền, cơ sở xét nghiệm, cơ sở chẩn đ"
+    },
+    {
+      "id": 72,
+      "question": "chuyen vien bao hiem y te can thu tuc gi",
+      "group": "BHYT",
+      "target_docs": [
+        "Thông-tư-01-2025-TT-BYT.md",
+        "Luật-25-2018-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 24.8,
+      "total_time_s": 26.79,
+      "response_preview": "Chào bạn,\n\nDựa trên dữ liệu pháp lý được cung cấp, một chuyên viên bảo hiểm y tế (viên chức bảo hiểm y tế) sẽ thực hiện các thủ tục liên quan đến việc quản lý thẻ bảo hiểm y tế và ký kết hợp đồng khám bệnh, chữa bệnh bảo hiểm y tế với các cơ sở y tế. Cụ thể, các thủ tục mà chuyên viên bảo hiểm y tế cần nắm vững bao gồm:\n\n1.  **Thủ tục cấp lại, gộp, đổi, điều chỉnh thông tin trên thẻ bảo hiểm y tế:** Chuyên viên sẽ tiếp nhận hồ sơ và kiểm tra tính đầy đủ, hợp lệ của hồ sơ, bao gồm Tờ khai cung cấ"
+    },
+    {
+      "id": 73,
+      "question": "toi bi mat viec thi duoc ho tro gi",
+      "group": "Viec lam",
+      "target_docs": [
+        "Luật-74-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 12.5,
+      "total_time_s": 14.44,
+      "response_preview": "Khi bạn bị mất việc (chấm dứt hợp đồng lao động hoặc hợp đồng làm việc) và đang đóng bảo hiểm thất nghiệp, bạn có thể được hưởng các chế độ hỗ trợ sau đây:\n\n1.  **Tư vấn, giới thiệu việc làm:** Bạn sẽ được tư vấn, giới thiệu việc làm miễn phí thông qua trung tâm dịch vụ việc làm nếu bạn có nhu cầu tìm kiếm việc làm.\n2.  **Hỗ trợ đào tạo, nâng cao trình độ kỹ năng nghề:** Bạn có thể được hỗ trợ để tham gia các khóa đào tạo, nâng cao trình độ kỹ năng nghề.\n3.  **Trợ cấp thất nghiệp:**\n    *   **Mứ"
+    },
+    {
+      "id": 74,
+      "question": "bao hiem that nghiep chi tra bao nhieu tien mot thang",
+      "group": "Viec lam",
+      "target_docs": [
+        "Luật-74-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.82,
+      "total_time_s": 10.2,
+      "response_preview": "Mức hưởng trợ cấp thất nghiệp hàng tháng được tính như sau:\n\n1.  **Lợi tu vấn dễ hiểu, mạch lạc:**\n    Bạn sẽ nhận được 60% mức bình quân tiền lương tháng đóng bảo hiểm thất nghiệp của 06 tháng gần nhất trước khi bạn chấm dứt hợp đồng lao động hoặc chấm dứt làm việc.\n    Tuy nhiên, số tiền này có giới hạn tối đa, không được vượt quá 05 lần mức lương tối thiểu tháng theo vùng do Chính phủ công bố, áp dụng tại tháng cuối cùng bạn đóng bảo hiểm thất nghiệp.\n\n2.  **Căn cứ pháp lý:**\n    - Luật Việc "
+    },
+    {
+      "id": 75,
+      "question": "dang ky lao dong la gi va co bat buoc khong",
+      "group": "Viec lam",
+      "target_docs": [
+        "Luật-74-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.43,
+      "total_time_s": 17.13,
+      "response_preview": "Chào bạn, tôi sẽ giải đáp thắc mắc của bạn về đăng ký lao động dựa trên dữ liệu pháp lý được cung cấp.\n\n1.  **Đăng ký lao động là gì và có bắt buộc không?**\n\n    Đăng ký lao động là quá trình người lao động cung cấp các thông tin cá nhân và thông tin liên quan đến quá trình học tập, làm việc, tình trạng việc làm, nhu cầu về việc làm, bảo hiểm xã hội, bảo hiểm thất nghiệp của mình cho cơ quan nhà nước có thẩm quyền. Những thông tin này sẽ được cập nhật vào Cơ sở dữ liệu về người lao động, giúp qu"
+    },
+    {
+      "id": 76,
+      "question": "phan biet doi xu trong tuyen dung la gi",
+      "group": "Viec lam",
+      "target_docs": [
+        "Luật-74-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.44,
+      "total_time_s": 13.01,
+      "response_preview": "Trong lĩnh vực tuyển sinh (tương đương với tuyển dụng trong ngữ cảnh rộng hơn), phân biệt đối xử có thể hiểu là việc một thí sinh bị mất cơ hội dự tuyển do những quy định hoặc hành vi không liên quan đến trình độ, năng lực của bản thân.\n\nCụ thể, các nguyên tắc cơ bản trong tuyển sinh nhằm đảm bảo sự công bằng, tránh phân biệt đối xử bao gồm:\n1.  **Công bằng về cơ hội dự tuyển:** Không thí sinh nào bị mất cơ hội dự tuyển vì những quy định không liên quan đến trình độ, năng lực của họ, hoặc do quy"
+    },
+    {
+      "id": 77,
+      "question": "dieu kien de huong bao hiem that nghiep la gi",
+      "group": "Viec lam",
+      "target_docs": [
+        "Nghị-định-28-2015-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 4.94,
+      "total_time_s": 6.27,
+      "response_preview": "Để được hưởng trợ cấp thất nghiệp, người lao động cần đáp ứng đủ các điều kiện sau:\n\n1.  **Chấm dứt hợp đồng lao động hoặc làm việc hợp pháp:** Người lao động phải chấm dứt hợp đồng lao động, hợp đồng làm việc hoặc chấm dứt làm việc theo đúng quy định của pháp luật. Điều này không bao gồm các trường hợp người lao động tự ý chấm dứt hợp đồng lao động trái pháp luật hoặc nghỉ việc để hưởng lương hưu.\n2.  **Thời gian đóng bảo hiểm thất nghiệp:**\n    *   Đối với hợp đồng lao động không xác định thời"
+    },
+    {
+      "id": 78,
+      "question": "thoi gian huong tro cap that nghiep toi da bao lau",
+      "group": "Viec lam",
+      "target_docs": [
+        "Nghị-định-28-2015-NĐ-CP.md",
+        "Nghị-định-61-2020-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 4.31,
+      "total_time_s": 4.49,
+      "response_preview": "Chào bạn,\n\nThời gian hưởng trợ cấp thất nghiệp tối đa là 12 tháng.\n\n**Căn cứ pháp lý:**\n- Luật Việc làm (Luật số 38/2013/QH13), Điều 39, Khoản 2.\n- Quyết định số 173/QĐ-BHXH, Điều 2."
+    },
+    {
+      "id": 79,
+      "question": "nguoi lao dong bi tai nan lao dong thi duoc boi thuong the nao",
+      "group": "Viec lam",
+      "target_docs": [
+        "Thông-tư-28-2015-TT-BLĐTBXH.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 16.47,
+      "total_time_s": 19.06,
+      "response_preview": "Người lao động bị tai nạn lao động sẽ được hưởng các chế độ trợ cấp và bồi thường theo quy định của pháp luật. Cụ thể, các quyền lợi này bao gồm:\n\n1.  **Trách nhiệm của người sử dụng lao động về chi phí y tế:**\n    *   Người sử dụng lao động phải kịp thời sơ cứu, cấp cứu cho người lao động bị tai nạn lao động.\n    *   Nếu người lao động tham gia bảo hiểm y tế: Người sử dụng lao động phải thanh toán phần chi phí đồng chi trả và những chi phí không nằm trong danh mục do bảo hiểm y tế chi trả.\n    "
+    },
+    {
+      "id": 80,
+      "question": "hop dong lao dong phai co nhung noi dung gi",
+      "group": "Viec lam",
+      "target_docs": [
+        "Thông-tư-23-2022-TT-BLĐTBXH.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 4.79,
+      "total_time_s": 4.84,
+      "response_preview": "Xin lỗi, hệ thống không có dữ liệu pháp lý liên quan trực tiếp đến việc liệt kê cụ thể các nội dung mà hợp đồng lao động phải có. Dữ liệu chỉ đề cập đến việc giao kết hợp đồng lao động không đầy đủ các nội dung chủ yếu là một hành vi vi phạm.\n\n**Can cứ pháp lý:**\n- Chương II, Điều 8 (Nguồn: Chương II > Điều 8)"
+    },
+    {
+      "id": 81,
+      "question": "toi bi cong ty cat giam lao dong thi quyen loi cua toi la gi",
+      "group": "Viec lam",
+      "target_docs": [
+        "Thông-tư-15-2023-TT-BLĐTBXH.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 10.66,
+      "total_time_s": 13.82,
+      "response_preview": "Chào bạn,\n\nKhi bạn bị công ty cắt giảm lao động (chấm dứt hợp đồng lao động), bạn có thể được hưởng các quyền lợi liên quan đến bảo hiểm thất nghiệp nếu đáp ứng đủ các điều kiện theo quy định của pháp luật.\n\n**1. Lời tư vấn dễ hiểu, mạch lạc:**\n\nBạn có thể được hưởng các quyền lợi sau:\n\n*   **Trợ cấp thất nghiệp:** Đây là quyền lợi chính giúp bạn có một khoản thu nhập trong thời gian tìm kiếm việc làm mới. Để được hưởng trợ cấp này, bạn cần đáp ứng các điều kiện sau:\n    *   Bạn đã chấm dứt hợp "
+    },
+    {
+      "id": 82,
+      "question": "chinh sach ho tro hoc nghe cho nguoi that nghiep la gi",
+      "group": "Viec lam",
+      "target_docs": [
+        "Nghị-định-61-2020-NĐ-CP.md",
+        "Luật-74-2025-QH15.md"
+      ],
+      "answered": false,
+      "has_citation": false,
+      "error": "Response ended prematurely",
+      "fttb_s": null,
+      "total_time_s": 12.775401830673218,
+      "response_preview": ""
+    },
+    {
+      "id": 83,
+      "question": "ngan sach nha nuoc la gi va ai quyet dinh",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-83-2015-QH13.md",
+        "Luật-89-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.13,
+      "total_time_s": 12.9,
+      "response_preview": "Chào bạn, dựa trên dữ liệu pháp lý được cung cấp, tôi xin tư vấn như sau:\n\n1.  **Ngân sách nhà nước là gì và ai quyết định?**\n\n    Ngân sách nhà nước là toàn bộ các khoản thu và chi của Nhà nước, được dự kiến và thực hiện trong một khoảng thời gian nhất định. Mục đích của ngân sách nhà nước là để đảm bảo Nhà nước có đủ nguồn lực thực hiện các chức năng và nhiệm vụ của mình.\n\n    Về thẩm quyền quyết định, Quốc hội là cơ quan có quyền thảo luận và quyết định dự toán ngân sách nhà nước (bao gồm tổn"
+    },
+    {
+      "id": 84,
+      "question": "boi chi ngan sach la gi",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-83-2015-QH13.md",
+        "Luật-89-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.59,
+      "total_time_s": 16.43,
+      "response_preview": "Bội chi ngân sách là tình trạng tổng chi ngân sách lớn hơn tổng thu ngân sách. Cụ thể, bội chi ngân sách nhà nước bao gồm bội chi ngân sách trung ương và bội chi ngân sách địa phương cấp tỉnh.\n\nĐể hiểu rõ hơn:\n*   **Bội chi ngân sách trung ương** được xác định bằng chênh lệch lớn hơn giữa tổng chi ngân sách trung ương (không bao gồm trả nợ gốc) và tổng thu ngân sách trung ương (không bao gồm vay).\n*   **Bội chi ngân sách địa phương cấp tỉnh** là tổng hợp bội chi ngân sách cấp tỉnh của từng địa p"
+    },
+    {
+      "id": 85,
+      "question": "nguoi dan co duoc giam sat viec su dung ngan sach khong",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-83-2015-QH13.md",
+        "Luật-89-2025-QH15.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 6.97,
+      "total_time_s": 7.22,
+      "response_preview": "Có, người dân được giám sát việc sử dụng ngân sách nhà nước thông qua hoạt động giám sát của cộng đồng. Mặt trận Tổ quốc Việt Nam các cấp sẽ chủ trì tổ chức việc giám sát này.\n\n**Can cứ pháp lý:**\n- Luật Ngân sách nhà nước 2015 (Luật số 83/2015/QH13), Điều 16, Khoản 1.\n- Luật Ngân sách nhà nước 2025 (Luật số 89/2025/QH15), Điều 16, Khoản 1."
+    },
+    {
+      "id": 86,
+      "question": "doanh nghiep co bat buoc phai lam ke toan khong",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-88-2015-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.31,
+      "total_time_s": 14.96,
+      "response_preview": "Chào bạn,\n\nDoanh nghiệp bắt buộc phải thực hiện công tác kế toán. Luật Kế toán quy định về nội dung công tác kế toán, tổ chức bộ máy kế toán và người làm kế toán, và các doanh nghiệp là đối tượng áp dụng của Luật này. Điều này có nghĩa là doanh nghiệp phải tuân thủ các quy định về kế toán.\n\n**Căn cứ pháp lý:**\n- Luật Kế toán, Điều 2, Khoản 4.\n- Luật Kế toán, Điều 1."
+    },
+    {
+      "id": 87,
+      "question": "bao cao tai chinh hang nam phai nop khi nao",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-88-2015-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 8.69,
+      "total_time_s": 8.75,
+      "response_preview": "Báo cáo tài chính hàng năm của đơn vị kế toán phải được nộp cho cơ quan nhà nước có thẩm quyền trong thời hạn 90 ngày, kể từ ngày kết thúc kỳ kế toán năm.\n\n**Can cứ pháp lý:**\n- Luật Kế toán 2015 (Luật số 88/2015/QH13), Điều 29, Khoản 3."
+    },
+    {
+      "id": 88,
+      "question": "kiem toan nha nuoc la gi va co quyen gi",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-81-2015-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 38.15,
+      "total_time_s": 42.41,
+      "response_preview": "Chào bạn,\n\nDựa trên các dữ liệu pháp lý được cung cấp, Kiểm toán nhà nước và các quyền hạn của nó được quy định như sau:\n\n1.  **Kiểm toán nhà nước là gì và có quyền gì:**\n\n    Kiểm toán nhà nước là một cơ quan nhà nước có chức năng đánh giá và xác nhận tính đúng đắn, trung thực của các thông tin tài chính công, tài sản công hoặc báo cáo tài chính liên quan đến việc quản lý, sử dụng tài chính công, tài sản công. Cơ quan này cũng đánh giá việc chấp hành pháp luật và hiệu quả trong quản lý, sử dụng"
+    },
+    {
+      "id": 89,
+      "question": "ai bi kiem toan nha nuoc kiem tra",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-81-2015-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.68,
+      "total_time_s": 14.03,
+      "response_preview": "Kiểm toán nhà nước thực hiện kiểm toán đối với các cơ quan, tổ chức, đơn vị quản lý, sử dụng tài chính công, tài sản công và các đối tượng có liên quan.\n\nCụ thể, các đối tượng bị Kiểm toán nhà nước kiểm tra bao gồm:\n\n*   Kiểm toán nhà nước (là đối tượng áp dụng của Luật Kiểm toán nhà nước).\n*   Các cơ quan, tổ chức quản lý, sử dụng tài chính công, tài sản công.\n*   Các cơ quan, tổ chức, cá nhân khác có liên quan đến hoạt động kiểm toán nhà nước.\n*   Hội đồng nhân dân, Ủy ban nhân dân các cấp và "
+    },
+    {
+      "id": 90,
+      "question": "tai san cong la gi va ai duoc su dung",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Luật-15-2017-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 13.51,
+      "total_time_s": 17.32,
+      "response_preview": "Chào bạn, tôi sẽ tư vấn về tài sản công và đối tượng được sử dụng dựa trên các quy định pháp luật bạn cung cấp.\n\n1.  **Tư vấn dễ hiểu, mạch lạc:**\n\n    Tài sản công là tài sản thuộc sở hữu của toàn dân, do Nhà nước đại diện chủ sở hữu và thống nhất quản lý. Đây là những tài sản được hình thành từ nhiều nguồn khác nhau và phục vụ cho lợi ích chung của quốc gia, cộng đồng.\n\n    Các loại tài sản công rất đa dạng, bao gồm:\n    *   Đất đai, tài nguyên nước, tài nguyên khoáng sản, nguồn lợi ở vùng biể"
+    },
+    {
+      "id": 91,
+      "question": "co quan nha nuoc muon mua sam tai san phai lam thu tuc gi",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Nghị-định-186-2025-NĐ-CP.md",
+        "Luật-15-2017-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 19.67,
+      "total_time_s": 24.05,
+      "response_preview": "Để mua sắm tài sản công, cơ quan nhà nước cần thực hiện các thủ tục sau:\n\n1.  **Điều kiện mua sắm:** Cơ quan nhà nước chỉ được mua sắm tài sản công khi chưa có tài sản hoặc còn thiếu tài sản so với tiêu chuẩn, định mức quy định, nhưng Nhà nước không có tài sản để giao và việc mua sắm này không thuộc trường hợp được thuê hoặc khoán kinh phí sử dụng tài sản công.\n2.  **Phương thức thực hiện:**\n    *   Việc mua sắm tài sản công được thực hiện theo quy định của pháp luật về đấu thầu.\n    *   Có hai "
+    },
+    {
+      "id": 92,
+      "question": "xu ly tai san cong khi khong con su dung nhu the nao",
+      "group": "Tai chinh",
+      "target_docs": [
+        "Nghị-định-286-2025-NĐ-CP.md",
+        "Luật-15-2017-QH14.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.58,
+      "total_time_s": 15.4,
+      "response_preview": "Khi tài sản công không còn sử dụng được, việc xử lý được gọi là thanh lý tài sản công. Quá trình này được thực hiện theo các quy định cụ thể về điều kiện, hình thức và trình tự.\n\nDưới đây là hướng dẫn chi tiết:\n\n1.  **Lý do (điều kiện) để thanh lý tài sản công:**\n    Tài sản công sẽ được xem xét thanh lý khi thuộc một trong các trường hợp sau:\n    *   Tài sản đã hết thời gian sử dụng theo quy định của pháp luật (ví dụ: hết niên hạn, tần suất sử dụng hoặc thời gian tính hao mòn).\n    *   Tài sản "
+    },
+    {
+      "id": 93,
+      "question": "toi muon khieu nai quyet dinh cua uy ban nhan dan thi gui don o dau",
+      "group": "Khieu nai",
+      "target_docs": [
+        "Luật-02-2011-QH13.md",
+        "Nghị-định-124-2020-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.41,
+      "total_time_s": 11.45,
+      "response_preview": "Chào bạn,\n\nKhi bạn muốn khiếu nại quyết định hành chính của Ủy ban nhân dân, bạn cần gửi đơn đến cơ quan có thẩm quyền giải quyết khiếu nại lần đầu hoặc lần hai, tùy thuộc vào cấp độ của quyết định và tình hình giải quyết trước đó.\n\n**1. Nơi gửi đơn khiếu nại lần đầu:**\n\n*   **Nếu là quyết định của Chủ tịch Ủy ban nhân dân cấp xã:** Bạn gửi đơn khiếu nại lần đầu đến chính Chủ tịch Ủy ban nhân dân cấp xã đó.\n*   **Nếu là quyết định của Chủ tịch Ủy ban nhân dân cấp tỉnh:** Bạn gửi đơn khiếu nại lầ"
+    },
+    {
+      "id": 94,
+      "question": "thoi hieu khieu nai la bao lau",
+      "group": "Khieu nai",
+      "target_docs": [
+        "Luật-02-2011-QH13.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 14.18,
+      "total_time_s": 16.19,
+      "response_preview": "Thời hiệu khiếu nại phụ thuộc vào loại quyết định hoặc hành vi bị khiếu nại. Cụ thể như sau:\n\n1.  **Đối với khiếu nại quyết định hành chính, hành vi hành chính thông thường:**\n    Thời hiệu khiếu nại là 90 ngày, tính từ ngày bạn nhận được quyết định hành chính hoặc biết được quyết định, hành vi hành chính đó.\n    Trong trường hợp bạn không thể thực hiện quyền khiếu nại đúng thời hiệu vì các lý do khách quan như ốm đau, thiên tai, địch họa, đi công tác, học tập ở nơi xa hoặc các trở ngại khách qu"
+    },
+    {
+      "id": 95,
+      "question": "toi muon to cao tham nhung thi gui don cho ai",
+      "group": "Khieu nai",
+      "target_docs": [
+        "Nghị-định-31-2019-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 9.62,
+      "total_time_s": 12.04,
+      "response_preview": "Chào bạn,\n\nKhi bạn muốn tố cáo hành vi vi phạm pháp luật trong việc thực hiện nhiệm vụ, công vụ (bao gồm cả tham nhũng), bạn cần gửi đơn đến cơ quan, tổ chức có thẩm quyền giải quyết. Thẩm quyền này được xác định dựa trên cấp quản lý của người hoặc cơ quan bị tố cáo:\n\n1.  **Nếu bạn tố cáo công chức do Chủ tịch Ủy ban nhân dân cấp xã quản lý trực tiếp:** Bạn gửi đơn đến Chủ tịch Ủy ban nhân dân cấp xã.\n2.  **Nếu bạn tố cáo:**\n    *   Chủ tịch, Phó Chủ tịch Ủy ban nhân dân cấp xã, hoặc cán bộ, côn"
+    },
+    {
+      "id": 96,
+      "question": "nguoi to cao co duoc bao ve khong",
+      "group": "Khieu nai",
+      "target_docs": [
+        "Nghị-định-31-2019-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 11.64,
+      "total_time_s": 15.43,
+      "response_preview": "Chào bạn,\n\nNgười tố cáo **có được bảo vệ** theo quy định của pháp luật Việt Nam. Việc bảo vệ này nhằm đảm bảo an toàn và quyền lợi cho người tố cáo cũng như những người thân của họ khi họ thực hiện quyền tố cáo.\n\nDưới đây là các thông tin chi tiết về việc bảo vệ người tố cáo:\n\n1.  **Phạm vi và đối tượng được bảo vệ:**\n    *   **Bảo vệ bí mật thông tin:** Thông tin cá nhân của người tố cáo sẽ được giữ bí mật, trừ trường hợp người tố cáo tự tiết lộ.\n    *   **Bảo vệ vị trí công tác, việc làm:** Đả"
+    },
+    {
+      "id": 97,
+      "question": "toi muon gap lanh dao de khieu nai truc tiep thi den dau",
+      "group": "Khieu nai",
+      "target_docs": [
+        "Luật-136-2025-QH15.md"
+      ],
+      "answered": false,
+      "has_citation": false,
+      "error": "Response ended prematurely",
+      "fttb_s": null,
+      "total_time_s": 1.1957805156707764,
+      "response_preview": ""
+    },
+    {
+      "id": 98,
+      "question": "co quan bao hiem xa hoi viet nam co chuc nang gi",
+      "group": "Khac",
+      "target_docs": [
+        "Nghị-định-89-2020-NĐ-CP.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 5.0,
+      "total_time_s": 5.77,
+      "response_preview": "Cơ quan Bảo hiểm xã hội Việt Nam có các chức năng chính sau:\n\n1.  **Tổ chức thực hiện các chế độ, chính sách:** Cơ quan này có chức năng tổ chức thực hiện các chế độ, chính sách về bảo hiểm xã hội, bảo hiểm y tế.\n2.  **Thu, chi bảo hiểm thất nghiệp:** Tổ chức việc thu và chi trả các chế độ bảo hiểm thất nghiệp.\n3.  **Quản lý và sử dụng các quỹ:** Quản lý và sử dụng các quỹ bảo hiểm xã hội, bảo hiểm thất nghiệp và bảo hiểm y tế.\n4.  **Thanh tra chuyên ngành:** Thực hiện thanh tra chuyên ngành đối"
+    },
+    {
+      "id": 99,
+      "question": "co che tai chinh thuc hien khung trinh do quoc gia viet nam doi voi giao duc dai hoc nhu the nao",
+      "group": "Khac",
+      "target_docs": [
+        "Nghị-định-166-2016-NĐ-CP.md",
+        "Thông-tư-26-2022-TT-BTC.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 15.96,
+      "total_time_s": 21.23,
+      "response_preview": "Cơ chế tài chính thực hiện Khung trình độ quốc gia Việt Nam đối với các trình độ của giáo dục đại học giai đoạn 2020-2025 được hướng dẫn cụ thể bởi Bộ Tài chính. Cơ chế này bao gồm các quy định về nguồn kinh phí, nguyên tắc lập dự toán, quản lý, quyết toán kinh phí và các nội dung, mức chi cụ thể.\n\nDưới đây là thông tin chi tiết:\n\n1.  **Lời tư vấn dễ hiểu, mạch lạc:**\n\n    Để thực hiện Khung trình độ quốc gia Việt Nam trong giáo dục đại học giai đoạn 2020-2025, các hoạt động sẽ được tài trợ từ n"
+    },
+    {
+      "id": 100,
+      "question": "nhiem vu va huong dan cua bo giao duc cho cac truong dai hoc trong nam hoc moi la gi",
+      "group": "Khac",
+      "target_docs": [
+        "646301.md",
+        "4725_BGDDT-PC.md"
+      ],
+      "answered": true,
+      "has_citation": true,
+      "error": null,
+      "fttb_s": 16.75,
+      "total_time_s": 19.36,
+      "response_preview": "Chào bạn,\n\nTrong năm học 2025 - 2026, Bộ Giáo dục và Đào tạo đã ban hành các hướng dẫn và nhiệm vụ trọng tâm cho các trường đại học, cao đẳng, trung cấp, tập trung vào các lĩnh vực chính sau:\n\n1.  **Về công tác pháp chế:**\n    *   Các trường cần tổ chức quán triệt, triển khai hướng dẫn về công tác pháp chế đến cán bộ, giảng viên, nhân viên và người học.\n    *   Chỉ đạo Phòng Pháp chế, tổ chức pháp chế hoặc người làm công tác pháp chế xây dựng kế hoạch công tác pháp chế dựa trên tình hình thực ti"
+    }
+  ]
+}

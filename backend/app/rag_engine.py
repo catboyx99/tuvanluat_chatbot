@@ -87,7 +87,7 @@ def invoke_rag_chain(query: str, history: list):
     print(f"[Perf] Query rewrite: {t1-t0:.2f}s | '{query}' -> '{search_query}'")
 
     # 2. Retrieval — lay top-k ket qua
-    docs = vector_store.similarity_search(search_query, k=5)
+    docs = vector_store.similarity_search(search_query, k=10)
     t2 = time.time()
     print(f"[Perf] Vector search: {t2-t1:.2f}s | {len(docs)} docs found")
 

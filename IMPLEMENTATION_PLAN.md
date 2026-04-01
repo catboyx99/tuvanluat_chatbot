@@ -61,7 +61,7 @@ Hệ thống triển khai theo **Next.js Frontend + Python FastAPI Backend**, gi
   - Metadata: `source`, `Luật/Nghị Định`, `Chương/Mục`, `Điều`, `Khoản`
 - **RAG Flow**:
   1. **Query Rewriting**: Dùng `gemini-2.5-flash-lite` thêm dấu tiếng Việt vào câu hỏi, giữ nguyên nghĩa gốc (VD: "con toi 10 tuoi no hoc duoc truong nao" → "Con tôi 10 tuổi, nó học được trường nào?")
-  2. Retrieval: Top-5 vector search từ ChromaDB (không dùng threshold — để LLM tự đánh giá relevance)
+  2. Retrieval: Top-10 vector search từ ChromaDB (không dùng threshold — để LLM tự đánh giá relevance)
   3. Context: Build context kèm metadata label `[Nguồn: Luật > Chương > Điều > Khoản]`
   4. System Prompt: Linh hoạt suy luận ý định câu hỏi, trả lời 2 phần:
      - Phần 1: Lời tư vấn dễ hiểu
@@ -190,3 +190,43 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] **Singleton Pattern**: `get_vector_store()`, `build_llm()`, `build_rewrite_llm()` dùng global singleton — tạo 1 lần, dùng lại cho mọi request
 - [x] Docker build & deploy thành công
 - [x] Benchmark sau singleton: FTTB request warm tốt nhất **4.08s** (câu 1 lặp lại)
+
+### Giai đoạn 9 — Cải thiện Retrieval Quality ✅
+**Vấn đề**: Deploy tại `http://113.161.95.116:3000/`. Khi hỏi "con tôi 5 tuổi cháu học tại đâu được", LLM trả lời "không có dữ liệu pháp lý liên quan" — dù Luật Giáo dục 2019 CÓ chứa nội dung về mầm non, tiểu học.
+**Nguyên nhân**: 77/90 file .md có nội dung trong code block → MarkdownHeaderTextSplitter không parse header → chunks thiếu metadata → vector search kém.
+**Giải pháp**: Sửa `document_loader.py` — thêm 2 hàm preprocessing + filter junk chunks:
+- `strip_code_blocks()`: xóa code block markers, `## Page X`, page numbers, watermarks
+- `inject_markdown_headers()`: convert "Điều X.", "Chương X", "LUẬT..." → markdown headers. Header ngắn gọn (chỉ "Điều X"), nội dung xuống dòng riêng (tránh bị nuốt vào metadata).
+- Filter chunks < 15 ký tự (junk từ PDF)
+- Tăng k=5 → k=10 trong `rag_engine.py`
+
+**Bước 1 — Fix trên local** ✅
+- [x] Kiểm tra format: 77/90 file nội dung trong code block
+- [x] Thêm `strip_code_blocks()`: xóa code block markers, page numbers, watermarks
+- [x] Thêm `inject_markdown_headers()`: convert cấu trúc pháp luật → markdown headers (header ngắn + content tách dòng)
+- [x] Filter chunks < 15 chars (junk page numbers)
+- [x] Tăng k=5 → k=10
+
+**Bước 2 — Test thành công trên local** ✅
+- [x] Re-ingest: 90 files → 10300 chunks (clean, không junk)
+- [x] Test "con toi 5 tuoi": trả về đúng Luật GD Điều 28, Điều 99, Điều 26 + NĐ 125 (mầm non)
+- [x] Metadata đầy đủ: Luật/Nghị Định, Chương/Mục, Điều (không còn "Không rõ nguồn")
+- [x] Test suite 100 câu: **100% answered, 98% citation, 0% no_data, avg 14.35s**
+  - Kết quả: `backend/tests/test_suite_20260401_092001.json`
+  - Per group: GD 45/45, BHXH 15/15, BHYT 12/12, VL 9/10, TC 10/10, KN 4/5, Khác 3/3
+
+**Bước 3 — Push code lên Git**
+- [ ] `git add` + `git commit` + `git push origin main`
+
+**Bước 4 — Pull source về server**
+- [ ] SSH vào server `113.161.95.116`
+- [ ] `cd tuvanluat_chatbot && git pull origin main`
+
+**Bước 5 — Re-ingest trên server**
+- [ ] Xóa ChromaDB data cũ: `docker compose down -v`
+- [ ] Build lại và chạy: `docker compose up -d --build`
+- [ ] Chờ auto-ingest hoàn tất (~2-3 phút)
+
+**Bước 6 — Verify trên server**
+- [ ] Test query "con tôi 5 tuổi cháu học tại đâu được" → OK
+- [ ] Test thêm các câu hỏi khác
