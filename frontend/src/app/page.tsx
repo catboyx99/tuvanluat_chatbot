@@ -227,7 +227,7 @@ export default function Chat() {
         )}
       </main>
 
-      <div className="p-4 bg-gradient-to-t from-[#f0f4fb] flex-none border-t border-[#dde3f0] fixed w-full bottom-0 left-0 flex justify-center md:pb-8 shadow-[0_-4px_10px_-4px_rgba(13,27,110,0.08)]">
+      <div className="p-4 bg-[#f0f4fb] flex-none border-t border-[#dde3f0] fixed w-full bottom-0 left-0 flex justify-center md:pb-8 shadow-[0_-4px_10px_-4px_rgba(13,27,110,0.08)]">
         <form onSubmit={handleSubmit} className="relative w-full max-w-4xl flex items-center drop-shadow-sm">
           <input
             className="w-full px-6 py-4 pr-16 bg-white border border-[#c5cfe8] rounded-full focus:outline-none focus:ring-2 focus:ring-[#0d1b6e] focus:border-transparent transition-all text-base text-gray-800 placeholder-[#9ca3af]"
