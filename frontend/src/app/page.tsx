@@ -172,18 +172,19 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#1e1e1e] text-gray-200 font-sans relative">
-      <header className="bg-[#252526] p-5 flex items-center gap-3 shadow-lg fixed w-full top-0 start-0 z-10 border-b border-[#3c3c3c]">
-        <Scale className="text-[#569cd6]" size={28} />
-        <h1 className="text-[#cccccc] text-xl font-semibold tracking-wide">Trợ lý ảo tư vấn luật</h1>
+    <div className="flex flex-col h-screen bg-[#f0f4fb] text-gray-800 font-sans relative">
+      {/* Header: navy đậm giống HUFLIT ACA */}
+      <header className="bg-[#0d1b6e] p-5 flex items-center gap-3 shadow-md fixed w-full top-0 start-0 z-10">
+        <Scale className="text-white" size={28} />
+        <h1 className="text-white text-xl font-semibold tracking-wide">AI tư vấn pháp chế</h1>
       </header>
 
       <main ref={mainRef} className="flex-1 overflow-y-auto px-4 sm:px-6 w-full max-w-4xl mx-auto flex flex-col gap-6 pt-24 pb-32">
         {messages.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center opacity-80 mt-20">
-            <Scale className="w-20 h-20 text-[#3c3c3c] mb-6" />
-            <h2 className="text-2xl font-medium text-[#808080]">Bạn cần hỗ trợ pháp lý?</h2>
-            <p className="text-[#6a6a6a] mt-2">Nhập câu hỏi để chúng tôi tư vấn Luật, nghị định, thông tư...</p>
+            <Scale className="w-20 h-20 text-[#c5cfe8] mb-6" />
+            <h2 className="text-2xl font-medium text-[#0d1b6e]">Bạn cần hỗ trợ pháp lý?</h2>
+            <p className="text-[#6b7280] mt-2">Nhập câu hỏi để chúng tôi tư vấn Luật, nghị định, thông tư...</p>
           </div>
         )}
 
@@ -194,8 +195,8 @@ export default function Chat() {
             <div
               className={`px-5 py-4 max-w-[85%] rounded-3xl leading-relaxed shadow-sm text-[15.5px] ${
                 m.role === 'user'
-                ? 'bg-[#264f78] text-[#d4d4d4] rounded-tr-md whitespace-pre-wrap'
-                : 'bg-[#2d2d2d] border border-[#3c3c3c] text-[#cccccc] rounded-tl-md'
+                ? 'bg-[#0d1b6e] text-white rounded-tr-md whitespace-pre-wrap'
+                : 'bg-white border border-[#dde3f0] text-gray-800 rounded-tl-md'
               }`}
             >
               {m.role === 'assistant' && idx === lastAssistantIdx ? (
@@ -207,7 +208,7 @@ export default function Chat() {
               )}
             </div>
             {m.role === 'assistant' && finalTimes[m.id] && (
-              <span className="text-[11px] text-[#6a6a6a] mt-1 ml-2">{formatTimer(finalTimes[m.id])}</span>
+              <span className="text-[11px] text-[#9ca3af] mt-1 ml-2">{formatTimer(finalTimes[m.id])}</span>
             )}
           </div>
           );
@@ -215,21 +216,21 @@ export default function Chat() {
 
         {delayNotice && (
            <div className="flex flex-col w-full items-start msg-appear">
-             <div className="px-5 py-4 bg-[#2d2d2d]/80 border border-[#3c3c3c]/60 text-[#808080] rounded-3xl rounded-tl-md max-w-[85%] leading-relaxed shadow-sm text-[15px]">
+             <div className="px-5 py-4 bg-white/90 border border-[#dde3f0] text-[#6b7280] rounded-3xl rounded-tl-md max-w-[85%] leading-relaxed shadow-sm text-[15px]">
                 <span className="flex items-center gap-3">
-                    <Scale size={22} className="text-[#569cd6] scale-swing flex-shrink-0" />
+                    <Scale size={22} className="text-[#0d1b6e] scale-swing flex-shrink-0" />
                     {delayMsg}
                 </span>
              </div>
-             <span className="text-[11px] text-[#6a6a6a] mt-1 ml-2">Đang phân tích câu hỏi của bạn<ThinkingDots /> {formatTimer(elapsedMs)}</span>
+             <span className="text-[11px] text-[#9ca3af] mt-1 ml-2">Đang phân tích câu hỏi của bạn<ThinkingDots /> {formatTimer(elapsedMs)}</span>
            </div>
         )}
       </main>
 
-      <div className="p-4 bg-gradient-to-t from-[#1e1e1e] md:bg-[#1e1e1e] md:bg-none flex-none border-t border-[#3c3c3c] fixed w-full bottom-0 left-0 flex justify-center md:pb-8 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.3)]">
-        <form onSubmit={handleSubmit} className="relative w-full max-w-4xl flex items-center drop-shadow-lg">
+      <div className="p-4 bg-gradient-to-t from-[#f0f4fb] flex-none border-t border-[#dde3f0] fixed w-full bottom-0 left-0 flex justify-center md:pb-8 shadow-[0_-4px_10px_-4px_rgba(13,27,110,0.08)]">
+        <form onSubmit={handleSubmit} className="relative w-full max-w-4xl flex items-center drop-shadow-sm">
           <input
-            className="w-full px-6 py-4 pr-16 bg-[#3c3c3c] border border-[#4a4a4a] rounded-full focus:outline-none focus:ring-2 focus:ring-[#569cd6] focus:border-transparent transition-all text-base text-[#d4d4d4] placeholder-[#6a6a6a]"
+            className="w-full px-6 py-4 pr-16 bg-white border border-[#c5cfe8] rounded-full focus:outline-none focus:ring-2 focus:ring-[#0d1b6e] focus:border-transparent transition-all text-base text-gray-800 placeholder-[#9ca3af]"
             value={input}
             placeholder="Nhập câu hỏi, thủ tục pháp lý bạn thắc mắc..."
             onChange={(e) => setInput(e.target.value)}
@@ -238,7 +239,7 @@ export default function Chat() {
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="absolute right-2 p-2.5 bg-[#569cd6] text-[#1e1e1e] rounded-full hover:bg-[#6eb0e6] disabled:bg-[#4a4a4a] disabled:text-[#6a6a6a] disabled:cursor-not-allowed transition-all"
+            className="absolute right-2 p-2.5 bg-[#0d1b6e] text-white rounded-full hover:bg-[#1a2e9e] disabled:bg-[#c5cfe8] disabled:text-[#9ca3af] disabled:cursor-not-allowed transition-all"
           >
             <Send size={20} className={isLoading ? "opacity-50" : ""} />
           </button>

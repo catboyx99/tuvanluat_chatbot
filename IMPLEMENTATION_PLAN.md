@@ -229,3 +229,75 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 **Bước 6 — Verify trên server** ✅
 - [x] Test "con toi 5 tuoi chau hoc duoc truong nao" → trả lời đúng mầm non + citation Luật GD Điều 23, 26, 28, 80
 - [x] http://113.161.95.116:3000/ hoạt động OK
+
+### Giai đoạn 10 — Authentication Gate (JWT SSO qua Reverse Proxy) 🚧
+**Mục tiêu**: Chatbot chỉ truy cập được sau khi user đã login từ 1 website external (tự xây). Dùng **OpenResty (nginx + Lua) reverse proxy** verify JWT HS256 với shared secret.
+
+**Kiến trúc**:
+```
+External Login Website → generate JWT (HS256, JWT_SECRET) → redirect /?auth=<JWT>
+        ↓
+Nginx Gateway (OpenResty, port 3000, expose ra ngoài)
+        ↓ verify JWT signature + exp
+        ├─ Valid  → set cookie chatbot_session (HttpOnly, Max-Age=1d) → forward internal
+        └─ Invalid → 302 redirect LOGIN_URL
+        ↓
+Frontend (Next.js, internal only) + Backend (FastAPI, internal only)
+```
+
+**JWT Payload** (minimal, không chứa user info):
+```json
+{ "iat": 1712345678, "exp": 1712950478, "iss": "login-site-name" }
+```
+
+**Env vars mới** (thêm vào `.env` root):
+- `JWT_SECRET`: random 32+ chars (generate: `openssl rand -hex 32`)
+- `LOGIN_URL`: URL redirect khi unauthorized (VD: `https://login.example.com`)
+- `SESSION_MAX_AGE`: default 86400 (1 ngày, seconds) — JWT `exp` + cookie Max-Age cùng giá trị này
+
+**Bước 1 — Thiết kế & chọn tech stack**
+- [ ] Xác nhận JWT HS256 + OpenResty `lua-resty-jwt`
+- [ ] Tạo file `nginx/` folder: `Dockerfile`, `nginx.conf`, `auth.lua`
+
+**Bước 2 — Implement Nginx gateway**
+- [ ] Dockerfile: base `openresty/openresty:alpine` + `opm install SkyLothar/lua-resty-jwt`
+- [ ] `nginx.conf`: 
+  - `server` block lắng nghe port 3000
+  - Location `/` → access_by_lua_file auth.lua → proxy_pass http://frontend:3000
+  - Location `/api/chat` → auth check → proxy_pass http://backend:8000 (stream-friendly: `proxy_buffering off`)
+  - Location `/health` → public, proxy trực tiếp backend (monitoring)
+- [ ] `auth.lua`:
+  - Extract `?auth=<JWT>` query param → verify → set cookie + 302 redirect clean URL
+  - Hoặc đọc cookie `chatbot_session` → verify JWT → allow/deny
+  - Invalid/missing → 302 redirect `LOGIN_URL` (backend env)
+
+**Bước 3 — Cập nhật docker-compose**
+- [ ] Thêm service `nginx` với build context `./nginx`
+- [ ] Expose chỉ `nginx:3000 → 3000`
+- [ ] Remove `ports:` khỏi `frontend` và `backend` (chỉ internal network)
+- [ ] Inject env vars: `JWT_SECRET`, `LOGIN_URL`, `SESSION_MAX_AGE` vào nginx
+- [ ] Depends_on: `nginx` → `frontend`, `backend`
+
+**Bước 4 — Spec JWT + mock login để test**
+- [ ] Tạo file `docs/JWT_SPEC.md`: spec payload format + algo HS256 + pattern redirect `?auth=<JWT>`
+- [ ] Tạo `test/mock_login.html` — trang HTML sinh JWT HS256 (dùng JS library) để test end-to-end local, không phụ thuộc website nguồn
+
+**Bước 5 — Test scenarios**
+- [ ] Test 1: Truy cập `http://localhost:3000/` không có cookie → 302 redirect `LOGIN_URL` ✓
+- [ ] Test 2: Truy cập `http://localhost:3000/?auth=<valid-JWT>` → set cookie + load chatbot UI ✓
+- [ ] Test 3: Truy cập `http://localhost:3000/?auth=<expired-JWT>` → 302 redirect ✓
+- [ ] Test 4: Truy cập với cookie JWT bị tamper → 302 redirect ✓
+- [ ] Test 5: Truy cập `/health` không cần auth → 200 OK ✓
+- [ ] Test 6: Gửi chat `/api/chat` có cookie hợp lệ → stream OK ✓
+
+**Bước 6 — Deploy & verify trên server**
+- [ ] `git commit` + `git push origin main`
+- [ ] SSH server `113.161.95.116`, `git pull`, `docker compose up -d --build`
+- [ ] Test trên production với mock_login page
+- [ ] Verify port 8000 (backend) + 3000 (frontend) KHÔNG còn expose trực tiếp
+- [ ] Cập nhật `.env` server với `JWT_SECRET` + `LOGIN_URL` production
+
+**Bước 7 — Cập nhật docs**
+- [ ] Cập nhật CLAUDE.md mục 2.4 Authentication Gate ✅ (đã cập nhật)
+- [ ] Cập nhật IMPLEMENTATION_PLAN.md Phase 10 ✅ (đã cập nhật)
+- [ ] Cập nhật README deploy steps với `.env` vars mới

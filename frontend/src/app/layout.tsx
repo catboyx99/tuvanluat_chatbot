@@ -16,7 +16,7 @@ const geistMono = localFont({
 
 /* SEO Metadata - Tiêu đề và mô tả cho trang web */
 export const metadata: Metadata = {
-  title: "Trợ lý ảo Tư vấn luật",
+  title: "AI tư vấn pháp chế",
   description: "Chatbot tư vấn pháp luật Việt Nam sử dụng trí tuệ nhân tạo, hỗ trợ tra cứu luật, nghị định, thông tư.",
 };
 

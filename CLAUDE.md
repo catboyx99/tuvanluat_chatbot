@@ -46,6 +46,19 @@
   - System prompt yêu cầu chỉ trả lời dựa trên dữ liệu được cung cấp, linh hoạt suy luận ý định câu hỏi đời thường.
   - KHÔNG bịa số điều khoản, KHÔNG dùng kiến thức bên ngoài context.
 
+### 2.4. Authentication Gate (SSO từ website external)
+- **Mục tiêu**: Chatbot CHỈ truy cập được sau khi user đã đăng nhập từ 1 website external (tự xây). Người dùng vào chatbot trực tiếp (không qua website kia) → bị chặn, redirect về trang login.
+- **Kiến trúc**: **Nginx reverse proxy (OpenResty) + JWT HS256 shared secret** đứng trước Frontend/Backend. Chỉ Nginx expose port ra ngoài; Frontend + Backend chỉ lắng nghe trong Docker network.
+- **Flow**:
+  1. User login thành công trên **External Login Website** → website sinh JWT ký HS256 bằng `JWT_SECRET` (shared giữa 2 bên).
+  2. Website kia redirect user: `https://<chatbot-domain>/?auth=<JWT>`.
+  3. Nginx gateway verify JWT (chữ ký + `exp`) → set cookie `chatbot_session` (HttpOnly, Secure, SameSite=Lax, Max-Age=1d) → 302 redirect URL sạch.
+  4. Mọi request tiếp theo: Nginx đọc cookie → verify JWT → forward vào frontend/backend nếu hợp lệ, 302 redirect về `LOGIN_URL` nếu không.
+- **JWT Payload**: `{ iat: <timestamp>, exp: <timestamp>, iss: "<login-site-identifier>" }`. KHÔNG chứa user info (chatbot không quan tâm user là ai — chỉ cần token hợp lệ).
+- **Session**: 1 ngày (configurable qua `SESSION_MAX_AGE` env, default 86400s).
+- **Env vars mới**: `JWT_SECRET` (random 32+ chars), `LOGIN_URL` (URL redirect khi unauthorized), `SESSION_MAX_AGE` (seconds, default 86400 = 1 ngày).
+- **Bypass endpoints**: `/health` (backend) giữ public để monitoring. Tất cả endpoints khác (`/`, `/api/chat`, static assets) đều phải qua auth.
+
 ## 3. Kiến trúc Công nghệ (Technology Stack)
 
 ### 3.1. Backend (API + RAG Core)
@@ -64,14 +77,15 @@
   - Message content truy cập qua `m.parts` (không phải `m.content`)
 
 ### 3.3. DevOps
-- **Docker / Docker-Compose**: 3 services:
+- **Docker / Docker-Compose**: 4 services:
+  - `nginx`: OpenResty (nginx + Lua) — reverse proxy + JWT auth gate, expose port 3000 ra ngoài
   - `chroma`: ChromaDB server (container riêng, data persist qua `chroma_data` volume)
-  - `backend`: FastAPI + RAG (kết nối ChromaDB qua HTTP, mount `md_materials/` read-only)
-  - `frontend`: Next.js (port 3000)
+  - `backend`: FastAPI + RAG — KHÔNG expose port (chỉ internal network)
+  - `frontend`: Next.js — KHÔNG expose port (chỉ internal network)
 - **Git/GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
 - **Deploy trên máy mới** (chỉ 3 bước):
   1. `git clone https://github.com/catboyx99/tuvanluat_chatbot.git && cd tuvanluat_chatbot`
-  2. Tạo file `.env` ở root chứa `GEMINI_API_KEY=<api-key>`
+  2. Tạo file `.env` ở root chứa: `GEMINI_API_KEY=<key>`, `JWT_SECRET=<random-32+chars>`, `LOGIN_URL=<url-redirect-khi-unauth>`
   3. `docker compose up -d --build` (lần đầu tự ingest ~2-3 phút, các lần sau skip)
 
 ## 4. Trạng thái hiện tại — Hoàn thiện
