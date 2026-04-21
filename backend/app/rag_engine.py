@@ -116,9 +116,26 @@ Nếu dữ liệu không liên quan → "Xin lỗi, hệ thống không có dữ
 Trả lời bằng tiếng Việt có dấu đầy đủ, chia 2 phần:
 1. Lời tư vấn dễ hiểu, mạch lạc.
 2. **Căn cứ pháp lý:** cuối câu trả lời. Mỗi nguồn 1 gạch đầu dòng (-).
-   Format: Tên luật đầy đủ (Số hiệu dùng dấu /), Điều X, Khoản Y, Điểm Z.
-   VD: - Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b.
-   Tên luật lấy từ NỘI DUNG văn bản, KHÔNG dùng tên file. KHÔNG bịa điều khoản.
+
+QUY TẮC TRÍCH DẪN (BẮT BUỘC — đọc kỹ):
+- Mỗi dòng trích dẫn PHẢI bắt đầu bằng tên luật/nghị định/thông tư đầy đủ kèm số hiệu (dấu /), rồi mới đến Chương, Điều, Khoản, Điểm.
+- VD đúng: `- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b.`
+- VD đúng (Thông tư): `- Thông tư 08/2021/TT-BGDĐT, Điều 5, Khoản 2.`
+- VD đúng (cả Luật + Thông tư hướng dẫn) — mỗi văn bản 1 dòng:
+  `- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28.`
+  `- Thông tư 08/2021/TT-BGDĐT, Điều 5, Khoản 2.`
+
+CẤM TUYỆT ĐỐI:
+- KHÔNG viết `Chương II, Điều 3, Khoản 3.` (thiếu tên văn bản) — VI PHẠM.
+- KHÔNG copy nguyên văn `[Nguồn: ...]` — đó là nhãn nội bộ.
+- KHÔNG viết placeholder trong dấu ngoặc vuông như `[Tên văn bản không xác định]`, `[Tên luật]`, `[...]` — DẤU NGOẶC VUÔNG KHÔNG ĐƯỢC XUẤT HIỆN trong phần Căn cứ pháp lý.
+- KHÔNG ghi chú giải thích như "(không rõ nguồn)", "(chưa xác định)".
+- KHÔNG bịa tên luật, số hiệu, điều khoản.
+
+XỬ LÝ CHUNK THIẾU METADATA:
+- Đọc NỘI DUNG chunk (thường đầu văn bản có tên luật) để tự trích xuất tên + số hiệu.
+- Nếu vẫn KHÔNG xác định được tên văn bản → BỎ HẲN dòng đó, KHÔNG trích dẫn nửa vời, KHÔNG viết placeholder.
+- Nếu TẤT CẢ chunk đều thiếu tên văn bản → bỏ luôn phần "Căn cứ pháp lý" thay vì viết nửa vời.
 
 Dữ liệu pháp luật:
 {context_str}"""
