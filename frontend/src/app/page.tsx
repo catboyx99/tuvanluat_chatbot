@@ -176,14 +176,14 @@ export default function Chat() {
       {/* Header: navy đậm giống HUFLIT ACA */}
       <header className="bg-[#0d1b6e] p-5 flex items-center gap-3 shadow-md fixed w-full top-0 start-0 z-10">
         <Scale className="text-white" size={28} />
-        <h1 className="text-white text-xl font-semibold tracking-wide">AI tư vấn pháp chế</h1>
+        <h1 className="text-white text-xl font-semibold tracking-wide">AI tư vấn pháp luật</h1>
       </header>
 
       <main ref={mainRef} className="flex-1 overflow-y-auto px-4 sm:px-6 w-full max-w-4xl mx-auto flex flex-col gap-6 pt-24 pb-32">
         {messages.length === 0 && (
           <div className="flex-1 flex flex-col items-center justify-center text-center opacity-80 mt-20">
             <Scale className="w-20 h-20 text-[#c5cfe8] mb-6" />
-            <h2 className="text-2xl font-medium text-[#0d1b6e]">Bạn cần hỗ trợ pháp lý?</h2>
+            <h2 className="text-2xl font-medium text-[#0d1b6e]">Bạn cần hỗ trợ pháp luật?</h2>
             <p className="text-[#6b7280] mt-2">Nhập câu hỏi để chúng tôi tư vấn Luật, nghị định, thông tư...</p>
           </div>
         )}
@@ -191,39 +191,38 @@ export default function Chat() {
         {messages.map((m, idx) => {
           if (m.role === 'assistant' && !getMessageText(m)) return null;
           return (
-          <div key={m.id} className={`flex flex-col w-full ${m.role === 'user' ? 'items-end' : 'items-start'} msg-appear`}>
-            <div
-              className={`px-5 py-4 max-w-[85%] rounded-3xl leading-relaxed shadow-sm text-[15.5px] ${
-                m.role === 'user'
-                ? 'bg-[#0d1b6e] text-white rounded-tr-md whitespace-pre-wrap'
-                : 'bg-white border border-[#dde3f0] text-gray-800 rounded-tl-md'
-              }`}
-            >
-              {m.role === 'assistant' && idx === lastAssistantIdx ? (
-                <TypingText text={getMessageText(m)} isStreaming={isStreaming} onUpdate={scrollToBottom} />
-              ) : m.role === 'assistant' ? (
-                <div className="markdown-body"><ReactMarkdown>{getMessageText(m)}</ReactMarkdown></div>
-              ) : (
-                getMessageText(m)
+            <div key={m.id} className={`flex flex-col w-full ${m.role === 'user' ? 'items-end' : 'items-start'} msg-appear`}>
+              <div
+                className={`px-5 py-4 max-w-[85%] rounded-3xl leading-relaxed shadow-sm text-[15.5px] ${m.role === 'user'
+                  ? 'bg-[#0d1b6e] text-white rounded-tr-md whitespace-pre-wrap'
+                  : 'bg-white border border-[#dde3f0] text-gray-800 rounded-tl-md'
+                  }`}
+              >
+                {m.role === 'assistant' && idx === lastAssistantIdx ? (
+                  <TypingText text={getMessageText(m)} isStreaming={isStreaming} onUpdate={scrollToBottom} />
+                ) : m.role === 'assistant' ? (
+                  <div className="markdown-body"><ReactMarkdown>{getMessageText(m)}</ReactMarkdown></div>
+                ) : (
+                  getMessageText(m)
+                )}
+              </div>
+              {m.role === 'assistant' && finalTimes[m.id] && (
+                <span className="text-[11px] text-[#9ca3af] mt-1 ml-2">{formatTimer(finalTimes[m.id])}</span>
               )}
             </div>
-            {m.role === 'assistant' && finalTimes[m.id] && (
-              <span className="text-[11px] text-[#9ca3af] mt-1 ml-2">{formatTimer(finalTimes[m.id])}</span>
-            )}
-          </div>
           );
         })}
 
         {delayNotice && (
-           <div className="flex flex-col w-full items-start msg-appear">
-             <div className="px-5 py-4 bg-white/90 border border-[#dde3f0] text-[#6b7280] rounded-3xl rounded-tl-md max-w-[85%] leading-relaxed shadow-sm text-[15px]">
-                <span className="flex items-center gap-3">
-                    <Scale size={22} className="text-[#0d1b6e] scale-swing flex-shrink-0" />
-                    {delayMsg}
-                </span>
-             </div>
-             <span className="text-[11px] text-[#9ca3af] mt-1 ml-2">Đang phân tích câu hỏi của bạn<ThinkingDots /> {formatTimer(elapsedMs)}</span>
-           </div>
+          <div className="flex flex-col w-full items-start msg-appear">
+            <div className="px-5 py-4 bg-white/90 border border-[#dde3f0] text-[#6b7280] rounded-3xl rounded-tl-md max-w-[85%] leading-relaxed shadow-sm text-[15px]">
+              <span className="flex items-center gap-3">
+                <Scale size={22} className="text-[#0d1b6e] scale-swing flex-shrink-0" />
+                {delayMsg}
+              </span>
+            </div>
+            <span className="text-[11px] text-[#9ca3af] mt-1 ml-2">Đang phân tích câu hỏi của bạn<ThinkingDots /> {formatTimer(elapsedMs)}</span>
+          </div>
         )}
       </main>
 
