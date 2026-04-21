@@ -7,8 +7,13 @@ description: Pull source mới nhất từ GitHub về server rồi rebuild & re
 
 Skill này chạy TRÊN server production (113.161.95.116, Ubuntu). Mục đích: đồng bộ source mới nhất từ GitHub và rebuild Docker stack theo đúng 3 bước deploy trong `IMPLEMENTATION_PLAN.md`.
 
+## Repo
+- GitHub: https://github.com/catboyx99/tuvanluat_chatbot
+- Branch deploy: `main`
+
 ## Tiền đề
 - Đã clone repo về server tại một thư mục (thường là `~/tuvanluat_chatbot`).
+- Nếu chưa clone: `git clone https://github.com/catboyx99/tuvanluat_chatbot.git ~/tuvanluat_chatbot`
 - File `.env` ở root repo đã tồn tại và chứa `GEMINI_API_KEY=...`. KHÔNG tạo lại, KHÔNG overwrite.
 - Docker + docker compose đã cài sẵn.
 
