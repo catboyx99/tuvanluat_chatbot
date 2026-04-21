@@ -8,10 +8,10 @@
 ## 2. Các thành phần và Tính năng cốt lõi
 
 ### 2.1. Giao diện Người dùng (Chat UI)
-- Có Main Header: **"Trợ lý ảo tư vấn luật"**.
+- Có Main Header: **"AI tư vấn pháp luật"**.
 - Layout tối giản: Chỉ dùng duy nhất 1 khung chat (chat interface) ở giữa màn hình.
-- **Dark Theme (IDE-style)**: Giao diện tối giống theme VS Code — background `#1e1e1e`, header `#252526`, accent blue `#569cd6`.
-- **Hiệu ứng Typing**: Bot trả lời với hiệu ứng gõ chữ từng ký tự mượt mà (requestAnimationFrame ~4ms/char) kèm con trỏ `|` nhấp nháy xanh. Message mới slide-up + fade-in.
+- **Light Theme (navy accent)**: Background `#f0f4fb` (xanh nhạt), header navy `#0d1b6e` + chữ trắng, user bubble navy + chữ trắng, bot bubble trắng + border `#dde3f0`, scrollbar `#c5cfe8`, markdown heading/strong/code dùng navy.
+- **Hiệu ứng Typing**: Bot trả lời với hiệu ứng gõ chữ từng ký tự mượt mà (requestAnimationFrame ~4ms/char) kèm con trỏ `|` nhấp nháy navy. Message mới slide-up + fade-in.
 - **Markdown Rendering**: Bot trả lời dạng Markdown, frontend parse bằng `react-markdown` (in đậm, list, heading...). User message giữ plain text.
 - **Trích dẫn pháp lý chuẩn**: Cuối câu trả lời bắt buộc có phần "Căn cứ pháp lý" trích dẫn theo format:
   - Tiêu đề `**Căn cứ pháp lý:**` trên dòng riêng, mỗi nguồn là 1 gạch đầu dòng markdown (`-`) trên dòng riêng.
@@ -25,6 +25,9 @@
 - **Loading Animation**: Khi gửi câu hỏi, hiện ngay icon cán cân (Scale) lắc lư kèm câu trấn an random (8 messages luân phiên). Tắt ngay khi có chữ đầu tiên từ stream (không đợi stream kết thúc). Ẩn bubble assistant rỗng khi chưa có nội dung streaming.
 - **Auto Scroll**: Chat tự cuộn xuống đáy khi có tin nhắn mới và liên tục khi typing effect đang chạy (dùng `scrollTop = scrollHeight` trực tiếp, không dùng `scrollIntoView` smooth vì bị lag).
 - **Bộ đếm thời gian chờ (Response Timer)**: Khi gửi câu hỏi, phía dưới loading bubble hiển thị dòng "Đang phân tích câu hỏi của bạn..." với thinking dots animation (3 chấm nhấp nháy lần lượt) kèm bộ đếm thời gian. Dòng này biến mất khi có chữ đầu tiên từ stream. Thời gian cuối cùng hiển thị nhỏ phía dưới khung chat câu trả lời. Format: `120ms` → `1.2s` → `1m:05s`.
+- **Timestamp cuối bubble**: Mỗi bubble assistant có timestamp tiếng Việt đầy đủ ở cuối (`Thứ Hai, ngày 21 tháng 4 năm 2026, 14:35:22`), `font-medium`, màu thừa hưởng content, ẩn khi còn đang stream.
+- **Export PDF từng câu trả lời**: Mỗi bubble assistant có link "📄 Tải lời tư vấn" ở góc phải dưới. Click → xuất PDF (template A4: header tên app + timestamp, body clone node bubble, footer disclaimer) qua `html2pdf.js` client-side. Tên file `tu-van-luat_YYYY-MM-DD_HH-mm.pdf`. Bullet list dùng `::before` pseudo-elements để tương thích html2canvas.
+- **Xử lý Gemini quá tải**: Khi backend gặp 503/overload, stream yield sentinel `__GEMINI_OVERLOAD__` → frontend hiện thông báo đỏ "Model Gemini hiện đang quá tải vui lòng bấm nút retry để load câu trả lời" + nút **Retry** (resend câu hỏi cuối).
 
 ### 2.2. Xử lý dữ liệu (Data Pipeline)
 - **Nguồn nạp văn bản**: Duy nhất 1 thư mục `md_materials/` ở root project. Backend đọc trực tiếp qua Docker volume mount.
@@ -46,19 +49,6 @@
   - System prompt yêu cầu chỉ trả lời dựa trên dữ liệu được cung cấp, linh hoạt suy luận ý định câu hỏi đời thường.
   - KHÔNG bịa số điều khoản, KHÔNG dùng kiến thức bên ngoài context.
 
-### 2.4. Authentication Gate (SSO từ website external)
-- **Mục tiêu**: Chatbot CHỈ truy cập được sau khi user đã đăng nhập từ 1 website external (tự xây). Người dùng vào chatbot trực tiếp (không qua website kia) → bị chặn, redirect về trang login.
-- **Kiến trúc**: **Nginx reverse proxy (OpenResty) + JWT HS256 shared secret** đứng trước Frontend/Backend. Chỉ Nginx expose port ra ngoài; Frontend + Backend chỉ lắng nghe trong Docker network.
-- **Flow**:
-  1. User login thành công trên **External Login Website** → website sinh JWT ký HS256 bằng `JWT_SECRET` (shared giữa 2 bên).
-  2. Website kia redirect user: `https://<chatbot-domain>/?auth=<JWT>`.
-  3. Nginx gateway verify JWT (chữ ký + `exp`) → set cookie `chatbot_session` (HttpOnly, Secure, SameSite=Lax, Max-Age=1d) → 302 redirect URL sạch.
-  4. Mọi request tiếp theo: Nginx đọc cookie → verify JWT → forward vào frontend/backend nếu hợp lệ, 302 redirect về `LOGIN_URL` nếu không.
-- **JWT Payload**: `{ iat: <timestamp>, exp: <timestamp>, iss: "<login-site-identifier>" }`. KHÔNG chứa user info (chatbot không quan tâm user là ai — chỉ cần token hợp lệ).
-- **Session**: 1 ngày (configurable qua `SESSION_MAX_AGE` env, default 86400s).
-- **Env vars mới**: `JWT_SECRET` (random 32+ chars), `LOGIN_URL` (URL redirect khi unauthorized), `SESSION_MAX_AGE` (seconds, default 86400 = 1 ngày).
-- **Bypass endpoints**: `/health` (backend) giữ public để monitoring. Tất cả endpoints khác (`/`, `/api/chat`, static assets) đều phải qua auth.
-
 ## 3. Kiến trúc Công nghệ (Technology Stack)
 
 ### 3.1. Backend (API + RAG Core)
@@ -77,35 +67,34 @@
   - Message content truy cập qua `m.parts` (không phải `m.content`)
 
 ### 3.3. DevOps
-- **Docker / Docker-Compose**: 4 services:
-  - `nginx`: OpenResty (nginx + Lua) — reverse proxy + JWT auth gate, expose port 3000 ra ngoài
+- **Docker / Docker-Compose**: 3 services:
   - `chroma`: ChromaDB server (container riêng, data persist qua `chroma_data` volume)
-  - `backend`: FastAPI + RAG — KHÔNG expose port (chỉ internal network)
-  - `frontend`: Next.js — KHÔNG expose port (chỉ internal network)
+  - `backend`: FastAPI + RAG (internal network)
+  - `frontend`: Next.js — expose port 3000 ra ngoài
 - **Git/GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
 - **Deploy trên máy mới** (chỉ 3 bước):
   1. `git clone https://github.com/catboyx99/tuvanluat_chatbot.git && cd tuvanluat_chatbot`
-  2. Tạo file `.env` ở root chứa: `GEMINI_API_KEY=<key>`, `JWT_SECRET=<random-32+chars>`, `LOGIN_URL=<url-redirect-khi-unauth>`
+  2. Tạo file `.env` ở root chứa: `GEMINI_API_KEY=<key>`
   3. `docker compose up -d --build` (lần đầu tự ingest ~2-3 phút, các lần sau skip)
 
 ## 4. Trạng thái hiện tại — Hoàn thiện
-- Frontend + Backend đã hoàn thiện và chạy OK
-- 11326 documents pháp luật đã ingest vào ChromaDB
-- Dark theme IDE-style, typing effect (~4ms/char), markdown rendering, citation format chuẩn (bullet list)
-- Auto scroll theo typing effect (snap instant, không dùng smooth)
-- Auto-detect & incremental ingest (1 thư mục md_materials/ duy nhất ở root)
-- Query rewriting: thêm dấu tiếng Việt vào câu hỏi, giữ nguyên nghĩa gốc (dùng `gemini-2.5-flash-lite`)
-- Singleton pattern: LLM, ChromaDB, embedding khởi tạo 1 lần, dùng lại cho mọi request
-- Performance logging: đo thời gian rewrite, vector search, LLM first token
-- Loading animation (Scale icon lắc lư + random messages, tắt ngay khi stream bắt đầu có text)
-- Anti-hallucination (system prompt linh hoạt + không bịa điều khoản)
-- Docker 3 services: ChromaDB (container riêng) + Backend + Frontend, data persist qua volume
-- ENV: chỉ cần 1 file `.env` ở root (backend đọc qua `load_dotenv()` trỏ về root, Docker inject qua `environment:`)
-- Pushed lên GitHub
+Tổng quan 6 giai đoạn (xem chi tiết trong `IMPLEMENTATION_PLAN.md`):
+
+- **Giai đoạn 1 — Dựng nền tảng RAG end-to-end ✅**: Frontend Next.js 14 + Backend FastAPI + ChromaDB, streaming qua AI SDK v6 (SSE UIMessageStream), citation chuẩn pháp lý (Điều/Khoản/Điểm), auto-detect & incremental ingest từ `md_materials/`, Docker 3 services, pushed GitHub.
+- **Giai đoạn 2 — Polish UX & tối ưu hiệu năng ✅**: Typing effect 4ms/char, auto-scroll instant, loading animation (Scale icon + thinking dots), Response Timer (`120ms` → `1.2s` → `1m:05s`), Singleton LLM/vector store, FTTB 12-14s → ~4-6s (rewrite đổi sang `gemini-2.5-flash-lite`, system prompt rút gọn 70%).
+- **Giai đoạn 3 — Cải thiện Retrieval Quality ✅**: Preprocessing markdown (strip code blocks, inject headers), filter junk chunks, tăng k=10. Test suite 100 câu: 100% answered, 98% citation, avg 14.35s. Re-ingest 90 files → 10300 chunks.
+- **Giai đoạn 4 — UI Light Mode & Đổi tên ✅**: Chuyển dark → light theme (background `#f0f4fb`, navy `#0d1b6e`), đổi tên header "AI tư vấn pháp chế".
+- **Giai đoạn 5 — Fix citation & rewrite & timestamp ✅**: Đổi tên "AI tư vấn pháp luật", fix diacritics trong system prompt, siết quy tắc trích dẫn (cấm placeholder `[...]`, cấm copy `[Nguồn: ...]`), fix loading bubble lần submit 2+, timestamp tiếng Việt cuối bubble, rewrite chuẩn hoá intent + ép output có dấu đầy đủ, thêm deploy skill ở `.claude/skills/deploy/SKILL.md`.
+- **Giai đoạn 6 — Export PDF từng câu trả lời ✅**: Link "📄 Tải lời tư vấn" mỗi bubble assistant, html2pdf.js client-side, template A4 với header/body/footer, bullet dùng `::before` pseudo-elements cho html2canvas compatibility, handle Gemini 503 overload sentinel + Retry button.
+
+**Số liệu hiện tại**:
+- ~10300 chunks pháp luật (90 files .md) trong ChromaDB
+- FTTB ~4-6s (warm request), test suite 100% answered / 98% citation
+- ENV: 1 file `.env` ở root (`GEMINI_API_KEY`)
 
 ## 5. Quy trình phát triển
-- **Khi dev tính năng mới**: PHẢI thực hiện đầy đủ đến khi chạy được bằng Docker (`docker compose up -d --build`). Không dừng ở code local — phải đảm bảo build Docker thành công và tính năng hoạt động trong môi trường container.
 - **Cập nhật IMPLEMENTATION_PLAN.md**: Khi implement tính năng, phải cập nhật tiến độ trong IMPLEMENTATION_PLAN.md (đánh dấu `[x]` cho task hoàn thành, thêm ghi chú nếu cần).
+- **Deploy**: Không tự deploy lên server sau khi code/commit. User sẽ tự deploy. Nếu có lưu ý kỹ thuật cần nhớ khi deploy, cập nhật vào `.claude/skills/deploy/SKILL.md`.
 
 ## 6. Ghi chú kỹ thuật quan trọng
 - **Python 3.14** rất mới, có compatibility issues (thiếu `chardet`, Pydantic V1 warning). `--reload` của uvicorn không ổn định trên Windows. Console log phải dùng ASCII (không dùng tiếng Việt trong `print()`) vì Windows cp1252 không encode được Unicode tiếng Việt.

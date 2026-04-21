@@ -118,80 +118,50 @@ LawConsultant_ChatBot/
 
 ## 3. Các bước triển khai
 
-### Giai đoạn 1 — Khởi tạo Project ✅
-Setup `frontend` Next.js và `backend` FastAPI trong root workspace.
+### Giai đoạn 1 — Dựng nền tảng RAG end-to-end ✅
+Gộp Khởi tạo project + RAG core + Frontend + Kiểm thử triển khai.
 
-### Giai đoạn 2 — RAG Core (Backend) ✅
-Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với Gemini 2.5 Flash.
-
-### Giai đoạn 3 — Giao diện & Tích hợp (Frontend) ✅
-- UI dark theme IDE-style, typing effect, streaming
-- Proxy route SSE UIMessageStream (tương thích AI SDK v6)
-- Fallback UX >2s, citation format chuẩn
-
-### Giai đoạn 4 — Kiểm thử & Triển khai ✅
-- [x] Backend health check, single-query stream
-- [x] Dọn file test rác, re-ingest ChromaDB sạch (11326 docs)
-- [x] Fix AI SDK v6 breaking changes (useChat API + SSE protocol)
-- [x] Dark theme + typing effect
-- [x] Citation format chuẩn pháp lý (Điều/Khoản/Điểm a, Điểm b, Điểm c)
-- [x] Markdown rendering (react-markdown) cho bot response
-- [x] Loading animation: Scale icon lắc lư + random messages (hiện ngay, không đợi 2s)
+- [x] Setup `frontend` Next.js 14 (App Router) và `backend` FastAPI trong root workspace
+- [x] RAG core: đọc Markdown đa cấp (#/##/###/####), embed `gemini-embedding-001`, lưu ChromaDB
+- [x] API query với Gemini 2.5 Flash (streaming), health check, single-query stream
+- [x] Frontend UI dark theme IDE-style, typing effect, streaming qua AI SDK v6 (SSE UIMessageStream)
+- [x] Proxy route `/api/chat` chuyển raw stream → SSE UIMessageStream format
+- [x] Citation format chuẩn pháp lý (Điều/Khoản/Điểm a, b, c)
+- [x] Markdown rendering (react-markdown) cho bot response, user giữ plain text
+- [x] Loading animation: Scale icon lắc lư + random messages, hiện ngay không đợi 2s
 - [x] Ẩn bubble assistant rỗng khi chưa có streaming content
-- [x] Auto-detect file .md mới + incremental ingest (1 thư mục md_materials/ duy nhất ở root)
-- [x] Dọn file test rác (luat_doanh_nghiep_mau.md, run_law_chatbot.cmd)
+- [x] Auto-detect file .md mới + incremental ingest (1 thư mục `md_materials/` duy nhất ở root)
 - [x] Query rewriting: câu hỏi tự nhiên/không dấu → truy vấn pháp lý chính xác
 - [x] Anti-hallucination: system prompt linh hoạt suy luận ý định + không bịa điều khoản
-- [x] ChromaDB tách container riêng (server mode, HTTP client)
-- [x] Docker 3 services (chroma + backend + frontend), volume persist, chỉ cần `.env` + `docker compose up`
+- [x] ChromaDB tách container riêng (server mode, HTTP client), volume persist
+- [x] Docker 3 services (chroma + backend + frontend), chỉ cần `.env` + `docker compose up`
+- [x] Re-ingest ChromaDB sạch (11326 docs), dọn file test rác
 - [x] Push project lên GitHub (https://github.com/catboyx99/tuvanluat_chatbot)
 
-### Giai đoạn 5 — Cải thiện UX ✅
+### Giai đoạn 2 — Polish UX & tối ưu hiệu năng ✅
+Gộp Cải thiện UX + Response Timer + Loading UX + Tối ưu FTTB.
+
+**UX & Animation**
 - [x] Tăng tốc typing effect: 12ms/char → 4ms/char (nhanh gấp 3)
 - [x] Auto scroll theo typing: dùng `scrollTop` instant thay vì `scrollIntoView smooth` (hết lag)
 - [x] Loading animation tắt ngay khi stream có text đầu tiên (không đợi kết thúc)
-- [x] Căn cứ pháp lý hiển thị bullet list (mỗi nguồn 1 gạch đầu dòng)
-- [x] Fix Tailwind reset xóa list-style: thêm `list-style-type: disc/decimal` trong CSS
+- [x] Căn cứ pháp lý hiển thị bullet list (mỗi nguồn 1 gạch đầu dòng), fix Tailwind reset bằng `list-style-type: disc/decimal`
 - [x] Xóa `backend/.env` thừa, backend `load_dotenv()` trỏ về root `.env`
 
-### Giai đoạn 6 — Response Timer ✅
-- [x] Thêm bộ đếm thời gian chờ (Response Timer) trong loading bubble
-  - [x] Bắt đầu đếm khi user gửi câu hỏi (status chuyển sang `submitted`)
-  - [x] Hiển thị label nhỏ phía dưới loading bubble (text `#6a6a6a`, font 11px)
-  - [x] Dừng đếm khi assistant có text đầu tiên (stream bắt đầu)
-  - [x] Lưu thời gian cuối cùng vào `finalTimes` map, hiển thị nhỏ phía dưới khung chat câu trả lời
-  - [x] Format hiển thị: `120ms` → `1.2s` → `1m:05s`
-  - [x] Docker build & deploy thành công
+**Response Timer**
+- [x] Bộ đếm thời gian chờ trong loading bubble: bắt đầu khi submit, dừng khi stream có text, lưu `finalTimes` hiển thị nhỏ dưới bubble
+- [x] Format hiển thị: `120ms` → `1.2s` → `1m:05s`
+- [x] Đổi text timer: "Câu trả lời sẽ có trong..." → "Đang phân tích câu hỏi của bạn..." + thinking dots animation (3 chấm nhấp nháy)
 
-### Giai đoạn 7 — Cải thiện Loading UX ✅
-- [x] Đổi dòng timer loading bubble: "Câu trả lời sẽ có trong..." → "Đang phân tích câu hỏi của bạn..."
-- [x] Thêm thinking dots animation (3 chấm nhấp nháy lần lượt) vào CSS
-- [x] Docker build & deploy thành công
-
-### Giai đoạn 8 — Tối ưu tốc độ FTTB ✅
-**Vấn đề**: FTTB 12-14s. Bottleneck: query rewrite (gemini-2.5-flash ~11s) + system prompt quá dài (~1900 chars).
-**Giải pháp**: Đổi model rewrite + rút gọn system prompt.
-
-- [x] Tạo hàm `build_rewrite_llm()` riêng dùng `gemini-2.5-flash-lite`, `temperature=0.0`, `streaming=False`
-- [x] Cập nhật `rewrite_query()` gọi `build_rewrite_llm()` thay vì `build_llm()`
+**Tối ưu FTTB (12-14s → ~4-6s)**
+- [x] Tạo `build_rewrite_llm()` dùng `gemini-2.5-flash-lite` (query rewrite ~11s → ~1s, nhanh 10x)
 - [x] Rút gọn System Prompt từ ~1900 chars → ~600 chars (giảm ~70% input tokens)
-- [x] Thêm performance logging (`time.time()`) đo rewrite, vector search, LLM first token
-- [x] Docker build & deploy thành công
-- [x] Benchmark FTTB (3 câu test):
-  - "con tôi 10 tuổi nó học được trường nào": 12s → **6.43s** (~1.9x)
-  - "Nó muốn đi học đại học nó cần gì": 14s → **9.67s** (~1.4x)
-  - "tôi cho cháu căn nhà để đi học được không": **6.01s** (câu test mới)
-- [x] Chi tiết cải thiện từng step:
-  - Query rewrite: ~11s → ~1s (đổi sang `gemini-2.5-flash-lite`, 10x nhanh hơn)
-  - System prompt: ~1900 chars → ~600 chars (giảm 70% input tokens → LLM xử lý nhanh hơn)
-  - LLM main: vẫn dao động 3-8s (thinking model, không tắt được qua API)
-  - Singleton: request warm giảm thêm ~0.3-0.5s (rewrite 0.48s, search 0.45s)
-- [x] **Fix rewrite sai ý định**: Đổi prompt rewrite từ "chuyển thành truy vấn pháp lý" → "thêm dấu tiếng Việt, giữ nguyên nghĩa gốc" — câu 3 rewrite đúng "cho cháu căn nhà" thay vì "thuê nhà"
-- [x] **Singleton Pattern**: `get_vector_store()`, `build_llm()`, `build_rewrite_llm()` dùng global singleton — tạo 1 lần, dùng lại cho mọi request
-- [x] Docker build & deploy thành công
-- [x] Benchmark sau singleton: FTTB request warm tốt nhất **4.08s** (câu 1 lặp lại)
+- [x] Singleton Pattern: `get_vector_store()`, `build_llm()`, `build_rewrite_llm()` — tạo 1 lần, dùng lại
+- [x] Performance logging (`time.time()`) đo rewrite, vector search, LLM first token
+- [x] Fix rewrite sai ý định: prompt đổi từ "chuyển thành truy vấn pháp lý" → "thêm dấu tiếng Việt, giữ nguyên nghĩa gốc"
+- [x] Benchmark FTTB: 12s → **6.43s** (câu 1), 14s → **9.67s** (câu 2), request warm tốt nhất **4.08s**
 
-### Giai đoạn 9 — Cải thiện Retrieval Quality ✅
+### Giai đoạn 3 — Cải thiện Retrieval Quality ✅
 **Vấn đề**: Deploy tại `http://113.161.95.116:3000/`. Khi hỏi "con tôi 5 tuổi cháu học tại đâu được", LLM trả lời "không có dữ liệu pháp lý liên quan" — dù Luật Giáo dục 2019 CÓ chứa nội dung về mầm non, tiểu học.
 **Nguyên nhân**: 77/90 file .md có nội dung trong code block → MarkdownHeaderTextSplitter không parse header → chunks thiếu metadata → vector search kém.
 **Giải pháp**: Sửa `document_loader.py` — thêm 2 hàm preprocessing + filter junk chunks:
@@ -230,7 +200,7 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Test "con toi 5 tuoi chau hoc duoc truong nao" → trả lời đúng mầm non + citation Luật GD Điều 23, 26, 28, 80
 - [x] http://113.161.95.116:3000/ hoạt động OK
 
-### Giai đoạn 10 — UI Light Mode & Đổi tên ✅
+### Giai đoạn 4 — UI Light Mode & Đổi tên ✅
 - [x] Chuyển toàn bộ giao diện từ dark theme (VS Code `#1e1e1e`) sang light mode
   - Background: `#f0f4fb` (xanh nhạt)
   - Header: navy đậm `#0d1b6e` + chữ trắng (theo style HUFLIT ACA)
@@ -244,7 +214,7 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Fix input bar: đổi từ gradient transparent → nền đặc `#f0f4fb` (không overlay lên chat)
 - [x] Deploy lên server `113.161.95.116`, verify OK
 
-### Giai đoạn 11 — Fix citation & rewrite & timestamp trong bubble ✅
+### Giai đoạn 5 — Fix citation & rewrite & timestamp trong bubble ✅
 - [x] Đổi tên "AI tư vấn pháp chế" → **"AI tư vấn pháp luật"**
 - [x] Fix system prompt bị không dấu: viết lại tiếng Việt có dấu đầy đủ để LLM không copy "Can cu phap ly" vào output
 - [x] Siết quy tắc trích dẫn: cấm placeholder `[...]`, cấm copy nhãn `[Nguồn: ...]`, cấm dòng trích dẫn thiếu tên văn bản — chunk thiếu metadata phải BỎ HẲN
@@ -253,7 +223,7 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Cải thiện query rewrite: chuẩn hoá intent (loại bỏ "quy định", "cho tôi biết", "là gì"...) → cùng chủ đề ra cùng query, thêm ép output luôn có dấu tiếng Việt đầy đủ
 - [x] Thêm skill `/deploy` ở `.claude/skills/deploy/SKILL.md` để agent trên server tự pull + rebuild (model-agnostic, <100 dòng)
 
-### Giai đoạn 12 — Export PDF từng câu trả lời ✅
+### Giai đoạn 6 — Export PDF từng câu trả lời ✅
 **Mục tiêu**: Mỗi bubble assistant có link "📄 Tải lời tư vấn" ở góc phải dưới. Click → xuất PDF nội dung bubble đó (lời tư vấn + Căn cứ pháp lý + timestamp).
 
 **Kỹ thuật**: `html2pdf.js` (client-side, ~50KB). Clone node bubble → wrap header/footer → save.
@@ -268,4 +238,3 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] `data-pdf-message-id` gắn vào vùng nội dung, `pdf-exclude` trên timestamp + nút để không leak vào PDF
 - [x] Test: câu ngắn, câu dài, câu có bullet Căn cứ pháp lý — page break, font tiếng Việt OK
 - [x] Docker rebuild frontend, verify end-to-end
-- [ ] Deploy lên server, verify
