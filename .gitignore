@@ -30,3 +30,6 @@ prd.md
 # Claude Code
 .agent/
 .claude/
+
+# IDE
+.vscode/

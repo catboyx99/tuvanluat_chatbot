@@ -116,6 +116,18 @@ LawConsultant_ChatBot/
 - **Thêm file luật mới**: Copy file `.md` vào `md_materials/` → `docker compose restart backend`
 - **GitHub**: https://github.com/catboyx99/tuvanluat_chatbot
 
+## 2.5. Tóm tắt trạng thái hoàn thiện
+Tổng quan 6 giai đoạn đã hoàn thành (chi tiết từng task xem Section 3):
+
+- **Giai đoạn 1 — Dựng nền tảng RAG end-to-end ✅**: Frontend Next.js 14 + Backend FastAPI + ChromaDB, streaming qua AI SDK v6 (SSE UIMessageStream), citation chuẩn pháp lý (Điều/Khoản/Điểm), auto-detect & incremental ingest từ `md_materials/`, Docker 3 services, pushed GitHub.
+- **Giai đoạn 2 — Polish UX & tối ưu hiệu năng ✅**: Typing effect 4ms/char, auto-scroll instant, loading animation (Scale icon + thinking dots), Response Timer (`120ms` → `1.2s` → `1m:05s`), Singleton LLM/vector store, FTTB 12-14s → ~4-6s (rewrite đổi sang `gemini-2.5-flash-lite`, system prompt rút gọn 70%).
+- **Giai đoạn 3 — Cải thiện Retrieval Quality ✅**: Preprocessing markdown (strip code blocks, inject headers), filter junk chunks, tăng k=10. Test suite 100 câu: 100% answered, 98% citation, avg 14.35s. Re-ingest 90 files → 10300 chunks.
+- **Giai đoạn 4 — UI Light Mode & Đổi tên ✅**: Chuyển dark → light theme (background `#f0f4fb`, navy `#0d1b6e`), đổi tên header "AI tư vấn pháp chế".
+- **Giai đoạn 5 — Fix citation & rewrite & timestamp ✅**: Đổi tên "AI tư vấn pháp luật", fix diacritics trong system prompt, siết quy tắc trích dẫn (cấm placeholder `[...]`, cấm copy `[Nguồn: ...]`), fix loading bubble lần submit 2+, timestamp tiếng Việt cuối bubble, rewrite chuẩn hoá intent + ép output có dấu đầy đủ, thêm deploy skill ở `.claude/skills/deploy/SKILL.md`.
+- **Giai đoạn 6 — Export PDF từng câu trả lời ✅**: Link "📄 Tải lời tư vấn" mỗi bubble assistant, html2pdf.js client-side, template A4 với header/body/footer, bullet dùng `::before` pseudo-elements cho html2canvas compatibility, handle Gemini 503 overload sentinel + Retry button.
+
+**Số liệu hiện tại**: ~10300 chunks (90 files .md), FTTB ~4-6s (warm), test suite 100% answered / 98% citation, ENV 1 file `.env` (`GEMINI_API_KEY`).
+
 ## 3. Các bước triển khai
 
 ### Giai đoạn 1 — Dựng nền tảng RAG end-to-end ✅
