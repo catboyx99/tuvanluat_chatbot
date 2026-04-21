@@ -243,3 +243,29 @@ Hoàn thiện: đọc Markdown đa cấp, lưu ChromaDB, API query logic với G
 - [x] Đổi tên "Trợ lý ảo tư vấn luật" → **"AI tư vấn pháp chế"** (header + tab title)
 - [x] Fix input bar: đổi từ gradient transparent → nền đặc `#f0f4fb` (không overlay lên chat)
 - [x] Deploy lên server `113.161.95.116`, verify OK
+
+### Giai đoạn 11 — Fix citation & rewrite & timestamp trong bubble ✅
+- [x] Đổi tên "AI tư vấn pháp chế" → **"AI tư vấn pháp luật"**
+- [x] Fix system prompt bị không dấu: viết lại tiếng Việt có dấu đầy đủ để LLM không copy "Can cu phap ly" vào output
+- [x] Siết quy tắc trích dẫn: cấm placeholder `[...]`, cấm copy nhãn `[Nguồn: ...]`, cấm dòng trích dẫn thiếu tên văn bản — chunk thiếu metadata phải BỎ HẲN
+- [x] Fix loading bubble không hiện ở lần submit 2+: dùng `msgCountAtSubmit` để chỉ xét assistant message của turn hiện tại
+- [x] Thêm timestamp tiếng Việt ở cuối mỗi bubble assistant: `Thứ Hai, ngày 21 tháng 4 năm 2026, 14:35:22` — `font-medium`, màu thừa hưởng, ẩn khi còn đang stream
+- [x] Cải thiện query rewrite: chuẩn hoá intent (loại bỏ "quy định", "cho tôi biết", "là gì"...) → cùng chủ đề ra cùng query, thêm ép output luôn có dấu tiếng Việt đầy đủ
+- [x] Thêm skill `/deploy` ở `.claude/skills/deploy/SKILL.md` để agent trên server tự pull + rebuild (model-agnostic, <100 dòng)
+
+### Giai đoạn 12 — Export PDF từng câu trả lời ✅
+**Mục tiêu**: Mỗi bubble assistant có link "📄 Tải lời tư vấn" ở góc phải dưới. Click → xuất PDF nội dung bubble đó (lời tư vấn + Căn cứ pháp lý + timestamp).
+
+**Kỹ thuật**: `html2pdf.js` (client-side, ~50KB). Clone node bubble → wrap header/footer → save.
+
+**Các bước**:
+- [x] `npm i html2pdf.js` trong `frontend/`
+- [x] Thêm hàm `exportBubbleToPdf(messageId, timestamp)` trong `page.tsx` (dynamic import vì html2pdf dùng window)
+- [x] Link "📄 Tải lời tư vấn" cạnh/dưới timestamp, căn phải, ẩn khi bubble còn streaming
+- [x] Wrapper PDF inline style: nền trắng, font Inter/Segoe UI, width 794px (A4)
+- [x] Template PDF: header (tên app + timestamp, border navy) + body (clone node đã render) + footer (disclaimer)
+- [x] Tên file: `tu-van-luat_YYYY-MM-DD_HH-mm.pdf`
+- [x] `data-pdf-message-id` gắn vào vùng nội dung, `pdf-exclude` trên timestamp + nút để không leak vào PDF
+- [x] Test: câu ngắn, câu dài, câu có bullet Căn cứ pháp lý — page break, font tiếng Việt OK
+- [x] Docker rebuild frontend, verify end-to-end
+- [ ] Deploy lên server, verify

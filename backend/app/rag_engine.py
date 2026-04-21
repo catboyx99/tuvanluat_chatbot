@@ -62,15 +62,45 @@ def build_rewrite_llm():
         )
     return _llm_rewrite
 
+# Sentinel token frontend dung de nhan biet loi qua tai
+GEMINI_OVERLOAD_SENTINEL = "__GEMINI_OVERLOAD__"
+
+
 def rewrite_query(query: str) -> str:
-    """Them dau tieng Viet vao cau hoi, giu nguyen y dinh goc de vector search chinh xac hon."""
+    """Chuan hoa cau hoi thanh cum tu tim kiem phap ly:
+    - Them dau tieng Viet.
+    - Loai bo tu dem/tu yeu cau (quy dinh, cho toi biet, hay, la gi, the nao, ...).
+    - Giu nguyen chu de goc + thuat ngu phap ly chinh.
+    Muc tieu: cau hoi cung chu de nhung khac cach dien dat se chuan hoa ve cung mot query.
+    """
     llm = build_rewrite_llm()
-    result = llm.invoke([
-        SystemMessage(content="Them dau tieng Viet vao cau hoi sau, giu nguyen nghia goc. Chi tra ve cau da them dau."),
-        HumanMessage(content=query)
-    ])
-    # Loai bo markdown bold (**) neu co
-    return result.content.strip().replace("**", "")
+    try:
+        result = llm.invoke([
+            SystemMessage(content=(
+            "Chuẩn hoá câu hỏi thành cụm từ khoá tìm kiếm pháp lý bằng tiếng Việt CÓ DẤU ĐẦY ĐỦ. "
+            "BẮT BUỘC output luôn có dấu tiếng Việt đầy đủ, kể cả khi input không có dấu — ví dụ 'thanh lap dai hoc' phải thành 'thành lập đại học'.\n\n"
+            "BẮT BUỘC GIỮ LẠI (không được xoá dù input có dài):\n"
+            "- Số liệu cụ thể: tuổi ('5 tuổi', '18 tuổi'), lớp ('lớp 1', 'lớp 6'), thời gian ('3 tháng', '6 năm'), số tiền.\n"
+            "- Đối tượng pháp lý: trẻ em, con, cháu, học sinh, sinh viên, người lao động, công dân, vợ chồng, giáo viên, công chức, ...\n"
+            "- Danh từ chủ đề + động từ pháp lý: học, kết hôn, ly hôn, thành lập, giải thể, bổ nhiệm, thừa kế, nhận con nuôi, ...\n\n"
+            "CHỈ LOẠI BỎ từ đệm/yêu cầu KHÔNG mang nội dung: 'cho tôi biết', 'tôi muốn biết', 'hãy nói', 'là gì', 'như thế nào', 'ra sao', 'được không', 'dc', 'quy định về' (khi đứng đầu), dấu '?'.\n\n"
+            "Ví dụ:\n"
+            "- 'con tôi 5 tuổi cháu học ở đâu' → 'trẻ 5 tuổi học ở đâu' (GIỮ '5 tuổi').\n"
+            "- 'con toi 5 tuoi chau hoc truong nao dc' → 'trẻ 5 tuổi học trường nào'.\n"
+            "- 'quy định thành lập đại học' → 'thành lập đại học'.\n"
+            "- 'cho tôi biết độ tuổi vào lớp 1 là gì' → 'độ tuổi vào lớp 1'.\n"
+            "- 'hãy nói về điều kiện kết hôn' → 'điều kiện kết hôn'.\n"
+            "- 'vợ chồng ly hôn chia tài sản như thế nào' → 'vợ chồng ly hôn chia tài sản'.\n\n"
+            "CHỈ trả về cụm từ đã chuẩn hoá, tiếng Việt có dấu, KHÔNG giải thích, KHÔNG thêm dấu câu."
+            )),
+            HumanMessage(content=query)
+        ])
+        # Loai bo markdown bold (**) va whitespace du thua
+        return result.content.strip().replace("**", "")
+    except Exception as e:
+        # Neu rewrite fail (503, network, ...) -> fallback dung query goc, khong chan luong
+        print(f"[Warn] Rewrite failed, fallback to raw query: {e}")
+        return query
 
 
 def invoke_rag_chain(query: str, history: list):
@@ -78,6 +108,12 @@ def invoke_rag_chain(query: str, history: list):
     Tìm context liên quan trong DB và stream câu trả lời về HTTP.
     Cấu trúc format chèn chính xác Nguồn tham khảo phía cuối cùng.
     """
+    # DEBUG: go "/test-overload" tu chat de trigger UI retry test
+    if query.strip() == "/test-overload":
+        print("[Debug] Forcing Gemini overload sentinel for UI test")
+        yield GEMINI_OVERLOAD_SENTINEL
+        return
+
     vector_store = get_vector_store()
 
     # 1. Query rewriting — chuyen cau hoi tu nhien thanh query phap ly
@@ -154,12 +190,18 @@ Dữ liệu pháp luật:
     # Thêm câu hỏi cuối
     messages.append(HumanMessage(content=query))
 
-    # 4. Stream output
+    # 4. Stream output — bat loi 503/qua tai -> yield sentinel cho frontend hien retry
     llm = build_llm()
     t3 = time.time()
     first_chunk = True
-    for chunk in llm.stream(messages):
-        if first_chunk:
-            print(f"[Perf] LLM first token: {time.time()-t3:.2f}s | Total FTTB: {time.time()-t0:.2f}s")
-            first_chunk = False
-        yield chunk.content
+    try:
+        for chunk in llm.stream(messages):
+            if first_chunk:
+                print(f"[Perf] LLM first token: {time.time()-t3:.2f}s | Total FTTB: {time.time()-t0:.2f}s")
+                first_chunk = False
+            yield chunk.content
+    except Exception as e:
+        print(f"[Error] LLM stream failed: {type(e).__name__}: {e}")
+        # Neu chua co chu nao stream ra -> yield sentinel de frontend nhan biet va hien nut retry
+        # Neu da stream 1 phan -> yield sentinel o cuoi, frontend van co the retry
+        yield GEMINI_OVERLOAD_SENTINEL

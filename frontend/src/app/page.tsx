@@ -1,7 +1,9 @@
 'use client';
 import { useChat } from '@ai-sdk/react';
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Send, Scale } from 'lucide-react';
+import { Send, Scale, FileDown, RefreshCw } from 'lucide-react';
+
+const GEMINI_OVERLOAD_SENTINEL = '__GEMINI_OVERLOAD__';
 import ReactMarkdown from 'react-markdown';
 
 function TypingText({ text, isStreaming, onUpdate }: { text: string; isStreaming: boolean; onUpdate?: () => void }) {
@@ -69,11 +71,98 @@ function ThinkingDots() {
   );
 }
 
+// Định dạng thời gian kiểu Việt Nam: "Thứ Hai, ngày 21 tháng 4 năm 2026, 14:35:22"
+function formatVNTime(d: Date): string {
+  const days = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  const ss = d.getSeconds().toString().padStart(2, '0');
+  return `${days[d.getDay()]}, ngày ${d.getDate()} tháng ${d.getMonth() + 1} năm ${d.getFullYear()}, ${hh}:${mm}:${ss}`;
+}
+
+// Tao ten file PDF dang: tu-van-luat_2026-04-21_14-35.pdf
+function pdfFilename(d: Date): string {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  return `tu-van-luat_${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}.pdf`;
+}
+
+// Export noi dung 1 bubble assistant ra PDF.
+// Clone node render san (markdown da thanh HTML) -> wrap header/footer -> html2pdf.
+async function exportBubbleToPdf(messageId: string, timestamp: string) {
+  const sourceNode = document.querySelector<HTMLElement>(`[data-pdf-message-id="${messageId}"]`);
+  if (!sourceNode) return;
+
+  const contentClone = sourceNode.cloneNode(true) as HTMLElement;
+  // Xoa cursor typing va timestamp noi bo neu co
+  contentClone.querySelectorAll('.typing-cursor, .pdf-exclude').forEach(el => el.remove());
+
+  // Xay wrapper PDF: header + body + footer
+  const wrapper = document.createElement('div');
+  wrapper.className = 'pdf-export';
+  // Width 720px de lai bien an toan cho A4 (794px la canh), tranh cat chu
+  wrapper.style.cssText = 'padding:32px;font-family:Inter,Segoe UI,sans-serif;color:#1f2937;background:#ffffff;width:720px;box-sizing:border-box;word-wrap:break-word;overflow-wrap:break-word;';
+  wrapper.innerHTML = `
+    <style>
+      /* Tu render bullet bang ::before de chu dong vi tri (html2canvas khong render ::marker tot) */
+      .pdf-export ul, .pdf-export ol { padding-left: 0; margin: 8px 0; list-style: none; counter-reset: pdflist; }
+      .pdf-export li { margin-bottom: 6px; padding-left: 22px; position: relative; page-break-inside: avoid; break-inside: avoid; }
+      .pdf-export ul > li::before {
+        content: "•";
+        position: absolute;
+        left: 6px;
+        top: 0;
+        line-height: 1.7;
+        color: #1f2937;
+      }
+      .pdf-export ol { counter-reset: pdflist; }
+      .pdf-export ol > li { counter-increment: pdflist; }
+      .pdf-export ol > li::before {
+        content: counter(pdflist) ".";
+        position: absolute;
+        left: 0;
+        top: 0;
+        line-height: 1.7;
+        color: #1f2937;
+      }
+      .pdf-export p { margin: 8px 0; page-break-inside: avoid; break-inside: avoid; }
+      .pdf-export strong { color: #0d1b6e; font-weight: 700; }
+      .pdf-export h1, .pdf-export h2, .pdf-export h3 { color: #0d1b6e; margin: 12px 0 6px 0; page-break-after: avoid; }
+      .pdf-export * { box-sizing: border-box; max-width: 100%; }
+    </style>
+    <div style="border-bottom:2px solid #0d1b6e;padding-bottom:12px;margin-bottom:20px;">
+      <h1 style="color:#0d1b6e;font-size:22px;font-weight:700;margin:0;">AI tư vấn pháp luật</h1>
+      <p style="color:#6b7280;font-size:13px;margin:6px 0 0 0;">${timestamp}</p>
+    </div>
+    <div id="pdf-body" style="font-size:14px;line-height:1.7;"></div>
+    <div style="border-top:1px solid #dde3f0;margin-top:24px;padding-top:12px;color:#9ca3af;font-size:11px;font-style:italic;">
+      Nội dung mang tính tham khảo, không thay thế tư vấn chính thức của luật sư. Hệ thống AI có thể có sai sót.
+    </div>
+  `;
+  wrapper.querySelector('#pdf-body')!.appendChild(contentClone);
+
+  // html2pdf dung window nen phai dynamic import
+  const html2pdf = (await import('html2pdf.js')).default;
+  const filename = pdfFilename(new Date());
+  await html2pdf()
+    .from(wrapper)
+    .set({
+      margin: [10, 10, 10, 10],
+      filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['li', 'p', 'tr'] },
+    })
+    .save();
+}
+
 export default function Chat() {
   const { messages, sendMessage, status, error } = useChat();
   const mainRef = useRef<HTMLElement>(null);
   const [input, setInput] = useState('');
   const [delayNotice, setDelayNotice] = useState(false);
+  const [answerTimestamps, setAnswerTimestamps] = useState<Record<string, string>>({});
+  const lastUserQueryRef = useRef<string>('');
 
   const isStreaming = status === 'streaming';
   const isLoading = status === 'submitted' || isStreaming;
@@ -113,6 +202,19 @@ export default function Chat() {
   useEffect(() => {
     scrollToBottom();
   }, [messages, delayNotice]);
+
+  // Gan timestamp cho assistant message khi xuat hien lan dau (chua co trong map)
+  useEffect(() => {
+    const missing: Record<string, string> = {};
+    messages.forEach(m => {
+      if (m.role === 'assistant' && !answerTimestamps[m.id] && getMessageText(m)) {
+        missing[m.id] = formatVNTime(new Date());
+      }
+    });
+    if (Object.keys(missing).length > 0) {
+      setAnswerTimestamps(prev => ({ ...prev, ...missing }));
+    }
+  }, [messages, answerTimestamps]);
 
   const lastAssistantHasContent = lastAssistantIdx >= 0 && !!getMessageText(messages[lastAssistantIdx]);
 
@@ -179,8 +281,24 @@ export default function Chat() {
     setDelayMsg(delayMessages[Math.floor(Math.random() * delayMessages.length)]);
     setDelayNotice(true);
     startTimerLoop();
+    lastUserQueryRef.current = trimmed;
     sendMessage({ text: trimmed });
     setInput('');
+  };
+
+  // Retry: gui lai cau hoi cuoi cung khi gap loi Gemini qua tai
+  const handleRetry = () => {
+    const q = lastUserQueryRef.current;
+    if (!q || isLoading) return;
+    cancelAnimationFrame(timerRafRef.current);
+    timerStartRef.current = Date.now();
+    timerRunningRef.current = true;
+    msgCountAtSubmitRef.current = messages.length;
+    setElapsedMs(0);
+    setDelayMsg(delayMessages[Math.floor(Math.random() * delayMessages.length)]);
+    setDelayNotice(true);
+    startTimerLoop();
+    sendMessage({ text: q });
   };
 
   return (
@@ -202,6 +320,10 @@ export default function Chat() {
 
         {messages.map((m, idx) => {
           if (m.role === 'assistant' && !getMessageText(m)) return null;
+          const isCurrentlyStreaming = m.role === 'assistant' && idx === lastAssistantIdx && isStreaming;
+          const rawText = getMessageText(m);
+          const hasOverloadError = m.role === 'assistant' && rawText.includes(GEMINI_OVERLOAD_SENTINEL);
+          const canExport = m.role === 'assistant' && answerTimestamps[m.id] && !isCurrentlyStreaming && !hasOverloadError;
           return (
             <div key={m.id} className={`flex flex-col w-full ${m.role === 'user' ? 'items-end' : 'items-start'} msg-appear`}>
               <div
@@ -210,12 +332,42 @@ export default function Chat() {
                   : 'bg-white border border-[#dde3f0] text-gray-800 rounded-tl-md'
                   }`}
               >
-                {m.role === 'assistant' && idx === lastAssistantIdx ? (
-                  <TypingText text={getMessageText(m)} isStreaming={isStreaming} onUpdate={scrollToBottom} />
-                ) : m.role === 'assistant' ? (
-                  <div className="markdown-body"><ReactMarkdown>{getMessageText(m)}</ReactMarkdown></div>
-                ) : (
-                  getMessageText(m)
+                {/* Vung noi dung duoc export PDF — data-pdf-message-id de exporter query */}
+                <div data-pdf-message-id={m.id}>
+                  {hasOverloadError ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="text-[#b91c1c] font-medium">
+                        ⚠️ Model Gemini hiện đang quá tải, vui lòng bấm nút retry để load câu trả lời.
+                      </div>
+                      <button
+                        onClick={handleRetry}
+                        disabled={isLoading}
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-[#0d1b6e] text-white rounded-lg hover:bg-[#1a2a8a] disabled:opacity-50 disabled:cursor-not-allowed self-start text-sm font-medium"
+                      >
+                        <RefreshCw size={16} /> Retry
+                      </button>
+                    </div>
+                  ) : m.role === 'assistant' && idx === lastAssistantIdx ? (
+                    <TypingText text={rawText} isStreaming={isStreaming} onUpdate={scrollToBottom} />
+                  ) : m.role === 'assistant' ? (
+                    <div className="markdown-body"><ReactMarkdown>{rawText}</ReactMarkdown></div>
+                  ) : (
+                    rawText
+                  )}
+                </div>
+                {m.role === 'assistant' && answerTimestamps[m.id] && !isCurrentlyStreaming && !hasOverloadError && (
+                  <div className="font-medium mt-3 pdf-exclude">{answerTimestamps[m.id]}</div>
+                )}
+                {canExport && (
+                  <div className="flex justify-end mt-2 pdf-exclude">
+                    <button
+                      onClick={() => exportBubbleToPdf(m.id, answerTimestamps[m.id])}
+                      className="inline-flex items-center gap-1 text-[12px] text-[#0d1b6e] hover:underline"
+                      title="Tải lời tư vấn này thành file PDF"
+                    >
+                      <FileDown size={14} /> Tải lời tư vấn
+                    </button>
+                  </div>
                 )}
               </div>
               {m.role === 'assistant' && finalTimes[m.id] && (
