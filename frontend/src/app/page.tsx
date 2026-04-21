@@ -147,14 +147,23 @@ export default function Chat() {
     }
   }, [messages]);
 
+  // Kiem tra co assistant message moi (sau luc submit) da co content chua
+  const newAssistantHasContent = useMemo(() => {
+    for (let i = msgCountAtSubmitRef.current; i < messages.length; i++) {
+      if (messages[i].role === 'assistant' && getMessageText(messages[i])) return true;
+    }
+    return false;
+  }, [messages]);
+
   useEffect(() => {
-    if (isLoading && !lastAssistantHasContent) {
-      setDelayMsg(delayMessages[Math.floor(Math.random() * delayMessages.length)]);
+    if (!isLoading) {
+      setDelayNotice(false);
+    } else if (!newAssistantHasContent) {
       setDelayNotice(true);
-    } else if (lastAssistantHasContent || !isLoading) {
+    } else {
       setDelayNotice(false);
     }
-  }, [isLoading, lastAssistantHasContent]);
+  }, [isLoading, newAssistantHasContent]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +175,9 @@ export default function Chat() {
     timerRunningRef.current = true;
     msgCountAtSubmitRef.current = messages.length;
     setElapsedMs(0);
+    // Hien loading ngay lap tuc voi random message
+    setDelayMsg(delayMessages[Math.floor(Math.random() * delayMessages.length)]);
+    setDelayNotice(true);
     startTimerLoop();
     sendMessage({ text: trimmed });
     setInput('');

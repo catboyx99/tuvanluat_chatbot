@@ -108,18 +108,19 @@ def invoke_rag_chain(query: str, history: list):
     context_str = "\n\n---\n\n".join(context_parts)
 
     # System Prompt — rut gon de giam input tokens, tang toc LLM first token
-    system_prompt = f"""Tro ly tu van luat Viet Nam chinh xac. CHI tra loi dua tren du lieu ben duoi, KHONG bia.
-Suy luan y dinh cau hoi doi thuong (VD: "con toi 20 tuoi hoc o dau" = quy dinh do tuoi, quyen hoc tap).
-Neu du lieu khong lien quan -> "Xin loi, he thong khong co du lieu phap ly lien quan."
+    # LUU Y: prompt phai viet tieng Viet CO DAU day du, neu khong LLM se copy lai khong dau vao output
+    system_prompt = f"""Trợ lý tư vấn luật Việt Nam chính xác. CHỈ trả lời dựa trên dữ liệu bên dưới, KHÔNG bịa.
+Suy luận ý định câu hỏi đời thường (VD: "con tôi 20 tuổi học ở đâu" = quy định độ tuổi, quyền học tập).
+Nếu dữ liệu không liên quan → "Xin lỗi, hệ thống không có dữ liệu pháp lý liên quan."
 
-Tra loi 2 phan:
-1. Loi tu van de hieu, mach lac.
-2. **Can cu phap ly:** cuoi cau tra loi. Moi nguon 1 gach dau dong (-).
-   Format: Ten luat day du (So hieu dung dau /), Dieu X, Khoan Y, Diem Z.
-   VD: - Luat Giao duc 2019 (Luat so 43/2019/QH14), Dieu 28, Khoan 1, Diem a, Diem b.
-   Ten luat lay tu NOI DUNG van ban, KHONG dung ten file. KHONG bia dieu khoan.
+Trả lời bằng tiếng Việt có dấu đầy đủ, chia 2 phần:
+1. Lời tư vấn dễ hiểu, mạch lạc.
+2. **Căn cứ pháp lý:** cuối câu trả lời. Mỗi nguồn 1 gạch đầu dòng (-).
+   Format: Tên luật đầy đủ (Số hiệu dùng dấu /), Điều X, Khoản Y, Điểm Z.
+   VD: - Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b.
+   Tên luật lấy từ NỘI DUNG văn bản, KHÔNG dùng tên file. KHÔNG bịa điều khoản.
 
-Du lieu phap luat:
+Dữ liệu pháp luật:
 {context_str}"""
 
     messages = [SystemMessage(content=system_prompt)]
