@@ -4,6 +4,77 @@ from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 
+def extract_document_metadata(raw_text: str, source_path: str = "") -> dict:
+    """
+    Trich so hieu + ngay ban hanh tu header van ban.
+    - so_hieu: NN/YYYY/TYPE (VD "43/2019/QH14", "125/2024/NĐ-CP", "08/2021/TT-BGDĐT")
+    - ngay_ban_hanh: dd/mm/yyyy (lay tu dong dia danh "Ha Noi, ngay..." o dau hoac cuoi van ban)
+    """
+    meta = {}
+    head = raw_text[:5000]
+    tail = raw_text[-3000:]
+
+    # --- So hieu ---
+    # Dinh dang: "so[:]? NN/YYYY/TYPE"
+    # TYPE pho bien: QH13/14/15, ND-CP, TT-BGDDT/BYT/..., QD-..., NQ-..., CT-...
+    type_alt = r"(?:QH\d+|N[ĐD][-\s]?CP|TT[-\s][\w\-ĐD]+|Q[ĐD][-\s][\w\-ĐD]+|NQ[-\s][\w\-ĐD]+|CT[-\s][\w\-ĐD]+)"
+    so_hieu_pat = rf"[Ss]ố\s*:?\s*(\d+)\s*/\s*(\d{{4}})\s*/?\s*({type_alt})"
+    m = re.search(so_hieu_pat, head)
+    if m:
+        n, y, t = m.group(1), m.group(2), m.group(3)
+        t = re.sub(r"\s+", "-", t.strip())
+        t = re.sub(r"-+", "-", t)
+        meta["so_hieu"] = f"{n}/{y}/{t}"
+
+    # --- Ngay ban hanh (priority order) ---
+    # Uu tien 1: pattern dia danh "Ha Noi[,] ngay DD thang MM nam YYYY" (day la ngay ky ban hanh)
+    # Uu tien 2: last match "ngay DD thang MM nam YYYY" trong 1500 ky tu cuoi (signature block)
+    # Uu tien 3: "co hieu luc tu ngay..." (chi dung khi khong tim duoc ngay ban hanh)
+    # Dau phay optional vi PDF OCR hay nuot.
+    def _parse_date(match):
+        try:
+            dd, mm, yy = int(match.group(1)), int(match.group(2)), int(match.group(3))
+            if 1 <= dd <= 31 and 1 <= mm <= 12 and 1900 <= yy <= 2100:
+                return f"{dd:02d}/{mm:02d}/{yy}"
+        except (ValueError, IndexError):
+            pass
+        return None
+
+    date_pat_primary = (
+        r"(?:Hà\s*Nội|Hà-Nội|TP\.?\s*Hồ\s*Chí\s*Minh|Hà\s*Nọi)"
+        r"[\s,]*ng[àa]y\s*(\d{1,2})\s*th[áa]ng\s*(\d{1,2})\s*n[ăa]m\s*(\d{4})"
+    )
+    m = re.search(date_pat_primary, head + "\n" + tail)
+    if m:
+        d = _parse_date(m)
+        if d:
+            meta["ngay_ban_hanh"] = d
+
+    if "ngay_ban_hanh" not in meta:
+        # Last occurrence in tail — usually signature date
+        matches = list(re.finditer(
+            r"ng[àa]y\s*(\d{1,2})\s*th[áa]ng\s*(\d{1,2})\s*n[ăa]m\s*(\d{4})",
+            raw_text[-1500:]
+        ))
+        if matches:
+            d = _parse_date(matches[-1])
+            if d:
+                meta["ngay_ban_hanh"] = d
+
+    if "ngay_ban_hanh" not in meta:
+        # Fallback cuoi: "co hieu luc thi hanh tu ngay..."
+        m = re.search(
+            r"c[óo]\s+hi[ệe]u\s+l[ựu]c.{0,30}?ng[àa]y\s*(\d{1,2})\s*th[áa]ng\s*(\d{1,2})\s*n[ăa]m\s*(\d{4})",
+            raw_text, re.IGNORECASE
+        )
+        if m:
+            d = _parse_date(m)
+            if d:
+                meta["ngay_ban_hanh"] = d
+
+    return meta
+
+
 def strip_code_blocks(text):
     """
     Xoa code block markers (```text ... ```) va metadata thua tu file .md convert tu PDF.
@@ -126,6 +197,17 @@ def load_and_split_markdown_documents(directory: str = "md_materials", only_file
     if not raw_documents:
         return []
 
+    # Trich so hieu + ngay ban hanh TRUOC khi strip (vi strip co the xoa header PDF)
+    for doc in raw_documents:
+        src = doc.metadata.get("source", "")
+        extracted = extract_document_metadata(doc.page_content, src)
+        doc.metadata["so_hieu"] = extracted.get("so_hieu", "")
+        doc.metadata["ngay_ban_hanh"] = extracted.get("ngay_ban_hanh", "")
+        if not extracted.get("so_hieu"):
+            print("[Loader] WARN: khong trich duoc so_hieu tu %s" % os.path.basename(src))
+        if not extracted.get("ngay_ban_hanh"):
+            print("[Loader] WARN: khong trich duoc ngay_ban_hanh tu %s" % os.path.basename(src))
+
     # Strip code block markers, metadata thua, roi inject markdown headers
     for doc in raw_documents:
         doc.page_content = strip_code_blocks(doc.page_content)
@@ -146,6 +228,9 @@ def load_and_split_markdown_documents(directory: str = "md_materials", only_file
         for s in splits:
             if 'source' not in s.metadata:
                 s.metadata['source'] = doc.metadata.get('source', 'Unknown file')
+            # Propagate metadata so_hieu + ngay_ban_hanh (MarkdownHeaderTextSplitter khong tu copy)
+            s.metadata['so_hieu'] = doc.metadata.get('so_hieu', '')
+            s.metadata['ngay_ban_hanh'] = doc.metadata.get('ngay_ban_hanh', '')
         md_header_splits.extend(splits)
 
     # Cat bang Character Limit de han che token LLM

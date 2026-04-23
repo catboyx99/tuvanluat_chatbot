@@ -125,8 +125,11 @@ Tổng quan 6 giai đoạn đã hoàn thành (chi tiết từng task xem Section
 - **Giai đoạn 4 — UI Light Mode & Đổi tên ✅**: Chuyển dark → light theme (background `#f0f4fb`, navy `#0d1b6e`), đổi tên header "AI tư vấn pháp chế".
 - **Giai đoạn 5 — Fix citation & rewrite & timestamp ✅**: Đổi tên "AI tư vấn pháp luật", fix diacritics trong system prompt, siết quy tắc trích dẫn (cấm placeholder `[...]`, cấm copy `[Nguồn: ...]`), fix loading bubble lần submit 2+, timestamp tiếng Việt cuối bubble, rewrite chuẩn hoá intent + ép output có dấu đầy đủ, thêm deploy skill ở `.claude/skills/deploy/SKILL.md`.
 - **Giai đoạn 6 — Export PDF từng câu trả lời ✅**: Link "📄 Tải lời tư vấn" mỗi bubble assistant, html2pdf.js client-side, template A4 với header/body/footer, bullet dùng `::before` pseudo-elements cho html2canvas compatibility, handle Gemini 503 overload sentinel + Retry button.
-
-**Số liệu hiện tại**: ~10300 chunks (90 files .md), FTTB ~4-6s (warm), test suite 100% answered / 98% citation, ENV 1 file `.env` (`GEMINI_API_KEY`).
+- **Giai đoạn 7 — Siết quy tắc trích dẫn (số hiệu + ngày ban hành) ✅**: Bắt buộc 3 thành phần trong mỗi dòng trích dẫn: (1) tên văn bản, (2) số hiệu trong `( )` dùng dấu `/`, (3) ngày ban hành/ký/hiệu lực format `dd/mm/yyyy`. Hướng dẫn LLM tìm ngày ở đầu văn bản (Nghị định/Thông tư/Quyết định), trong nội dung ("ban hành/ký/có hiệu lực"), cuối văn bản (dòng địa danh "Hà Nội, ngày..."). Cấm viết tên thiếu số hiệu; nếu chunk không có ngày → bỏ phần ngày (không bịa).
+- **Giai đoạn 8 — Extract số hiệu + ngày ban hành vào metadata khi ingest ✅**: Fix tận gốc case retrieval không tra ra số hiệu. Parse header văn bản khi ingest bằng regex, gán metadata `so_hieu` (VD `34/2018/QH14`, `125/2024/NĐ-CP`) và `ngay_ban_hanh` (`dd/mm/yyyy`). Đơn giản hoá prompt — số hiệu/ngày lấy từ dòng `[Meta: ...]` trong context. Priority ngày: "Hà Nội, ngày..." → last match trong tail → "có hiệu lực từ...". Warnings: ~8% file miss số hiệu, ~19% miss ngày (do PDF OCR hỏng — không cứu được bằng regex).
+- **Giai đoạn 9 — Fix mix-up chunk + thứ tự trình bày trích dẫn ✅**: Phát hiện bug LLM ghép tên từ chunk A với số hiệu/ngày từ chunk B (VD tên "Luật sửa đổi" + số hiệu `08/2012/QH13` của Luật gốc). Siết prompt: "QUY TẮC TRÓI BUỘC CHUNK" — tên + số hiệu + ngày + Điều/Khoản PHẢI cùng 1 chunk. Thêm **THỨ TỰ TRÌNH BÀY** bắt buộc: Luật (gốc) → Luật sửa đổi → Nghị quyết → Nghị định → Quyết định → Thông tư → khác. Trong cùng cấp sắp theo năm mới → cũ. Verify 2 câu test ("thành lập ĐH", "2+2"): citations đúng thứ tự, không còn mix-up.
+- **Giai đoạn 10 — Cập nhật deploy skill + thêm test-suite skill ✅**: Rewrite `.claude/skills/deploy/SKILL.md` với logic 2 mode (Mode A: chỉ `up -d --build`; Mode B: `down -v` + re-ingest khi ingest/metadata thay đổi) — bỏ rule "không wipe volume" cũ vì chroma_data nay treat ephemeral. Thêm skill mới `.claude/skills/test-suite/SKILL.md` hướng dẫn chạy 100-question test trên server: `docker compose cp` script vào container (không COPY trong image) → exec python với `TEST_API_URL=http://localhost:8000/api/chat` → copy JSON result ra `auto_test_serverside/`. Viết đa-AI (Claude/Gemini/GPT đọc được).
+**Số liệu hiện tại**: ~10300 chunks (90 files .md), metadata mỗi chunk gồm `source + Luật/Chương/Điều/Khoản + so_hieu + ngay_ban_hanh` (số hiệu extract thành công ~92% files, ngày ~81% — phần còn lại bị PDF OCR hỏng). FTTB ~4-6s (warm), test suite 100% answered / 98% citation (baseline trước Giai đoạn 7-8, cần re-run để đo baseline mới), ENV 1 file `.env` (`GEMINI_API_KEY`).
 
 ## 3. Các bước triển khai
 
@@ -250,3 +253,42 @@ Gộp Cải thiện UX + Response Timer + Loading UX + Tối ưu FTTB.
 - [x] `data-pdf-message-id` gắn vào vùng nội dung, `pdf-exclude` trên timestamp + nút để không leak vào PDF
 - [x] Test: câu ngắn, câu dài, câu có bullet Căn cứ pháp lý — page break, font tiếng Việt OK
 - [x] Docker rebuild frontend, verify end-to-end
+
+### Giai đoạn 7 — Siết quy tắc trích dẫn (số hiệu + ngày ban hành) ✅
+**Mục tiêu**: Mỗi dòng Căn cứ pháp lý PHẢI có đủ tên văn bản + số hiệu trong `( )` + ngày ban hành/ký/hiệu lực → người dùng dễ tìm nguồn gốc văn bản.
+
+**Các bước**:
+- [x] Cập nhật system prompt trong `backend/app/rag_engine.py` (khối QUY TẮC TRÍCH DẪN): bắt buộc 3 thành phần, liệt kê vị trí tìm ngày (đầu văn bản cho Nghị định/Thông tư, trong nội dung, dòng địa danh cuối), format `dd/mm/yyyy`, ưu tiên `ban hành ngày` / fallback `hiệu lực từ`
+- [x] Thêm VD đúng cho Luật / Nghị định / Thông tư / chỉ có ngày hiệu lực / combo Luật + Thông tư
+- [x] Bổ sung CẤM: viết tên thiếu số hiệu trong ngoặc đơn; bịa ngày (nếu chunk không có → bỏ phần ngày, giữ tên + số hiệu + điều khoản)
+- [x] Mở rộng XỬ LÝ CHUNK THIẾU METADATA: đọc đầu văn bản (tên + số hiệu + ngày ban hành) và cuối văn bản (ngày ký)
+- [ ] Test 5-10 câu thật xem LLM có trích dẫn đủ ngày/số hiệu không
+
+### Giai đoạn 8 — Extract số hiệu + ngày ban hành vào metadata khi ingest ✅
+**Mục tiêu**: Fix tận gốc case LLM không trích dẫn được số hiệu khi filename metadata format xấu (VD `Luật số 08-2012-QH13.md`). Parse header văn bản khi ingest, gán metadata chuẩn → prompt `rag_engine.py` đơn giản hơn, LLM không phải suy luận.
+
+**Bối cảnh**: Test câu "chương trình 2+2 dùng Luật giáo dục đại học số mấy" → LLM trả lời được tên + ngày nhưng BỎ số hiệu vì rule yêu cầu `/` còn metadata filename dùng `-`, LLM chọn an toàn = không cite (xem conversation 2026-04-23).
+
+**Các bước**:
+- [x] Khảo sát `backend/app/document_loader.py` — xác định hook point trước khi splitter
+- [x] Viết hàm `extract_document_metadata()` trong `document_loader.py`: regex số hiệu (Luật/NĐ/TT/QĐ) + ngày ban hành (priority: "Hà Nội, ngày..." → last match tail → "có hiệu lực từ...")
+- [x] Gán metadata vào raw doc TRƯỚC khi strip/inject headers, sau đó propagate xuống từng chunk (MarkdownHeaderTextSplitter không tự copy)
+- [x] Log WARN cho mỗi file miss số hiệu hoặc ngày
+- [x] Cập nhật `rag_engine.py` compose context: thêm dòng `[Meta: Số hiệu: ... | Ban hành: ...]` bên cạnh `[Nguồn: ...]`
+- [x] Đơn giản hoá prompt QUY TẮC TRÍCH DẪN: dùng số hiệu/ngày từ `[Meta: ...]` thay vì ép LLM suy luận; bỏ các VD dài dòng về convert format
+- [x] `docker compose down -v && up -d --build` — chờ auto-ingest (lần 1 gặp 429 rate limit, retry lần 2 OK)
+- [x] Test câu "chương trình 2+2" — trả về đúng `Luật 34/2018/QH14 ban hành 19/11/2018` + `NĐ 99/2019/NĐ-CP ban hành 30/12/2019`
+
+### Giai đoạn 9 — Fix mix-up chunk + thứ tự trình bày trích dẫn ✅
+**Mục tiêu**: 
+1. Chặn lỗi LLM ghép tên văn bản từ chunk này với số hiệu/ngày từ chunk khác (VD tên "Luật sửa đổi, bổ sung..." nhưng số hiệu `08/2012/QH13` — đây là Luật gốc, không phải sửa đổi).
+2. Sắp xếp căn cứ pháp lý theo thứ tự hiệu lực: Luật → Luật sửa đổi → Nghị định → Thông tư → ...
+
+**Các bước**:
+- [x] Thêm "QUY TẮC TRÓI BUỘC CHUNK" vào prompt `rag_engine.py`: tên + số hiệu + ngày + Điều/Khoản PHẢI cùng 1 chunk, cấm ghép chéo
+- [x] Thêm section "THỨ TỰ TRÌNH BÀY BẮT BUỘC": Luật gốc → Luật sửa đổi → Nghị quyết → Nghị định → Quyết định → Thông tư → văn bản khác. Trong cùng cấp sắp theo năm mới → cũ.
+- [x] Thêm cấm lặp cùng 1 văn bản ở 2 dòng (gộp các Điều/Khoản vào 1 dòng)
+- [x] Restart backend (không cần re-ingest vì chỉ sửa prompt)
+- [x] Test câu "quydinh thanh lap dai hoc" — trích dẫn đúng: Luật 08/2012/QH13 ngày 18/06/2012 → NĐ 125/2024 → NĐ 99/2019 (không còn mix-up)
+- [x] Test câu "2+2" — Luật sửa đổi 34/2018/QH14 đứng đầu (gốc không có trong context), theo sau là NĐ 99/2019 → NĐ 86/2018
+- [x] Cập nhật `.claude/skills/deploy/SKILL.md`: lưu ý khi deploy phải `down -v && up -d --build` để ingest lại metadata mới

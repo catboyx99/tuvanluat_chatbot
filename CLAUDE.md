@@ -19,10 +19,12 @@ Trợ lý ảo tư vấn luật Việt Nam dùng RAG. Nguồn dữ liệu: văn 
 
 ### 2.2. Trích dẫn pháp lý (BẮT BUỘC cuối mỗi câu trả lời)
 - Tiêu đề `**Căn cứ pháp lý:**` trên dòng riêng, mỗi nguồn 1 gạch đầu dòng markdown (`-`).
-- Format: `Tên văn bản đầy đủ (Số hiệu), Điều [số], Khoản [số], Điểm [chữ]`. Số hiệu dùng dấu `/` (VD `Luật số 43/2019/QH14`), KHÔNG dùng `-`.
+- Format: `Tên văn bản đầy đủ (Số hiệu), ngày ban hành, Điều [số], Khoản [số], Điểm [chữ]`.
+- **Số hiệu BẮT BUỘC** trong dấu ngoặc đơn ngay sau tên, dùng dấu `/` (VD `Luật Giáo dục 2019 (Luật số 43/2019/QH14)`), KHÔNG dùng `-`.
+- **Ngày tháng BẮT BUỘC** nếu chunk có — lấy từ "ban hành ngày...", "ký ngày...", "có hiệu lực từ ngày...", hoặc dòng địa danh đầu/cuối văn bản ("Hà Nội, ngày dd tháng mm năm yyyy"). Nghị định/Thông tư/Quyết định thường có ngày ở phần đầu văn bản. Format: `ban hành ngày dd/mm/yyyy` (hoặc `hiệu lực từ dd/mm/yyyy` nếu chỉ có ngày hiệu lực).
 - Nhiều Điểm cùng Khoản gộp 1 dòng (`..., Điểm a, Điểm b, Điểm c.`); Điều khác nhau phải tách dòng.
 - Tên luật LẤY TỪ NỘI DUNG văn bản, KHÔNG từ tên file/metadata (`Luật-15-2017-QH14` ❌ → `Luật Quản lý, sử dụng tài sản công` ✅).
-- Nếu không xác định được Điều/Khoản → chỉ ghi tên văn bản. KHÔNG bịa, KHÔNG placeholder `[...]`, KHÔNG copy nhãn nội bộ `[Nguồn: ...]`.
+- Nếu chunk không có ngày → bỏ phần ngày (giữ tên + số hiệu + điều khoản). Nếu không xác định được tên/số hiệu → BỎ HẲN dòng đó. KHÔNG bịa, KHÔNG placeholder `[...]`, KHÔNG copy nhãn nội bộ `[Nguồn: ...]`.
 
 ### 2.3. Data Pipeline
 - **Nguồn**: 1 thư mục `md_materials/` ở root, Docker volume mount read-only vào backend.

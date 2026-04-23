@@ -138,9 +138,23 @@ def invoke_rag_chain(query: str, history: list):
         chapter = d.metadata.get("Chương/Mục", "")
         article = d.metadata.get("Điều", "")
         clause = d.metadata.get("Khoản", "")
+        so_hieu = d.metadata.get("so_hieu", "")
+        ngay_bh = d.metadata.get("ngay_ban_hanh", "")
         label_parts = [p for p in [law_name, chapter, article, clause] if p]
         label = " > ".join(label_parts) if label_parts else "Không rõ nguồn"
-        context_parts.append(f"[Nguồn: {label}]\n{d.page_content}")
+        # Dong meta chuan: so hieu + ngay ban hanh (lay tu regex extract luc ingest, CHINH XAC)
+        meta_line = ""
+        if so_hieu or ngay_bh:
+            bits = []
+            if so_hieu:
+                bits.append(f"Số hiệu: {so_hieu}")
+            if ngay_bh:
+                bits.append(f"Ban hành: {ngay_bh}")
+            meta_line = " | ".join(bits)
+        header_line = f"[Nguồn: {label}]"
+        if meta_line:
+            header_line += f"\n[Meta: {meta_line}]"
+        context_parts.append(f"{header_line}\n{d.page_content}")
     context_str = "\n\n---\n\n".join(context_parts)
 
     # System Prompt — rut gon de giam input tokens, tang toc LLM first token
@@ -154,24 +168,39 @@ Trả lời bằng tiếng Việt có dấu đầy đủ, chia 2 phần:
 2. **Căn cứ pháp lý:** cuối câu trả lời. Mỗi nguồn 1 gạch đầu dòng (-).
 
 QUY TẮC TRÍCH DẪN (BẮT BUỘC — đọc kỹ):
-- Mỗi dòng trích dẫn PHẢI bắt đầu bằng tên luật/nghị định/thông tư đầy đủ kèm số hiệu (dấu /), rồi mới đến Chương, Điều, Khoản, Điểm.
-- VD đúng: `- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28, Khoản 1, Điểm a, Điểm b.`
-- VD đúng (Thông tư): `- Thông tư 08/2021/TT-BGDĐT, Điều 5, Khoản 2.`
-- VD đúng (cả Luật + Thông tư hướng dẫn) — mỗi văn bản 1 dòng:
-  `- Luật Giáo dục 2019 (Luật số 43/2019/QH14), Điều 28.`
-  `- Thông tư 08/2021/TT-BGDĐT, Điều 5, Khoản 2.`
+- Mỗi dòng trích dẫn PHẢI có ĐẦY ĐỦ 3 phần theo thứ tự: (1) tên văn bản đầy đủ lấy từ NỘI DUNG CÙNG CHUNK, (2) số hiệu trong `( )` lấy từ dòng `[Meta: ...]` CỦA CHÍNH CHUNK ĐÓ, (3) ngày ban hành lấy từ dòng `[Meta: ...]` CỦA CHÍNH CHUNK ĐÓ. Sau đó mới đến Chương, Điều, Khoản, Điểm.
+- **QUY TẮC TRÓI BUỘC CHUNK**: Tên + số hiệu + ngày + Điều/Khoản PHẢI cùng đến từ MỘT chunk duy nhất. TUYỆT ĐỐI KHÔNG ghép tên từ chunk A với số hiệu/ngày từ chunk B. VD SAI: lấy "Luật sửa đổi, bổ sung..." từ chunk có số `34/2018/QH14`, rồi ghi số hiệu `08/2012/QH13` lấy từ chunk khác — 2 số hiệu khác nhau = 2 văn bản khác nhau, không được trộn.
+- Số hiệu và ngày đã được trích sẵn ở dòng `[Meta: Số hiệu: N/Y/TYPE | Ban hành: dd/mm/yyyy]` — DÙNG NGUYÊN VĂN, KHÔNG suy luận, KHÔNG chuyển format.
+- Tên văn bản (VD "Luật Giáo dục 2019", "Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học") lấy từ nội dung chunk (tiêu đề LUẬT / NGHỊ ĐỊNH / THÔNG TƯ), KHÔNG từ nhãn `[Nguồn: ...]`.
+
+**THỨ TỰ TRÌNH BÀY BẮT BUỘC** (sắp xếp từ cao xuống thấp theo hiệu lực pháp lý):
+1. Luật (gốc) — xuất hiện ĐẦU TIÊN
+2. Luật sửa đổi, bổ sung
+3. Nghị quyết của Quốc hội / Ủy ban thường vụ
+4. Nghị định (của Chính phủ)
+5. Quyết định (của Thủ tướng / Bộ trưởng)
+6. Thông tư (của Bộ / Liên Bộ)
+7. Các văn bản khác (Công văn, Kế hoạch...)
+
+Trong cùng 1 cấp, sắp theo năm ban hành mới → cũ. Nếu câu hỏi trực tiếp liên quan Luật Giáo dục / Luật Giáo dục đại học → dòng Luật đó PHẢI ở vị trí đầu tiên.
+
+VD đúng (thứ tự Luật → Luật sửa đổi → Nghị định → Thông tư):
+- `Luật Giáo dục đại học (Luật số 08/2012/QH13), ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
+- `Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học (Luật số 34/2018/QH14), ban hành ngày 19/11/2018, Điều 1, Khoản 10.`
+- `Nghị định 125/2024/NĐ-CP (Số 125/2024/NĐ-CP), ban hành ngày 05/10/2024, Điều 95, Khoản 1.`
+- `Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 5.`
 
 CẤM TUYỆT ĐỐI:
-- KHÔNG viết `Chương II, Điều 3, Khoản 3.` (thiếu tên văn bản) — VI PHẠM.
-- KHÔNG copy nguyên văn `[Nguồn: ...]` — đó là nhãn nội bộ.
-- KHÔNG viết placeholder trong dấu ngoặc vuông như `[Tên văn bản không xác định]`, `[Tên luật]`, `[...]` — DẤU NGOẶC VUÔNG KHÔNG ĐƯỢC XUẤT HIỆN trong phần Căn cứ pháp lý.
-- KHÔNG ghi chú giải thích như "(không rõ nguồn)", "(chưa xác định)".
-- KHÔNG bịa tên luật, số hiệu, điều khoản.
+- KHÔNG ghép tên từ chunk này với số hiệu/ngày từ chunk khác (VD: tên "Luật sửa đổi" + số hiệu `08/2012/QH13` = SAI, vì `08/2012/QH13` là Luật gốc, không phải sửa đổi).
+- KHÔNG viết trích dẫn thiếu tên văn bản hoặc thiếu số hiệu trong `( )` — VI PHẠM.
+- KHÔNG copy nguyên văn `[Nguồn: ...]` hay `[Meta: ...]` — đó là nhãn nội bộ.
+- KHÔNG dùng placeholder `[...]`, KHÔNG ghi `(không rõ nguồn)`, `(chưa xác định)`.
+- KHÔNG bịa số hiệu hoặc ngày tháng. Nếu dòng `[Meta: ...]` không có `Số hiệu` hoặc `Ban hành` → BỎ HẲN dòng đó.
+- KHÔNG lặp cùng 1 văn bản ở 2 dòng khác nhau — nếu nhiều Điều/Khoản của cùng văn bản, gộp 1 dòng (VD `..., Điều 27, Khoản 2, Điều 45, Khoản 1, Khoản 2.`).
 
 XỬ LÝ CHUNK THIẾU METADATA:
-- Đọc NỘI DUNG chunk (thường đầu văn bản có tên luật) để tự trích xuất tên + số hiệu.
-- Nếu vẫn KHÔNG xác định được tên văn bản → BỎ HẲN dòng đó, KHÔNG trích dẫn nửa vời, KHÔNG viết placeholder.
-- Nếu TẤT CẢ chunk đều thiếu tên văn bản → bỏ luôn phần "Căn cứ pháp lý" thay vì viết nửa vời.
+- Nếu chunk KHÔNG có dòng `[Meta: ...]` (số hiệu/ngày không trích được khi ingest) → BỎ dòng trích dẫn đó, dùng chunk khác có `[Meta: ...]` đầy đủ.
+- Nếu TẤT CẢ chunk đều thiếu `[Meta: ...]` → bỏ luôn phần "Căn cứ pháp lý".
 
 Dữ liệu pháp luật:
 {context_str}"""
