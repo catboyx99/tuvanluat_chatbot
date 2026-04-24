@@ -29,7 +29,8 @@ prd.md
 
 # Claude Code
 .agent/
-.claude/
+.claude/*
+!.claude/skills/
 
 # IDE
 .vscode/
