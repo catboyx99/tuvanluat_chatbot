@@ -48,6 +48,7 @@ Tiến độ chi tiết + tóm tắt trạng thái hoàn thiện: xem `IMPLEMENT
 ## 5. Quy trình phát triển
 - **Cập nhật `IMPLEMENTATION_PLAN.md`** khi implement xong — PHẢI update cả 2 chỗ: (1) Section 3 đánh `[x]` task chi tiết; (2) Section 2.5 "Tóm tắt trạng thái hoàn thiện" sửa/thêm bullet tương ứng + cập nhật "Số liệu hiện tại" nếu thay đổi. Quên Section 2.5 → AI phiên sau đọc trạng thái sai.
 - **Deploy**: KHÔNG tự deploy server sau khi commit. User tự deploy. Lưu ý khi deploy → `.claude/skills/deploy/SKILL.md`.
+- **KHỐI CHỐNG BỊA trong `backend/app/rag_engine.py`** (system_prompt, bắt đầu bằng `CHỐNG BỊA (BẮT BUỘC — ƯU TIÊN CAO NHẤT)`): BẮT BUỘC giữ nguyên trong mọi lần chỉnh sửa prompt sau này. Khi siết/nới quy tắc trích dẫn hoặc refactor prompt → KHÔNG được rút gọn, xoá, hay thay bằng 1 câu ngắn. Nếu cần bổ sung ràng buộc mới thì thêm bullet, không thay thế. Lý do: đã từng bị rút gọn ở commit 895b0bd khiến LLM bịa số hiệu/điều khoản.
 
 ## 6. Ghi chú kỹ thuật
 - **Python 3.14** có compatibility issues (thiếu `chardet`, Pydantic V1 warning); uvicorn `--reload` không ổn định Windows. `print()` dùng ASCII, KHÔNG tiếng Việt có dấu (Windows cp1252 crash). String literals tiếng Việt trong code OK.
