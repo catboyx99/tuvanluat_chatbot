@@ -1,6 +1,8 @@
 import os
+import re
 import time
 import chromadb
+from collections import OrderedDict
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
@@ -41,11 +43,12 @@ def ingest_docs_to_vector_store(documents):
     return True
 
 def build_llm():
-    # Model chinh: Gemini 2.5 Flash cho cau tra loi (streaming)
+    # Model chinh: gemini-2.5-flash-lite. Profile 24/04: flash co 503 va first-token 40s
+    # trong khi lite khong 503, avg first-token tuong duong. Giu lite de on dinh.
     global _llm_main
     if _llm_main is None:
         _llm_main = ChatGoogleGenerativeAI(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-flash-lite",
             temperature=0.0,
             streaming=True
         )
@@ -64,6 +67,178 @@ def build_rewrite_llm():
 
 # Sentinel token frontend dung de nhan biet loi qua tai
 GEMINI_OVERLOAD_SENTINEL = "__GEMINI_OVERLOAD__"
+
+# === Post-process citation block: dedupe theo so hieu, sap thu tu hieu luc, gop Dieu/Khoan/Diem ===
+CITATION_MARKER = "**Căn cứ pháp lý"
+CITE_LINE_RE = re.compile(
+    r"^\s*[-*]\s*`?\s*(?P<name>.+?)\s*`?\s*\(\s*(?P<num>[^)]+?)\s*\)\s*,\s*"
+    r"(?:ban\s+hành\s+ngày\s*(?P<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*)?"
+    r"(?P<refs>.+?)\s*\.?\s*$"
+)
+# Fallback: dong "BUG 2" - thieu ten van ban, chi co "Luật số X/Y/Z, ban hành..., Điều..."
+CITE_LINE_NONAME_RE = re.compile(
+    r"^\s*[-*]\s*(?P<num>(?:luật\s*số|số\s*hiệu|số)\s+\S+?)\s*,\s*"
+    r"(?:ban\s+hành\s+ngày\s*(?P<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*)?"
+    r"(?P<refs>.+?)\s*\.?\s*$",
+    re.IGNORECASE,
+)
+REF_TOKEN_RE = re.compile(r"(Điều|Khoản|Điểm|Chương|Mục)\s+([^\s,;]+)", re.IGNORECASE)
+
+
+def _doc_level(name: str, num: str) -> int:
+    n = name.lower()
+    u = num.lower()
+    if "luật sửa đổi" in n or "sửa đổi, bổ sung" in n:
+        return 2
+    if n.startswith("luật") or "/qh" in u:
+        # /qh trong so hieu luat (vd 08/2012/QH13)
+        return 2 if "sửa đổi" in n else 1
+    if "nghị quyết" in n or "/nq-" in u:
+        return 3
+    if "nghị định" in n or "nđ-cp" in u or "/nd-" in u:
+        return 4
+    if "quyết định" in n or "/qđ-" in u or "/qd-" in u:
+        return 5
+    if "thông tư" in n or "/tt-" in u:
+        return 6
+    return 7
+
+
+def _extract_year(num: str) -> int:
+    # Vd "08/2012/QH13" -> 2012, "125/2024/NĐ-CP" -> 2024
+    m = re.search(r"/(\d{4})/", num) or re.search(r"(\d{4})", num)
+    return int(m.group(1)) if m else 0
+
+
+def _parse_refs(s: str):
+    return [(kind.capitalize(), val.rstrip(".,;)")) for kind, val in REF_TOKEN_RE.findall(s)]
+
+
+def _merge_refs(struct: "OrderedDict", tokens):
+    """struct: OrderedDict[Điều -> OrderedDict[Khoản -> list[Điểm]]]. Khoản="" khi khong co."""
+    cur_dieu = None
+    cur_khoan = None
+    for kind, val in tokens:
+        k = kind.lower()
+        if k == "điều":
+            cur_dieu = val
+            struct.setdefault(cur_dieu, OrderedDict())
+            cur_khoan = None
+        elif k == "khoản":
+            if cur_dieu is None:
+                continue
+            cur_khoan = val
+            struct[cur_dieu].setdefault(cur_khoan, [])
+        elif k == "điểm":
+            if cur_dieu is None:
+                continue
+            if cur_khoan is None:
+                cur_khoan = ""
+                struct[cur_dieu].setdefault("", [])
+            if val not in struct[cur_dieu][cur_khoan]:
+                struct[cur_dieu][cur_khoan].append(val)
+        # bo qua Chuong/Muc — khong dua vao trich dan cuoi
+
+
+def _format_refs(struct: "OrderedDict") -> str:
+    parts = []
+    for dieu, khoan_map in struct.items():
+        parts.append(f"Điều {dieu}")
+        for khoan, diems in khoan_map.items():
+            if khoan:
+                parts.append(f"Khoản {khoan}")
+            for diem in diems:
+                parts.append(f"Điểm {diem}")
+    return ", ".join(parts)
+
+
+def fix_citation_block(text: str) -> str:
+    """Parse citation block sau '**Căn cứ pháp lý:**' va viet lai chuan:
+    - Dedupe theo so hieu (gop nhieu dong cua cung 1 van ban thanh 1 dong).
+    - Sap theo thu bac hieu luc (Luat -> Luat sua doi -> NQ -> ND -> QD -> TT -> khac).
+    - Trong cung 1 cap, sap theo nam giam dan.
+    - Format paren: 'Luật số X' neu ten bat dau 'Luật', con lai 'Số X'.
+    """
+    lines = text.splitlines()
+    head_idx = None
+    for i, ln in enumerate(lines):
+        if "Căn cứ pháp lý" in ln:
+            head_idx = i
+            break
+    if head_idx is None:
+        return text
+
+    prefix = "\n".join(lines[:head_idx])
+    head = lines[head_idx]
+    body = lines[head_idx + 1:]
+
+    docs = OrderedDict()  # key (so hieu chuan hoa) -> {name, num_core, date, struct}
+    leftover_pre = []
+    leftover_post = []
+    seen_any = False
+    for ln in body:
+        if not ln.strip():
+            if seen_any:
+                continue
+            else:
+                leftover_pre.append(ln)
+                continue
+        m = CITE_LINE_RE.match(ln)
+        m2 = None if m else CITE_LINE_NONAME_RE.match(ln)
+        if not m and not m2:
+            (leftover_post if seen_any else leftover_pre).append(ln)
+            continue
+        seen_any = True
+        if m:
+            name = m.group("name").strip().strip("`*").strip()
+            num_raw = m.group("num").strip()
+            date = (m.group("date") or "").strip()
+            refs_str = m.group("refs").strip()
+        else:
+            # Khong co ten -> tam gan name=""; neu sau merge khong co dong nao bo sung ten thi BO
+            name = ""
+            num_raw = m2.group("num").strip()
+            date = (m2.group("date") or "").strip()
+            refs_str = m2.group("refs").strip()
+        # Strip "Luật số" / "Số hiệu" / "Số" prefix de lay key chuan
+        core = re.sub(r"^(?:luật\s*số|số\s*hiệu|số)\s*[:\s]*", "", num_raw, flags=re.I).strip()
+        key = core.lower()
+        if key not in docs:
+            docs[key] = {"name": name, "core": core, "date": date, "struct": OrderedDict()}
+        else:
+            if not docs[key]["date"] and date:
+                docs[key]["date"] = date
+            # Giu ten dai hon (it co kha nang day du hon)
+            if len(name) > len(docs[key]["name"]):
+                docs[key]["name"] = name
+        _merge_refs(docs[key]["struct"], _parse_refs(refs_str))
+
+    # Bo cac doc thieu ten (BUG 2 khong duoc dong khac bo sung) — theo CLAUDE.md
+    docs = OrderedDict((k, v) for k, v in docs.items() if v["name"])
+
+    items = list(docs.items())
+    items.sort(key=lambda kv: (_doc_level(kv[1]["name"], kv[1]["core"]), -_extract_year(kv[1]["core"])))
+
+    out_lines = []
+    if prefix:
+        out_lines.append(prefix)
+    out_lines.append(head)
+    out_lines.extend(leftover_pre)
+    for _, v in items:
+        if v["name"].lower().startswith("luật"):
+            paren = f"Luật số {v['core']}"
+        else:
+            paren = f"Số {v['core']}"
+        line = f"- {v['name']} ({paren})"
+        if v["date"]:
+            line += f", ban hành ngày {v['date']}"
+        refs_out = _format_refs(v["struct"])
+        if refs_out:
+            line += f", {refs_out}"
+        line += "."
+        out_lines.append(line)
+    out_lines.extend(leftover_post)
+    return "\n".join(out_lines)
 
 
 def rewrite_query(query: str) -> str:
@@ -191,19 +366,52 @@ QUY TẮC TRÍCH DẪN (BẮT BUỘC — đọc kỹ):
 
 Trong cùng 1 cấp, sắp theo năm ban hành mới → cũ. Nếu câu hỏi trực tiếp liên quan Luật Giáo dục / Luật Giáo dục đại học → dòng Luật đó PHẢI ở vị trí đầu tiên.
 
-VD đúng (thứ tự Luật → Luật sửa đổi → Nghị định → Thông tư):
+**FORMAT BẮT BUỘC cho MỖI dòng** (copy-paste chính xác cấu trúc này, KHÔNG được đảo thứ tự các thành phần):
+`<TÊN VĂN BẢN ĐẦY ĐỦ> (<SỐ HIỆU>), ban hành ngày <DD/MM/YYYY>, Điều <số>, Khoản <số>, Điểm <chữ>.`
+
+Dòng Căn cứ pháp lý CHỈ chứa thông tin định vị nguồn (tên + số hiệu + ngày + Điều/Khoản/Điểm). TUYỆT ĐỐI KHÔNG nhét nội dung quy định/trích nguyên văn vào dòng trích dẫn — nội dung quy định đã nói ở phần 1 (lời tư vấn) phía trên.
+
+VD ĐÚNG (thứ tự Luật → Luật sửa đổi → Nghị định → Thông tư):
 - `Luật Giáo dục đại học (Luật số 08/2012/QH13), ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
 - `Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học (Luật số 34/2018/QH14), ban hành ngày 19/11/2018, Điều 1, Khoản 10.`
 - `Nghị định 125/2024/NĐ-CP (Số 125/2024/NĐ-CP), ban hành ngày 05/10/2024, Điều 95, Khoản 1.`
 - `Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 5.`
 
-CẤM TUYỆT ĐỐI:
+VD SAI — BUG 1 (format đảo, nội dung quy định nhét vào trích dẫn):
+`- Thủ tướng Chính phủ quyết định thành lập trường đại học công lập. (Nghị định số 125/2024/NĐ-CP, ban hành ngày 05/10/2024, Điều 95, Khoản 1)`
+→ CẤM viết như vậy. Sửa thành: `- Nghị định 125/2024/NĐ-CP (Số 125/2024/NĐ-CP), ban hành ngày 05/10/2024, Điều 95, Khoản 1.`
+
+VD SAI — BUG 2 (thiếu tên văn bản, chỉ có "Luật số ..."):
+`- Luật số 08/2012/QH13, ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
+→ CẤM. Bắt buộc có tên: `- Luật Giáo dục đại học (Luật số 08/2012/QH13), ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
+
+VD SAI — BUG 3 (thứ tự Nghị định trước Luật):
+```
+- Nghị định 125/2024/NĐ-CP ..., Điều 95.
+- Luật Giáo dục đại học (Luật số 08/2012/QH13) ..., Điều 27.
+```
+→ CẤM. Luật BẮT BUỘC đứng trên Nghị định. Sửa:
+```
+- Luật Giáo dục đại học (Luật số 08/2012/QH13) ..., Điều 27.
+- Nghị định 125/2024/NĐ-CP ..., Điều 95.
+```
+
+VD SAI — BUG 4 (lặp cùng 1 văn bản ở 2 dòng):
+```
+- Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 1.
+- Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 3.
+```
+→ CẤM lặp. Gộp 1 dòng duy nhất: `- Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 1, Khoản 1, Khoản 2, Điều 3.`
+
+CẤM TUYỆT ĐỐI (tổng hợp):
 - KHÔNG ghép tên từ chunk này với số hiệu/ngày từ chunk khác (VD: tên "Luật sửa đổi" + số hiệu `08/2012/QH13` = SAI, vì `08/2012/QH13` là Luật gốc, không phải sửa đổi).
-- KHÔNG viết trích dẫn thiếu tên văn bản hoặc thiếu số hiệu trong `( )` — VI PHẠM.
+- KHÔNG viết trích dẫn thiếu tên văn bản hoặc thiếu số hiệu trong `( )` — VI PHẠM (xem BUG 2).
+- KHÔNG đảo format: nội dung quy định ở ngoài, `(số hiệu, ngày, Điều)` trong ngoặc → CẤM (xem BUG 1). Luôn theo format `TÊN (SỐ HIỆU), ban hành ngày ..., Điều ...`.
 - KHÔNG copy nguyên văn `[Nguồn: ...]` hay `[Meta: ...]` — đó là nhãn nội bộ.
 - KHÔNG dùng placeholder `[...]`, KHÔNG ghi `(không rõ nguồn)`, `(chưa xác định)`.
 - KHÔNG bịa số hiệu hoặc ngày tháng. Nếu dòng `[Meta: ...]` không có `Số hiệu` hoặc `Ban hành` → BỎ HẲN dòng đó.
-- KHÔNG lặp cùng 1 văn bản ở 2 dòng khác nhau — nếu nhiều Điều/Khoản của cùng văn bản, gộp 1 dòng (VD `..., Điều 27, Khoản 2, Điều 45, Khoản 1, Khoản 2.`).
+- KHÔNG lặp cùng 1 văn bản ở 2 dòng khác nhau — gộp 1 dòng duy nhất (xem BUG 4).
+- KHÔNG đảo thứ tự hiệu lực: Luật phải đứng TRƯỚC Nghị định/Thông tư trong mọi trường hợp (xem BUG 3).
 
 XỬ LÝ CHUNK THIẾU METADATA:
 - Nếu chunk KHÔNG có dòng `[Meta: ...]` (số hiệu/ngày không trích được khi ingest) → BỎ dòng trích dẫn đó, dùng chunk khác có `[Meta: ...]` đầy đủ.
@@ -226,18 +434,68 @@ Dữ liệu pháp luật:
     # Thêm câu hỏi cuối
     messages.append(HumanMessage(content=query))
 
-    # 4. Stream output — bat loi 503/qua tai -> yield sentinel cho frontend hien retry
+    # 4. Stream output — auto retry 1 lan neu 503/UNAVAILABLE & chua stream byte nao.
+    #    Sau 2 lan fail -> yield sentinel cho frontend hien nut retry thu cong.
+    #    Phan loi tu van: stream bth (chi giu HOLD ky tu cuoi de phat hien marker bi cat).
+    #    Phan Can cu phap ly: buffer toan bo, post-process bang fix_citation_block roi yield.
     llm = build_llm()
-    t3 = time.time()
-    first_chunk = True
-    try:
-        for chunk in llm.stream(messages):
-            if first_chunk:
-                print(f"[Perf] LLM first token: {time.time()-t3:.2f}s | Total FTTB: {time.time()-t0:.2f}s")
-                first_chunk = False
-            yield chunk.content
-    except Exception as e:
-        print(f"[Error] LLM stream failed: {type(e).__name__}: {e}")
-        # Neu chua co chu nao stream ra -> yield sentinel de frontend nhan biet va hien nut retry
-        # Neu da stream 1 phan -> yield sentinel o cuoi, frontend van co the retry
-        yield GEMINI_OVERLOAD_SENTINEL
+    max_attempts = 2
+    HOLD = 80  # giu duoi pending de bat marker bi cat ngang giua cac chunk
+    for attempt in range(max_attempts):
+        t3 = time.time()
+        first_chunk = True
+        streamed_any = False
+        pending = ""
+        citation_buf = ""
+        in_citation = False
+        try:
+            for chunk in llm.stream(messages):
+                if first_chunk:
+                    print(f"[Perf] LLM first token: {time.time()-t3:.2f}s | Total FTTB: {time.time()-t0:.2f}s (attempt {attempt+1})")
+                    first_chunk = False
+                text = chunk.content or ""
+                if not text:
+                    continue
+                if in_citation:
+                    citation_buf += text
+                    streamed_any = True
+                    continue
+                pending += text
+                idx = pending.find(CITATION_MARKER)
+                if idx >= 0:
+                    if idx > 0:
+                        yield pending[:idx]
+                        streamed_any = True
+                    citation_buf = pending[idx:]
+                    pending = ""
+                    in_citation = True
+                else:
+                    if len(pending) > HOLD:
+                        out = pending[:-HOLD]
+                        pending = pending[-HOLD:]
+                        yield out
+                        streamed_any = True
+            # Stream xong binh thuong: flush
+            if in_citation:
+                yield fix_citation_block(citation_buf)
+            elif pending:
+                yield pending
+            return
+        except Exception as e:
+            err = str(e)
+            is_503 = "503" in err or "UNAVAILABLE" in err
+            if is_503 and not streamed_any and attempt < max_attempts - 1:
+                print(f"[Retry] 503 on attempt {attempt+1}, backing off 2s")
+                time.sleep(2)
+                continue
+            print(f"[Error] LLM stream failed: {type(e).__name__}: {e}")
+            # Flush phan da co (neu co) truoc khi yield sentinel
+            if in_citation and citation_buf:
+                try:
+                    yield fix_citation_block(citation_buf)
+                except Exception:
+                    yield citation_buf
+            elif pending:
+                yield pending
+            yield GEMINI_OVERLOAD_SENTINEL
+            return
