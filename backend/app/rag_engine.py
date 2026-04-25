@@ -346,7 +346,7 @@ CHỐNG BỊA (BẮT BUỘC — ƯU TIÊN CAO NHẤT):
 Suy luận ý định câu hỏi đời thường được phép (VD: "con tôi 20 tuổi học ở đâu" = quy định độ tuổi, quyền học tập) — nhưng câu trả lời vẫn PHẢI bám vào dữ liệu bên dưới.
 
 Trả lời bằng tiếng Việt có dấu đầy đủ, chia 2 phần:
-1. Lời tư vấn dễ hiểu, mạch lạc.
+1. **Lời tư vấn ĐẦY ĐỦ và mạch lạc** — KHÔNG được rút gọn xuống còn 1-2 câu. Phải bao gồm: (a) trả lời trực tiếp câu hỏi, (b) liệt kê toàn bộ điều kiện/thẩm quyền/quy trình/đối tượng có trong dữ liệu, (c) chia mục rõ ràng nếu có nhiều nội dung (dùng heading **bold** hoặc bullet). Mục tiêu: người đọc nắm trọn bộ quy định mà không cần đọc Căn cứ pháp lý.
 2. **Căn cứ pháp lý:** cuối câu trả lời. Mỗi nguồn 1 gạch đầu dòng (-).
 
 QUY TẮC TRÍCH DẪN (BẮT BUỘC — đọc kỹ):
@@ -371,37 +371,34 @@ Trong cùng 1 cấp, sắp theo năm ban hành mới → cũ. Nếu câu hỏi t
 
 Dòng Căn cứ pháp lý CHỈ chứa thông tin định vị nguồn (tên + số hiệu + ngày + Điều/Khoản/Điểm). TUYỆT ĐỐI KHÔNG nhét nội dung quy định/trích nguyên văn vào dòng trích dẫn — nội dung quy định đã nói ở phần 1 (lời tư vấn) phía trên.
 
-VD ĐÚNG (thứ tự Luật → Luật sửa đổi → Nghị định → Thông tư):
-- `Luật Giáo dục đại học (Luật số 08/2012/QH13), ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
-- `Luật sửa đổi, bổ sung một số điều của Luật Giáo dục đại học (Luật số 34/2018/QH14), ban hành ngày 19/11/2018, Điều 1, Khoản 10.`
-- `Nghị định 125/2024/NĐ-CP (Số 125/2024/NĐ-CP), ban hành ngày 05/10/2024, Điều 95, Khoản 1.`
-- `Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 5.`
+VD format hợp lệ (chỉ minh hoạ cấu trúc — KHÔNG phải nội dung mẫu để copy):
+- `<TÊN LUẬT GỐC> (Luật số <NN/YYYY/QHxx>), ban hành ngày <DD/MM/YYYY>, Điều X, Khoản Y.`
+- `<TÊN LUẬT SỬA ĐỔI> (Luật số <NN/YYYY/QHxx>), ban hành ngày <DD/MM/YYYY>, Điều X, Khoản Y.`
+- `<TÊN NGHỊ ĐỊNH> (Số <NN/YYYY/NĐ-CP>), ban hành ngày <DD/MM/YYYY>, Điều X.`
+- `<TÊN THÔNG TƯ> (Số <NN/YYYY/TT-CƠQUAN>), ban hành ngày <DD/MM/YYYY>, Điều X, Điểm a.`
 
 VD SAI — BUG 1 (format đảo, nội dung quy định nhét vào trích dẫn):
-`- Thủ tướng Chính phủ quyết định thành lập trường đại học công lập. (Nghị định số 125/2024/NĐ-CP, ban hành ngày 05/10/2024, Điều 95, Khoản 1)`
-→ CẤM viết như vậy. Sửa thành: `- Nghị định 125/2024/NĐ-CP (Số 125/2024/NĐ-CP), ban hành ngày 05/10/2024, Điều 95, Khoản 1.`
+`- <CÂU NỘI DUNG QUY ĐỊNH BỊ ĐẶT TRONG DÒNG TRÍCH DẪN>. (<số hiệu>, <ngày>, Điều X, Khoản Y)`
+→ CẤM. Nội dung quy định phải nằm ở phần 1 (lời tư vấn). Dòng trích dẫn chỉ chứa định danh nguồn theo FORMAT BẮT BUỘC ở trên.
 
 VD SAI — BUG 2 (thiếu tên văn bản, chỉ có "Luật số ..."):
-`- Luật số 08/2012/QH13, ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
-→ CẤM. Bắt buộc có tên: `- Luật Giáo dục đại học (Luật số 08/2012/QH13), ban hành ngày 18/06/2012, Điều 27, Khoản 2.`
+`- <Loại> số <NN/YYYY/TYPE>, ban hành ngày <ngày>, Điều X, Khoản Y.`
+→ CẤM. Bắt buộc có tên TRƯỚC paren: `- <TÊN VĂN BẢN ĐẦY ĐỦ> (<Loại> số <NN/YYYY/TYPE>), ban hành ngày <ngày>, Điều X, Khoản Y.`
 
-VD SAI — BUG 3 (thứ tự Nghị định trước Luật):
+VD SAI — BUG 3 (thứ tự đảo: văn bản cấp thấp đứng trước văn bản cấp cao):
 ```
-- Nghị định 125/2024/NĐ-CP ..., Điều 95.
-- Luật Giáo dục đại học (Luật số 08/2012/QH13) ..., Điều 27.
+- <Thông tư> ..., Điều X.
+- <Nghị định> ..., Điều Y.
+- <Luật> ..., Điều Z.
 ```
-→ CẤM. Luật BẮT BUỘC đứng trên Nghị định. Sửa:
-```
-- Luật Giáo dục đại học (Luật số 08/2012/QH13) ..., Điều 27.
-- Nghị định 125/2024/NĐ-CP ..., Điều 95.
-```
+→ CẤM. Luật BẮT BUỘC đứng trên Nghị định, Nghị định BẮT BUỘC đứng trên Thông tư. Sửa lại theo thứ tự Luật → NĐ → TT.
 
-VD SAI — BUG 4 (lặp cùng 1 văn bản ở 2 dòng):
+VD SAI — BUG 4 (lặp cùng 1 văn bản ở 2 dòng khác nhau):
 ```
-- Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 1.
-- Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 3.
+- <Văn bản A> (<Số hiệu A>) ..., Điều 1.
+- <Văn bản A> (<Số hiệu A>) ..., Điều 3, Khoản 2.
 ```
-→ CẤM lặp. Gộp 1 dòng duy nhất: `- Thông tư 08/2021/TT-BGDĐT (Số 08/2021/TT-BGDĐT), ban hành ngày 18/03/2021, Điều 1, Khoản 1, Khoản 2, Điều 3.`
+→ CẤM lặp. Gộp 1 dòng duy nhất: `- <Văn bản A> (<Số hiệu A>), ban hành ngày ..., Điều 1, Điều 3, Khoản 2.`
 
 CẤM TUYỆT ĐỐI (tổng hợp):
 - KHÔNG ghép tên từ chunk này với số hiệu/ngày từ chunk khác (VD: tên "Luật sửa đổi" + số hiệu `08/2012/QH13` = SAI, vì `08/2012/QH13` là Luật gốc, không phải sửa đổi).
