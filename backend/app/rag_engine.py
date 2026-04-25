@@ -69,7 +69,8 @@ def build_rewrite_llm():
 GEMINI_OVERLOAD_SENTINEL = "__GEMINI_OVERLOAD__"
 
 # === Post-process citation block: dedupe theo so hieu, sap thu tu hieu luc, gop Dieu/Khoan/Diem ===
-CITATION_MARKER = "**Căn cứ pháp lý"
+# Regex bat marker linh hoat: chap nhan "**Căn cứ pháp lý**", "## Căn cứ pháp lý", "# Căn cứ pháp lý", "Căn cứ pháp lý:" ...
+CITATION_MARKER_RE = re.compile(r"(?:\*\*|##|#)?\s*Căn\s+cứ\s+pháp\s+lý")
 CITE_LINE_RE = re.compile(
     r"^\s*[-*]\s*`?\s*(?P<name>.+?)\s*`?\s*\(\s*(?P<num>[^)]+?)\s*\)\s*,\s*"
     r"(?:ban\s+hành\s+ngày\s*(?P<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*)?"
@@ -78,6 +79,14 @@ CITE_LINE_RE = re.compile(
 # Fallback: dong "BUG 2" - thieu ten van ban, chi co "Luật số X/Y/Z, ban hành..., Điều..."
 CITE_LINE_NONAME_RE = re.compile(
     r"^\s*[-*]\s*(?P<num>(?:luật\s*số|số\s*hiệu|số)\s+\S+?)\s*,\s*"
+    r"(?:ban\s+hành\s+ngày\s*(?P<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*)?"
+    r"(?P<refs>.+?)\s*\.?\s*$",
+    re.IGNORECASE,
+)
+# Fallback 2: format LLM hay xuat thieu paren - "Nghị định 125/2024/NĐ-CP, ban hành ngày..."
+# hoac "Luật Giáo dục 43/2019/QH14, ngày..." - capture name la phan truoc so hieu.
+CITE_LINE_NOPAREN_RE = re.compile(
+    r"^\s*[-*]\s*(?P<name>.+?)\s*(?:số\s+)?(?P<num>\d+/\d+/[\w\-ĐD]+)\s*,\s*"
     r"(?:ban\s+hành\s+ngày\s*(?P<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*)?"
     r"(?P<refs>.+?)\s*\.?\s*$",
     re.IGNORECASE,
@@ -162,7 +171,7 @@ def fix_citation_block(text: str) -> str:
     lines = text.splitlines()
     head_idx = None
     for i, ln in enumerate(lines):
-        if "Căn cứ pháp lý" in ln:
+        if CITATION_MARKER_RE.search(ln):
             head_idx = i
             break
     if head_idx is None:
@@ -185,7 +194,8 @@ def fix_citation_block(text: str) -> str:
                 continue
         m = CITE_LINE_RE.match(ln)
         m2 = None if m else CITE_LINE_NONAME_RE.match(ln)
-        if not m and not m2:
+        m3 = None if (m or m2) else CITE_LINE_NOPAREN_RE.match(ln)
+        if not m and not m2 and not m3:
             (leftover_post if seen_any else leftover_pre).append(ln)
             continue
         seen_any = True
@@ -194,12 +204,18 @@ def fix_citation_block(text: str) -> str:
             num_raw = m.group("num").strip()
             date = (m.group("date") or "").strip()
             refs_str = m.group("refs").strip()
-        else:
+        elif m2:
             # Khong co ten -> tam gan name=""; neu sau merge khong co dong nao bo sung ten thi BO
             name = ""
             num_raw = m2.group("num").strip()
             date = (m2.group("date") or "").strip()
             refs_str = m2.group("refs").strip()
+        else:
+            # Format thieu paren: "Nghi dinh 125/2024/ND-CP, ban hanh ngay..."
+            name = m3.group("name").strip().strip("`*").strip()
+            num_raw = m3.group("num").strip()
+            date = (m3.group("date") or "").strip()
+            refs_str = m3.group("refs").strip()
         # Strip "Luật số" / "Số hiệu" / "Số" prefix de lay key chuan
         core = re.sub(r"^(?:luật\s*số|số\s*hiệu|số)\s*[:\s]*", "", num_raw, flags=re.I).strip()
         key = core.lower()
@@ -213,8 +229,30 @@ def fix_citation_block(text: str) -> str:
                 docs[key]["name"] = name
         _merge_refs(docs[key]["struct"], _parse_refs(refs_str))
 
-    # Bo cac doc thieu ten (BUG 2 khong duoc dong khac bo sung) — theo CLAUDE.md
-    docs = OrderedDict((k, v) for k, v in docs.items() if v["name"])
+    # Voi doc thieu ten (BUG 2): suy ra ten generic tu so hieu type (Luat/ND/TT/QD/NQ).
+    # Truoc kia drop han nhung roi se mat ca dong neu LLM xuat tat ca theo BUG 2 format.
+    def _generic_name_from_core(core: str) -> str:
+        c = core.lower()
+        if "/qh" in c:
+            return "Luật"
+        if "/nđ-cp" in c or "/nd-cp" in c:
+            return "Nghị định"
+        if "/nq-" in c:
+            return "Nghị quyết"
+        if "/qđ-" in c or "/qd-" in c:
+            return "Quyết định"
+        if "/tt-" in c:
+            return "Thông tư"
+        return ""
+
+    for k in list(docs.keys()):
+        if not docs[k]["name"]:
+            gn = _generic_name_from_core(docs[k]["core"])
+            if gn:
+                docs[k]["name"] = gn
+            else:
+                # Khong infer duoc type -> BO theo CLAUDE.md
+                del docs[k]
 
     items = list(docs.items())
     items.sort(key=lambda kv: (_doc_level(kv[1]["name"], kv[1]["core"]), -_extract_year(kv[1]["core"])))
@@ -222,7 +260,8 @@ def fix_citation_block(text: str) -> str:
     out_lines = []
     if prefix:
         out_lines.append(prefix)
-    out_lines.append(head)
+    # Chuan hoa head ve "**Căn cứ pháp lý:**" du LLM xuat dang ## hay # hay khong co dau :
+    out_lines.append("**Căn cứ pháp lý:**")
     out_lines.extend(leftover_pre)
     for _, v in items:
         if v["name"].lower().startswith("luật"):
@@ -343,6 +382,12 @@ CHỐNG BỊA (BẮT BUỘC — ƯU TIÊN CAO NHẤT):
 - Nếu dữ liệu HOÀN TOÀN không liên quan đến câu hỏi → trả lời đúng một câu: "Xin lỗi, hệ thống không có dữ liệu pháp lý liên quan." (không trích dẫn, không phần Căn cứ pháp lý).
 - Nếu dữ liệu chỉ liên quan MỘT PHẦN → trả lời phần có dữ liệu, phần còn lại nói rõ "dữ liệu hiện có chưa đề cập", KHÔNG tự điền.
 
+⚠️ RULE BẮT BUỘC #1 — LIỆT KÊ MỌI VĂN BẢN CẤP LUẬT TRONG CONTEXT:
+TRƯỚC khi viết Căn cứ pháp lý, BẮT BUỘC scan toàn bộ "Dữ liệu pháp luật" tìm các chunk có `[Meta: Số hiệu: <NN/YYYY/QHxx>]` (kết thúc /QH13, /QH14, /QH15...).
+- Mọi `/QHxx` trong Meta phải xuất hiện ở Căn cứ pháp lý ở vị trí ĐẦU TIÊN.
+- VI PHẠM nghiêm trọng: bỏ qua Luật `/QHxx` mà chỉ cite Nghị định `/NĐ-CP` hoặc Thông tư `/TT-...`. NĐ/TT là văn bản hướng dẫn → bắt buộc phải dẫn cả Luật gốc.
+- Nếu Meta của Luật chỉ xuất hiện ở 1 chunk trong khi NĐ chiếm 9/10 chunk → VẪN PHẢI cite Luật đó (chỉ 1 chunk cũng đủ).
+
 Suy luận ý định câu hỏi đời thường được phép (VD: "con tôi 20 tuổi học ở đâu" = quy định độ tuổi, quyền học tập) — nhưng câu trả lời vẫn PHẢI bám vào dữ liệu bên dưới.
 
 Trả lời bằng tiếng Việt có dấu đầy đủ, chia 2 phần:
@@ -365,6 +410,12 @@ QUY TẮC TRÍCH DẪN (BẮT BUỘC — đọc kỹ):
 7. Các văn bản khác (Công văn, Kế hoạch...)
 
 Trong cùng 1 cấp, sắp theo năm ban hành mới → cũ. Nếu câu hỏi trực tiếp liên quan Luật Giáo dục / Luật Giáo dục đại học → dòng Luật đó PHẢI ở vị trí đầu tiên.
+
+**BẮT BUỘC CITE LUẬT GỐC** (rule chống bỏ sót):
+- Nếu trong "Dữ liệu pháp luật" bên dưới có BẤT KỲ chunk nào có số hiệu kết thúc bằng `/QHxx` (Luật / Luật sửa đổi / Nghị quyết Quốc hội) liên quan đến chủ đề câu hỏi → BẮT BUỘC đưa Luật đó vào Căn cứ pháp lý ở vị trí ĐẦU TIÊN.
+- TUYỆT ĐỐI KHÔNG được chỉ cite Nghị định/Thông tư/Quyết định hướng dẫn mà bỏ Luật gốc, kể cả khi Luật chỉ xuất hiện ở 1 chunk còn NĐ/TT chiếm nhiều chunk hơn.
+- Lý do: Nghị định/Thông tư là văn bản hướng dẫn — phải dẫn nguồn pháp lý cấp cao nhất (Luật) để người đọc tra cứu được gốc quy định.
+- Ví dụ áp dụng: nếu câu hỏi về thành lập đại học và context có cả `08/2012/QH13` (Luật GDĐH) lẫn `125/2024/NĐ-CP` (NĐ hướng dẫn) → căn cứ pháp lý PHẢI có CẢ HAI, Luật đứng trước.
 
 **FORMAT BẮT BUỘC cho MỖI dòng** (copy-paste chính xác cấu trúc này, KHÔNG được đảo thứ tự các thành phần):
 `<TÊN VĂN BẢN ĐẦY ĐỦ> (<SỐ HIỆU>), ban hành ngày <DD/MM/YYYY>, Điều <số>, Khoản <số>, Điểm <chữ>.`
@@ -458,7 +509,8 @@ Dữ liệu pháp luật:
                     streamed_any = True
                     continue
                 pending += text
-                idx = pending.find(CITATION_MARKER)
+                _mm = CITATION_MARKER_RE.search(pending)
+                idx = _mm.start() if _mm else -1
                 if idx >= 0:
                     if idx > 0:
                         yield pending[:idx]
