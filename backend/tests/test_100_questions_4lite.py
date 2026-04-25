@@ -462,7 +462,7 @@ def run_test_suite():
     # Save to file
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_dir = os.path.dirname(os.path.abspath(__file__))
-    output_file = os.path.join(output_dir, "smoke_test_100_%s.json" % timestamp)
+    output_file = os.path.join(output_dir, "test_suit_%s.json" % timestamp)
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
 

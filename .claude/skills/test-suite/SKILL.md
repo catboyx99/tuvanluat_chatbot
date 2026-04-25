@@ -48,7 +48,7 @@ Câu hỏi cho user (khi cần hỏi):
 | Script | `backend/tests/<script_chọn>.py` trên host. Script KHÔNG có trong Docker image — phải `docker compose cp` vào container khi chạy. |
 | Số câu hỏi | 100 (phân theo group: Giáo dục, BHXH, BHYT, Việc làm, Tài chính, Khiếu nại, Khác) |
 | API endpoint | `http://localhost:8000/api/chat` (từ trong container backend) |
-| Output file | Trong container `/tmp/tests/test_suite_*.json` (suite 1) hoặc `smoke_test_100_*.json` (suite 2) |
+| Output file | Trong container `/tmp/tests/test_suite_*.json` (suite 1) hoặc `test_suit_*.json` (suite 2) |
 | Thời gian chạy | ~25-40 phút (100 câu × 15-25s/câu, tuỳ Gemini latency) |
 
 ## Tiền đề
@@ -62,12 +62,12 @@ Nếu thiếu → DỪNG, báo user chạy `/deploy` trước.
 
 Sau khi có lựa chọn, set biến `SCRIPT` theo bảng trên rồi chạy khối dưới. Ví dụ:
 - Suite 1: `SCRIPT=test_100_questions.py`, `PATTERN=test_suite_*.json`
-- Suite 2: `SCRIPT=test_100_questions_4lite.py`, `PATTERN=smoke_test_100_*.json`
+- Suite 2: `SCRIPT=test_100_questions_4lite.py`, `PATTERN=test_suit_*.json`
 
 ```bash
 # 0. Set bien theo lua chon
 SCRIPT=test_100_questions.py              # hoac test_100_questions_4lite.py
-PATTERN="test_suite_*.json"               # hoac "smoke_test_100_*.json"
+PATTERN="test_suite_*.json"               # hoac "test_suit_*.json"
 
 # 1. Vao repo
 cd ~/tuvanluat_chatbot

@@ -4,27 +4,104 @@ from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_text_splitters import MarkdownHeaderTextSplitter, RecursiveCharacterTextSplitter
 
 
+def _normalize_type(t: str) -> str:
+    """Chuan hoa TYPE: cac dau cach/underscore -> '-', merge dau '-' lien tiep, ND -> NĐ, QD -> QĐ."""
+    t = re.sub(r"[\s_]+", "-", t.strip())
+    t = re.sub(r"-+", "-", t)
+    # Chuan hoa ASCII -> Unicode (file ascii dat ten "ND-CP" thay vi "NĐ-CP")
+    t = t.replace("ND-CP", "NĐ-CP").replace("Nd-CP", "NĐ-CP")
+    t = re.sub(r"^QD-", "QĐ-", t)
+    t = re.sub(r"\bBGDDT\b", "BGDĐT", t)
+    t = re.sub(r"\bBLDTBXH\b", "BLĐTBXH", t)
+    return t
+
+
+def _extract_so_hieu_from_filename(source_path: str) -> str:
+    """Parse so hieu tu filename. Reliable hon text vi OCR thuong hong dong tieu de.
+    Tra ve so hieu chuan format NN/YYYY/TYPE hoac NN/TYPE (QD khong co nam) hoac '' neu khong match.
+    Vd:
+      - 'Luật-43-2019-QH14.md' -> '43/2019/QH14'
+      - 'Thông tư số 25-2021-TT-BGDĐT .md' -> '25/2021/TT-BGDĐT'
+      - 'Quyết-định-2383-QĐ-BGDĐT.md' -> '2383/QĐ-BGDĐT'
+      - '212_2025_ND-CP_666742.md' -> '212/2025/NĐ-CP'
+      - '1134_QD-BGDDT_512062.md' -> '1134/QĐ-BGDĐT'
+    """
+    fname = os.path.basename(source_path).replace(".md", "").strip()
+
+    # Pattern A: Luat/Nghi dinh/Thong tu/Nghi quyet co nam
+    pat_a = re.compile(
+        r"(?:Luật|Nghị[-\s]?định|Thông[-\s]?tư|Nghị[-\s]?quyết)"
+        r"(?:\s+số)?[-\s_]+(\d{1,4})[-\s_]+(\d{4})[-\s_]+"
+        r"(QH\d+|N[ĐD][-\s_]?CP|TT[-\s_][\w\-ĐD]+|NQ[-\s_][\w\-ĐD]+)",
+        re.IGNORECASE,
+    )
+    m = pat_a.search(fname)
+    if m:
+        return f"{m.group(1)}/{m.group(2)}/{_normalize_type(m.group(3))}"
+
+    # Pattern B: bat dau bang so - format <NN>_<YYYY>_<TYPE>... vd "21_2020_TT_BGDDT", "212_2025_ND-CP_666742"
+    pat_b = re.compile(
+        r"^(\d{1,4})[_-](\d{4})[_-]"
+        r"(QH\d+|N[ĐD][-_]?CP|TT[_-][\w\-ĐD]+|NQ[_-][\w\-ĐD]+)",
+        re.IGNORECASE,
+    )
+    m = pat_b.match(fname)
+    if m:
+        return f"{m.group(1)}/{m.group(2)}/{_normalize_type(m.group(3))}"
+
+    # Pattern C: Quyet dinh khong co nam - "Quyết-định-2383-QĐ-BGDĐT" / "Quyết định 1596-QĐ-BGDĐT "
+    pat_c = re.compile(
+        r"(?:Quyết[-\s]?định)[-\s_]+(\d{1,5})[-\s_]+(Q[ĐD][-\s_][\w\-ĐD]+)",
+        re.IGNORECASE,
+    )
+    m = pat_c.search(fname)
+    if m:
+        return f"{m.group(1)}/{_normalize_type(m.group(2))}"
+
+    # Pattern D: file ascii bat dau bang so + QD - vd "1134_QD-BGDDT_512062", "4022_QD-BGDDT_637691"
+    pat_d = re.compile(
+        r"^(\d{1,5})[_-](Q[ĐD][_-][\w\-ĐD]+)",
+        re.IGNORECASE,
+    )
+    m = pat_d.match(fname)
+    if m:
+        return f"{m.group(1)}/{_normalize_type(m.group(2))}"
+
+    return ""
+
+
+def _extract_so_hieu_from_text(head: str) -> str:
+    """Fallback khi filename khong match pattern. Bo qua match nam sau 'Can cu' (vd 'Can cu Nghi dinh so 99/2019/ND-CP')."""
+    type_alt = r"(?:QH\d+|N[ĐD][-\s]?CP|TT[-\s][\w\-ĐD]+|Q[ĐD][-\s][\w\-ĐD]+|NQ[-\s][\w\-ĐD]+|CT[-\s][\w\-ĐD]+)"
+    so_hieu_pat = rf"[Ss]ố\s*:?\s*(\d+)\s*/\s*(\d{{4}})\s*/?\s*({type_alt})"
+    for m in re.finditer(so_hieu_pat, head):
+        start = max(0, m.start() - 80)
+        prefix = head[start:m.start()].lower()
+        # Bo qua neu trong 80 chars truoc co "can cu" (kem dau hoac khong)
+        if "căn cứ" in prefix or "căn cú" in prefix or "can cu" in prefix:
+            continue
+        return f"{m.group(1)}/{m.group(2)}/{_normalize_type(m.group(3))}"
+    return ""
+
+
 def extract_document_metadata(raw_text: str, source_path: str = "") -> dict:
     """
     Trich so hieu + ngay ban hanh tu header van ban.
     - so_hieu: NN/YYYY/TYPE (VD "43/2019/QH14", "125/2024/NĐ-CP", "08/2021/TT-BGDĐT")
     - ngay_ban_hanh: dd/mm/yyyy (lay tu dong dia danh "Ha Noi, ngay..." o dau hoac cuoi van ban)
+
+    Strategy so_hieu: filename TRUOC (reliable, OCR khong dung den), text fallback voi loai tru "Can cu".
     """
     meta = {}
     head = raw_text[:5000]
     tail = raw_text[-3000:]
 
-    # --- So hieu ---
-    # Dinh dang: "so[:]? NN/YYYY/TYPE"
-    # TYPE pho bien: QH13/14/15, ND-CP, TT-BGDDT/BYT/..., QD-..., NQ-..., CT-...
-    type_alt = r"(?:QH\d+|N[ĐD][-\s]?CP|TT[-\s][\w\-ĐD]+|Q[ĐD][-\s][\w\-ĐD]+|NQ[-\s][\w\-ĐD]+|CT[-\s][\w\-ĐD]+)"
-    so_hieu_pat = rf"[Ss]ố\s*:?\s*(\d+)\s*/\s*(\d{{4}})\s*/?\s*({type_alt})"
-    m = re.search(so_hieu_pat, head)
-    if m:
-        n, y, t = m.group(1), m.group(2), m.group(3)
-        t = re.sub(r"\s+", "-", t.strip())
-        t = re.sub(r"-+", "-", t)
-        meta["so_hieu"] = f"{n}/{y}/{t}"
+    # --- So hieu: filename first, text fallback ---
+    so_hieu = _extract_so_hieu_from_filename(source_path)
+    if not so_hieu:
+        so_hieu = _extract_so_hieu_from_text(head)
+    if so_hieu:
+        meta["so_hieu"] = so_hieu
 
     # --- Ngay ban hanh (priority order) ---
     # Uu tien 1: pattern dia danh "Ha Noi[,] ngay DD thang MM nam YYYY" (day la ngay ky ban hanh)
