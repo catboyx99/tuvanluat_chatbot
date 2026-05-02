@@ -117,9 +117,13 @@ def extract_document_metadata(raw_text: str, source_path: str = "") -> dict:
             pass
         return None
 
+    # OCR thuong nuot ky tu / chen rac giua "ngay" va so (vd "ngay /8t 'thang 03 nam 2021"
+    # hoac "ngayO3thang 5 nam 2021"). Dung \D*? (any non-digit, lazy) cho phep regex tolerant.
+    # Cho phep mat khoang trang giua thang/nam (PDF concat). Cap khoang \D la 0-3 chars de tranh
+    # match xa qua xa va nuot nham 2 ngay.
     date_pat_primary = (
         r"(?:Hà\s*Nội|Hà-Nội|TP\.?\s*Hồ\s*Chí\s*Minh|Hà\s*Nọi)"
-        r"[\s,]*ng[àa]y\s*(\d{1,2})\s*th[áa]ng\s*(\d{1,2})\s*n[ăa]m\s*(\d{4})"
+        r"[\s,;]*ng[àa]y\D{0,5}(\d{1,2})\D{0,5}th[áa]ng\D{0,5}(\d{1,2})\D{0,5}n[ăa]m\s*(\d{4})"
     )
     m = re.search(date_pat_primary, head + "\n" + tail)
     if m:
@@ -130,7 +134,7 @@ def extract_document_metadata(raw_text: str, source_path: str = "") -> dict:
     if "ngay_ban_hanh" not in meta:
         # Last occurrence in tail — usually signature date
         matches = list(re.finditer(
-            r"ng[àa]y\s*(\d{1,2})\s*th[áa]ng\s*(\d{1,2})\s*n[ăa]m\s*(\d{4})",
+            r"ng[àa]y\D{0,5}(\d{1,2})\D{0,5}th[áa]ng\D{0,5}(\d{1,2})\D{0,5}n[ăa]m\s*(\d{4})",
             raw_text[-1500:]
         ))
         if matches:
@@ -141,7 +145,7 @@ def extract_document_metadata(raw_text: str, source_path: str = "") -> dict:
     if "ngay_ban_hanh" not in meta:
         # Fallback cuoi: "co hieu luc thi hanh tu ngay..."
         m = re.search(
-            r"c[óo]\s+hi[ệe]u\s+l[ựu]c.{0,30}?ng[àa]y\s*(\d{1,2})\s*th[áa]ng\s*(\d{1,2})\s*n[ăa]m\s*(\d{4})",
+            r"c[óo]\s+hi[ệe]u\s+l[ựu]c.{0,30}?ng[àa]y\D{0,5}(\d{1,2})\D{0,5}th[áa]ng\D{0,5}(\d{1,2})\D{0,5}n[ăa]m\s*(\d{4})",
             raw_text, re.IGNORECASE
         )
         if m:
