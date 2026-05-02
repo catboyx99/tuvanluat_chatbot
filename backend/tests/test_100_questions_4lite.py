@@ -151,30 +151,45 @@ QUESTIONS = [
      "target_docs": ["627183.md"], "target_id": None, "group": "BHXH"},
 
     # === C. BAO HIEM Y TE (12 cau) ===
+    # NOTE: target_id da widen sang multi-valid 2026-05-02 — nguyen target_id "25/2018/QH14" sai (la Luat To cao,
+    # khong phai BHYT). He thong luat BHYT thuc te: Luat 51/2024/QH15 (sua doi BHYT), NĐ 146/2018, NĐ 188/2025
+    # (chi tiet moi), NĐ 02/2025 + 75/2023 (sua doi 146), TT 01/2025/TT-BYT (huong dan).
     {"id": 61, "question": "toi chua co bao hiem y te thi mua o dau",
-     "target_docs": ["Luật-25-2018-QH14.md"], "target_id": "25/2018/QH14", "group": "BHYT"},
+     "target_docs": ["Luật-51-2024-QH15.md", "Nghị-định-188-2025-NĐ-CP.md", "Nghị-định-146-2018-NĐ-CP.md"],
+     "target_id": ["188/2025/NĐ-CP", "146/2018/NĐ-CP", "51/2024/QH15"], "group": "BHYT"},
     {"id": 62, "question": "bao hiem y te chi tra nhung gi khi di kham benh",
-     "target_docs": ["Luật-25-2018-QH14.md"], "target_id": "25/2018/QH14", "group": "BHYT"},
+     "target_docs": ["Luật-51-2024-QH15.md", "Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["51/2024/QH15", "188/2025/NĐ-CP", "146/2018/NĐ-CP"], "group": "BHYT"},
     {"id": 63, "question": "the bao hiem y te het han thi lam lai nhu the nao",
-     "target_docs": ["Luật-25-2018-QH14.md"], "target_id": "25/2018/QH14", "group": "BHYT"},
+     "target_docs": ["Nghị-định-188-2025-NĐ-CP.md", "Nghị-định-146-2018-NĐ-CP.md"],
+     "target_id": ["188/2025/NĐ-CP", "146/2018/NĐ-CP", "51/2024/QH15"], "group": "BHYT"},
     {"id": 64, "question": "kham benh trai tuyen thi bao hiem chi tra bao nhieu phan tram",
-     "target_docs": ["Luật-25-2018-QH14.md", "Luật-51-2024-QH15.md"], "target_id": "25/2018/QH14", "group": "BHYT"},
+     "target_docs": ["Luật-51-2024-QH15.md", "Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["51/2024/QH15", "188/2025/NĐ-CP", "146/2018/NĐ-CP"], "group": "BHYT"},
     {"id": 65, "question": "tre em duoi 6 tuoi co duoc cap the bao hiem y te mien phi khong",
-     "target_docs": ["Nghị-định-146-2018-NĐ-CP.md"], "target_id": "146/2018/NĐ-CP", "group": "BHYT"},
+     "target_docs": ["Nghị-định-146-2018-NĐ-CP.md", "Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["146/2018/NĐ-CP", "188/2025/NĐ-CP", "51/2024/QH15"], "group": "BHYT"},
     {"id": 66, "question": "nguoi ngheo co duoc nha nuoc ho tro mua bao hiem y te khong",
-     "target_docs": ["Nghị-định-146-2018-NĐ-CP.md", "Nghị-định-75-2023-NĐ-CP.md"], "target_id": "146/2018/NĐ-CP", "group": "BHYT"},
+     "target_docs": ["Nghị-định-146-2018-NĐ-CP.md", "Nghị-định-75-2023-NĐ-CP.md"],
+     "target_id": ["146/2018/NĐ-CP", "75/2023/NĐ-CP", "188/2025/NĐ-CP"], "group": "BHYT"},
     {"id": 67, "question": "muc dong bao hiem y te hien nay la bao nhieu",
-     "target_docs": ["Nghị-định-02-2025-NĐ-CP.md", "Nghị-định-146-2018-NĐ-CP.md"], "target_id": "02/2025/NĐ-CP", "group": "BHYT"},
+     "target_docs": ["Nghị-định-02-2025-NĐ-CP.md", "Nghị-định-146-2018-NĐ-CP.md", "Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["146/2018/NĐ-CP", "188/2025/NĐ-CP", "02/2025/NĐ-CP", "51/2024/QH15"], "group": "BHYT"},
     {"id": 68, "question": "benh nhan ung thu duoc bao hiem y te chi tra nhu the nao",
-     "target_docs": ["Nghị-định-188-2025-NĐ-CP.md"], "target_id": "188/2025/NĐ-CP", "group": "BHYT"},
+     "target_docs": ["Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["188/2025/NĐ-CP", "51/2024/QH15"], "group": "BHYT"},
     {"id": 69, "question": "danh muc thuoc bao hiem y te gom nhung loai nao",
-     "target_docs": ["Nghị-định-188-2025-NĐ-CP.md"], "target_id": "188/2025/NĐ-CP", "group": "BHYT"},
+     "target_docs": ["Nghị-định-188-2025-NĐ-CP.md", "Thông-tư-01-2025-TT-BYT.md"],
+     "target_id": ["188/2025/NĐ-CP", "01/2025/TT-BYT"], "group": "BHYT"},
     {"id": 70, "question": "quy trinh kham chua benh bao hiem y te dien ra nhu the nao",
-     "target_docs": ["Thông-tư-01-2025-TT-BYT.md"], "target_id": "01/2025/TT-BYT", "group": "BHYT"},
+     "target_docs": ["Thông-tư-01-2025-TT-BYT.md", "Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["01/2025/TT-BYT", "188/2025/NĐ-CP", "146/2018/NĐ-CP"], "group": "BHYT"},
     {"id": 71, "question": "co so y te nao duoc kham bao hiem y te",
-     "target_docs": ["Thông-tư-01-2025-TT-BYT.md"], "target_id": "01/2025/TT-BYT", "group": "BHYT"},
+     "target_docs": ["Thông-tư-01-2025-TT-BYT.md", "Nghị-định-188-2025-NĐ-CP.md"],
+     "target_id": ["01/2025/TT-BYT", "188/2025/NĐ-CP"], "group": "BHYT"},
     {"id": 72, "question": "chuyen vien bao hiem y te can thu tuc gi",
-     "target_docs": ["Thông-tư-01-2025-TT-BYT.md", "Luật-25-2018-QH14.md"], "target_id": "01/2025/TT-BYT", "group": "BHYT"},
+     "target_docs": ["Thông-tư-01-2025-TT-BYT.md", "Nghị-định-188-2025-NĐ-CP.md", "Luật-51-2024-QH15.md"],
+     "target_id": ["01/2025/TT-BYT", "188/2025/NĐ-CP", "51/2024/QH15"], "group": "BHYT"},
 
     # === D. VIEC LAM & LAO DONG (10 cau) ===
     {"id": 73, "question": "toi bi mat viec thi duoc ho tro gi",
@@ -308,9 +323,12 @@ def check_citation(response_text):
 
 def check_target_hit(response_text, target_id):
     """Kiem tra so hieu van ban muc tieu co xuat hien trong response khong.
+    target_id co the la str (1 so hieu) hoac list[str] (nhieu so hieu valid — hit neu bat ky cai nao xuat hien).
     Tra ve None neu target_id=None (informational-only case)."""
     if target_id is None:
         return None
+    if isinstance(target_id, list):
+        return any(t in response_text for t in target_id)
     return target_id in response_text
 
 
