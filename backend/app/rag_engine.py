@@ -70,7 +70,7 @@ GEMINI_OVERLOAD_SENTINEL = "__GEMINI_OVERLOAD__"
 
 # === Post-process citation block: dedupe theo so hieu, sap thu tu hieu luc, gop Dieu/Khoan/Diem ===
 # Regex bat marker linh hoat: chap nhan "**Căn cứ pháp lý**", "## Căn cứ pháp lý", "# Căn cứ pháp lý", "Căn cứ pháp lý:" ...
-CITATION_MARKER_RE = re.compile(r"(?:\*\*|##|#)?\s*Căn\s+cứ\s+pháp\s+lý")
+CITATION_MARKER_RE = re.compile(r"[#*]*\s*Căn\s+cứ\s+pháp\s+lý")
 CITE_LINE_RE = re.compile(
     r"^\s*[-*]\s*`?\s*(?P<name>.+?)\s*`?\s*\(\s*(?P<num>[^)]+?)\s*\)\s*,\s*"
     r"(?:ban\s+hành\s+ngày\s*(?P<date>\d{1,2}/\d{1,2}/\d{4})\s*,\s*)?"
@@ -161,12 +161,16 @@ def _format_refs(struct: "OrderedDict") -> str:
     return ", ".join(parts)
 
 
-def fix_citation_block(text: str) -> str:
+def fix_citation_block(text: str, valid_meta: dict = None) -> str:
     """Parse citation block sau '**Căn cứ pháp lý:**' va viet lai chuan:
     - Dedupe theo so hieu (gop nhieu dong cua cung 1 van ban thanh 1 dong).
     - Sap theo thu bac hieu luc (Luat -> Luat sua doi -> NQ -> ND -> QD -> TT -> khac).
     - Trong cung 1 cap, sap theo nam giam dan.
     - Format paren: 'Luật số X' neu ten bat dau 'Luật', con lai 'Số X'.
+
+    valid_meta: dict {so_hieu_lower: ngay_ban_hanh} tu cac chunk retrieval thuc te.
+    Neu LLM xuat ngay khong khop (vd 30/03/2021 cho TT 08/2021 ma meta thuc te 08/03/2021,
+    hoac meta rong) -> chong hallucinate bang cach STRIP ngay khoi dong trich dan.
     """
     lines = text.splitlines()
     head_idx = None
@@ -263,14 +267,20 @@ def fix_citation_block(text: str) -> str:
     # Chuan hoa head ve "**Căn cứ pháp lý:**" du LLM xuat dang ## hay # hay khong co dau :
     out_lines.append("**Căn cứ pháp lý:**")
     out_lines.extend(leftover_pre)
-    for _, v in items:
+    for k, v in items:
         if v["name"].lower().startswith("luật"):
             paren = f"Luật số {v['core']}"
         else:
             paren = f"Số {v['core']}"
         line = f"- {v['name']} ({paren})"
-        if v["date"]:
-            line += f", ban hành ngày {v['date']}"
+        # Validate ngay ban hanh chong hallucinate: chi giu ngay neu match meta thuc te.
+        date_to_use = v["date"]
+        if date_to_use and valid_meta is not None:
+            true_date = valid_meta.get(k, "")
+            if not true_date or true_date != date_to_use:
+                date_to_use = ""  # strip ngay bia
+        if date_to_use:
+            line += f", ban hành ngày {date_to_use}"
         refs_out = _format_refs(v["struct"])
         if refs_out:
             line += f", {refs_out}"
@@ -346,6 +356,12 @@ def invoke_rag_chain(query: str, history: list):
         return
 
     # 2. Compose Knowledge Context — kèm metadata rõ ràng để LLM trích dẫn chính xác
+    # valid_meta: chong hallucinate ngay — fix_citation_block dung de strip ngay khong khop
+    valid_meta = {}
+    for d in docs:
+        sh = d.metadata.get("so_hieu", "").strip()
+        if sh:
+            valid_meta[sh.lower()] = d.metadata.get("ngay_ban_hanh", "").strip()
     context_parts = []
     for d in docs:
         law_name = d.metadata.get("Luật/Nghị Định", "")
@@ -457,7 +473,8 @@ CẤM TUYỆT ĐỐI (tổng hợp):
 - KHÔNG đảo format: nội dung quy định ở ngoài, `(số hiệu, ngày, Điều)` trong ngoặc → CẤM (xem BUG 1). Luôn theo format `TÊN (SỐ HIỆU), ban hành ngày ..., Điều ...`.
 - KHÔNG copy nguyên văn `[Nguồn: ...]` hay `[Meta: ...]` — đó là nhãn nội bộ.
 - KHÔNG dùng placeholder `[...]`, KHÔNG ghi `(không rõ nguồn)`, `(chưa xác định)`.
-- KHÔNG bịa số hiệu hoặc ngày tháng. Nếu dòng `[Meta: ...]` không có `Số hiệu` hoặc `Ban hành` → BỎ HẲN dòng đó.
+- KHÔNG bịa số hiệu hoặc ngày tháng.
+- **NGÀY BAN HÀNH CHỈ ĐƯỢC LẤY TỪ TRƯỜNG `Ban hành: dd/mm/yyyy` TRONG `[Meta: ...]` CỦA CHÍNH CHUNK ĐÓ.** Nếu Meta không có `Ban hành:` → CITATION BỎ HẲN cụm `, ban hành ngày DD/MM/YYYY,` (vẫn giữ tên + số hiệu + Điều/Khoản). VD: `- Tên (Số 08/2021/TT-BGDĐT), Điều 18, Khoản 2.` (không ngày). TUYỆT ĐỐI KHÔNG đọc ngày từ nội dung chunk (các cụm `Căn cứ Luật ngày...`, `Thông tư X ngày...` trong body là ngày của VĂN BẢN KHÁC được tham chiếu, KHÔNG phải ngày của văn bản hiện tại — DÙNG = BỊA).
 - KHÔNG lặp cùng 1 văn bản ở 2 dòng khác nhau — gộp 1 dòng duy nhất (xem BUG 4).
 - KHÔNG đảo thứ tự hiệu lực: Luật phải đứng TRƯỚC Nghị định/Thông tư trong mọi trường hợp (xem BUG 3).
 
@@ -526,7 +543,7 @@ Dữ liệu pháp luật:
                         streamed_any = True
             # Stream xong binh thuong: flush
             if in_citation:
-                yield fix_citation_block(citation_buf)
+                yield fix_citation_block(citation_buf, valid_meta)
             elif pending:
                 yield pending
             return
@@ -541,7 +558,7 @@ Dữ liệu pháp luật:
             # Flush phan da co (neu co) truoc khi yield sentinel
             if in_citation and citation_buf:
                 try:
-                    yield fix_citation_block(citation_buf)
+                    yield fix_citation_block(citation_buf, valid_meta)
                 except Exception:
                     yield citation_buf
             elif pending:

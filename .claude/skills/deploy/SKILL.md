@@ -39,6 +39,8 @@ Tín hiệu:
 - `git diff OLD NEW --name-only` có `backend/app/document_loader.py` HOẶC `md_materials/`
 - Commit message chứa "re-ingest", "wipe chroma", hoặc "metadata schema"
 
+**LƯU Ý**: Đổi regex extract metadata trong `document_loader.py` (vd `extract_document_metadata`, `extract_so_hieu_*`) BẮT BUỘC Mode B vì metadata được tính tại ingest time và lưu vào ChromaDB. Restart backend KHÔNG re-compute metadata cho chunks đã có.
+
 **Lệnh**: `docker compose down -v && docker compose up -d --build`
 
 **Cảnh báo khi Mode B**:
