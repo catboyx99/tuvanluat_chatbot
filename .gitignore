@@ -34,3 +34,8 @@ prd.md
 
 # IDE
 .vscode/
+
+# Local test artifacts (server-side / debug — không push)
+auto_test_serverside/
+backend/tests/test_suit*.json
+backend/tests/test_suite*.json
